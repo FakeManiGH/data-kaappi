@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { v4 as uuidv4 } from 'uuid';
 import { generateRandomString } from '@/utils/GenerateRandomString';
 import { getStorage, ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import { doc, setDoc } from "firebase/firestore";
@@ -8,8 +9,10 @@ import Alert from '@/app/_components/_common/Alert';
 import { validateFile } from '@/utils/FileValidation';
 import { app, db } from '@/../firebaseConfig';
 import { useUser } from '@clerk/nextjs';
+import { useRouter } from 'next/navigation';
 
 function UploadForm() {
+  const router = useRouter();
   const [files, setFiles] = useState([]);
   const [fileErrors, setFileErrors] = useState([]);
   const [alert, setAlert] = useState({ isOpen: false, type: '', message: '', check: false });
@@ -45,7 +48,8 @@ function UploadForm() {
       const metadata = {
         contentType: file?.type
       };
-      const fileRef = ref(storage, 'file-base/' + file?.name);
+      const uniqueFileName = `${file?.name}_${uuidv4()}`;
+      const fileRef = ref(storage, 'file-base/' + uniqueFileName);
       const uploadTask = uploadBytesResumable(fileRef, file, metadata);
 
       uploadTask.on('state_changed',
@@ -57,41 +61,48 @@ function UploadForm() {
             newProgress[index] = progress;
             return newProgress;
           });
-
-          if (progress === 100) {
-            getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-              console.log('File available at', downloadURL);
-              saveFileData(file, downloadURL);
-            });
-          }
         },
         (error) => {
           console.error('Upload failed:', error);
+          setFileErrors((prevErrors) => [...prevErrors, error.message]);
         },
-        () => {
-          setFileErrors([]);
-          setFiles([]);
-          setAlert({ isOpen: true, type: 'error',title: 'Tallennettu' , message: 'Tiedostot tallennettu onnistuneesti!', check: true });
+        async () => {
+          try {
+            const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+            await saveFileData(file, downloadURL, uniqueFileName);
+            setFileErrors([]);
+            setFiles([]);
+            setAlert({ isOpen: true, type: 'success', message: 'Tiedostot ladattu onnistuneesti!', check: true });
+            setTimeout(() => {
+              setAlert({ isOpen: false, type: '', message: '', check: false });
+              router.push('/tiedostot');
+            }, 3000);
+          } catch (error) {
+            console.error('Error getting download URL or saving file data:', error);
+            setFileErrors((prevErrors) => [...prevErrors, error.message]);
+          }
         }
       );
     });
   };
 
   // Save file data to Firestore
-  const saveFileData = async (file, fileUrl) => {
+  const saveFileData = async (file, fileUrl, uniqueFileName) => {
     const docID = generateRandomString(6).toString();
-    await setDoc(doc(db, 'files', docID), {
-      fileName: file.name,
+    const fileDocRef = doc(db, 'files', docID);
+
+    await setDoc(fileDocRef, {
+      fileID: docID,
+      fileName: uniqueFileName,
       fileSize: file.size,
       fileType: file.type,
       fileUrl: fileUrl,
       userEmail: user.primaryEmailAddress.emailAddress,
       userName: user.fullName,
       password: '',
-      shortUrl: process.env.NEXT_PUBLIC_BASE_URL + docID,
+      shortUrl: process.env.NEXT_PUBLIC_BASE_URL + '/tiedosto/' + docID,
     });
   };
-
 
   // Handle form submit
   const handleSubmit = (event) => {
@@ -114,9 +125,9 @@ function UploadForm() {
           </label>
         </div>
         <button 
-          type="submit" 
-          className="mt-4 px-4 py-3 w-[30%] min-w-fit bg-primary text-white rounded-full disabled:bg-secondary disabled:opacity-50"
+          type="submit"
           {...(files.length === 0 && { disabled: true })}
+          className="mt-4 px-4 py-3 w-[30%] min-w-fit disabled:bg-secondary bg-primary text-white rounded-full"
         >Tallenna</button>
       </form>
       {fileErrors?.length > 0 && fileErrors.map((error, index) => (

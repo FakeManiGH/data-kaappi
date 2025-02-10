@@ -16,7 +16,7 @@ function SideNav({ currentIndex, setCurrentIndex, navList }) {
                 <Link 
                     href={`/${item.path}`} 
                     key={item.id} 
-                    className={`flex gap-2 p-4 w-full hover:bg-contrast hover:text-primary ${item.path == currentIndex ? 'bg-contrast text-primary' : 'text-gray-500'}`}
+                    className={`flex gap-2 p-4 w-full hover:bg-contrast hover:text-primary ${item.path == currentIndex ? 'bg-contrast text-primary' : 'text-gray-600 dark:text-gray-400'}`}
                     onClick={() => setCurrentIndex(item.path)}
                 >     
                     <item.icon />

@@ -1,5 +1,6 @@
 import React from 'react'
 import Image from 'next/image'
+import Link from 'next/link'
 
 function Header() {
   return (
@@ -15,27 +16,27 @@ function Header() {
                 <nav aria-label="Global" className="hidden md:block">
                 <ul className="flex items-center gap-6 text-md">
                     <li>
-                    <a className="text-foreground dark:text-gray-200 transition hover:text-primary" href="/tallenna"> Tallenna </a>
+                        <Link className="text-foreground dark:text-gray-200 transition hover:text-primary" href="/tallenna"> Tallenna </Link>
                     </li>
 
                     <li>
-                        <a className="text-foreground dark:text-gray-200 transition hover:text-primary" href="/tiedostot"> Tiedostot </a>
+                        <Link className="text-foreground dark:text-gray-200 transition hover:text-primary" href="/tiedostot"> Tiedostot </Link>
                     </li>
 
                     <li>
-                    <a className="text-foreground dark:text-gray-200 transition hover:text-primary" href="/tietoa"> Tietoa </a>
+                        <Link className="text-foreground dark:text-gray-200 transition hover:text-primary" href="/tietoa"> Tietoa </Link>
                     </li>
                 </ul>
                 </nav>
 
                 <div className="flex items-center gap-4">
                 <div className="sm:flex sm:gap-4">
-                    <a
+                    <Link
                     className="rounded-full bg-primary px-5 py-3 text-sm font-semibold text-white shadow hover:bg-primary/90"
                     href="/kojelauta"
                     >
                     Aloita
-                    </a>
+                    </Link>
                 </div>
 
                 <div className="block md:hidden">

@@ -13,7 +13,12 @@ export default {
         contrast: "var(--contrast)",
         contrast2: "var(--contrast2)",
         primary: "#0084ff",
-        secondary: "#6666666",
+        secondary: "#666666",
+        success: "#399c39",
+      },
+      backgroundColor: {
+        primary: "#0084ff",
+        secondary: "#666666",
         success: "#399c39",
       },
       fontFamily: {

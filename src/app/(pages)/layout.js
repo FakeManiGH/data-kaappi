@@ -1,15 +1,15 @@
 "use client"
-import React from 'react'
+import React, { useEffect } from 'react'
 import SideNav from './_components/SideNav';
 import TopHeader from './_components/TopHeader';
 import Footer from './_components/Footer';
-import { BadgeInfo, Files, LayoutDashboard, UploadCloud } from 'lucide-react'
+import { BadgeInfo, Files, LayoutDashboard, UploadCloud } from 'lucide-react';
 
 function layout({ children }) {
   const [currentIndex, setCurrentIndex] = React.useState('')
 
   // Get current index
-  React.useEffect(() => {
+  useEffect(() => {
     setCurrentIndex(window.location.pathname.split('/')[
       window.location.pathname.split('/').length - 1
     ])
