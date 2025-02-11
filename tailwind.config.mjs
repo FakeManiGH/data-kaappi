@@ -12,13 +12,14 @@ export default {
         foreground: "var(--foreground)",
         contrast: "var(--contrast)",
         contrast2: "var(--contrast2)",
+        navlink: "var(--navlink)",
         primary: "#0084ff",
-        secondary: "#666666",
+        secondary: "#777777",
         success: "#399c39",
       },
       backgroundColor: {
         primary: "#0084ff",
-        secondary: "#666666",
+        secondary: "#777777",
         success: "#399c39",
       },
       fontFamily: {

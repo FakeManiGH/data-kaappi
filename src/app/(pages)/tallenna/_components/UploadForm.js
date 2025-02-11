@@ -76,7 +76,7 @@ function UploadForm() {
             setTimeout(() => {
               setAlert({ isOpen: false, type: '', message: '', check: false });
               router.push('/tiedostot');
-            }, 3000);
+            }, 2000);
           } catch (error) {
             console.error('Error getting download URL or saving file data:', error);
             setFileErrors((prevErrors) => [...prevErrors, error.message]);
@@ -90,6 +90,7 @@ function UploadForm() {
   const saveFileData = async (file, fileUrl, uniqueFileName) => {
     const docID = generateRandomString(6).toString();
     const fileDocRef = doc(db, 'files', docID);
+    const shortUrl = process.env.NEXT_PUBLIC_BASE_URL + 'tiedosto/' + docID;
 
     await setDoc(fileDocRef, {
       fileID: docID,
@@ -100,7 +101,7 @@ function UploadForm() {
       userEmail: user.primaryEmailAddress.emailAddress,
       userName: user.fullName,
       password: '',
-      shortUrl: process.env.NEXT_PUBLIC_BASE_URL + '/tiedosto/' + docID,
+      shortUrl: shortUrl,
     });
   };
 
@@ -114,12 +115,12 @@ function UploadForm() {
     <div className="flex flex-col items-center justify-center w-full">
       <form onSubmit={handleSubmit} className="w-full mb-1 text-center">
         <div className="flex items-center justify-center w-full">
-          <label htmlFor="dropzone-file" className="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-500 border-dashed rounded-xl cursor-pointer bg-contrast hover:bg-contrast2">
+          <label htmlFor="dropzone-file" className="flex flex-col items-center justify-center w-full h-64 border-2 border-navlink border-dashed rounded-xl cursor-pointer hover:border-primary">
             <div className="flex flex-col items-center justify-center p-4 text-center pt-5 pb-6">
               <p className="mb-2 text-xl text-foreground">
                 <strong className="text-primary">Klikkaa</strong> tai <strong className="text-primary">tiputa</strong> tiedostoja
               </p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Kuva, Video ja Dokumetti -tiedostot (max. 5Mt / tiedosto)</p>
+              <p className="text-sm text-navlink">Kuva, Video ja Dokumetti -tiedostot (max. 5Mt / tiedosto)</p>
             </div>
             <input id="dropzone-file" type="file" accept='media_type' className="hidden" multiple onChange={handleFileChange} />
           </label>
