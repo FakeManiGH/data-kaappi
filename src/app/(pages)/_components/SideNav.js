@@ -4,7 +4,7 @@ import Link from 'next/link'
 
 function SideNav({ currentIndex, setCurrentIndex, navList }) {
     return (
-        <div className='flex flex-col w-64 h-full bg-background border-r border-contrast2 dark:border-contrast3'>
+        <div className='flex flex-col w-64 h-full border-r border-contrast2'>
             <div className='p-4'>
                 <a href='/' className='flex items-center gap-2'>
                     <Image src='/logo.svg' alt="Logo" width={40} height={40} />

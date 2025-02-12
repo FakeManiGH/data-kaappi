@@ -44,7 +44,7 @@ function layout({ children }) {
 
   return (
     <>
-      <div className="fixed inset-y-0 w-64 hidden z-50 md:flex flex-col h-full">
+      <div className="fixed inset-y-0 w-64 hidden md:flex flex-col h-full">
         <SideNav currentIndex={currentIndex} setCurrentIndex={setCurrentIndex} navList={navList} />
       </div>
       <div className='md:ml-64'>

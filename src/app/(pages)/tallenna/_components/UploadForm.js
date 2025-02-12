@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { v4 as uuidv4 } from 'uuid';
 import { generateRandomString } from '@/utils/GenerateRandomString';
 import { getStorage, ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import { doc, setDoc } from "firebase/firestore";
@@ -48,7 +47,7 @@ function UploadForm() {
       const metadata = {
         contentType: file?.type
       };
-      const uniqueFileName = `${file?.name}_${uuidv4()}`;
+      const uniqueFileName = `${file?.name}_${generateRandomString(6)}`;
       const fileRef = ref(storage, 'file-base/' + uniqueFileName);
       const uploadTask = uploadBytesResumable(fileRef, file, metadata);
 
@@ -100,6 +99,7 @@ function UploadForm() {
       fileUrl: fileUrl,
       userEmail: user.primaryEmailAddress.emailAddress,
       userName: user.fullName,
+      shared: false,
       password: '',
       shortUrl: shortUrl,
     });

@@ -8,7 +8,7 @@ function Upload() {
   return (
     <main>
       <h1 className='text-2xl sm:text-3xl'><strong>Tallenna tiedostoja</strong></h1>
-      <p className='text-sm sm:text-base'>Tallenna tiedostoja omaan data-kaappiisi.</p>
+      <p className='text-sm sm:text-base'>Tallenna tiedostoja data-kaappiisi.</p>
       <UploadForm />
     </main>
   )
