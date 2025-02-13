@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from 'react'
-import { ArrowLeftSquare, DownloadCloud, FileLock2, Settings, Share } from 'lucide-react'
+import { ArrowLeftSquare, LockKeyhole, Settings, Share2, Trash } from 'lucide-react'
 import Link from 'next/link'
 import SharePopup from './SharePopup'
+import PasswordPopup from './PasswordPopup'
 
-function FileNav({ file }) {
+function FileNav({ file, setFile }) {
     const [dropMenu, setDropMenu] = useState(false)
     const [sharePopup, setSharePopup] = useState(false)
+    const [passwordPopup, setPasswordPopup] = useState(false)
 
     useEffect(() => {
-        // close dropdown when clicked outside
         const handleClick = (e) => {
             if (!e.target.closest('.relative')) {
                 setDropMenu(false)
@@ -19,14 +20,24 @@ function FileNav({ file }) {
         return () => document.removeEventListener('click', handleClick)
     }, [])
 
+    const handleSharePopup = () => {
+        setDropMenu(false)
+        setSharePopup(true)
+    }
+
+    const handlePasswordPopup = () => {
+        setDropMenu(false)
+        setPasswordPopup(true)
+    }
+
     return (
-        <div className='flex items-center justify-between mb-4 relative border-b border-contrast2'>
+        <div className='flex items-center justify-between mb-4 border-b border-contrast2'>
             <Link href="/tiedostot" className='flex items-center text-sm text-navlink space-x-2 gap-1 hover:text-primary'>
                 <ArrowLeftSquare />
                 Takaisin tiedostoihin
             </Link>
 
-            <div>
+            <div className="relative">
                 <button 
                     className={`flex items-center gap-2 p-2 text-sm hover:text-primary ${dropMenu ? 'text-primary' : 'text-navlink'}`}	 
                     role="button"
@@ -41,55 +52,49 @@ function FileNav({ file }) {
                         className="absolute z-10 end-0 w-56 divide-y divide-contrast2 rounded-t-none rounded-b-xl overflow-hidden border border-contrast2 bg-background shadow-lg"
                         role="menu"
                     >
-                        <div className='shadow-md shadow-black/20 bg-contrast'>
+                        <div className='bg-background shadow-lg shadow-black/50'>
                             <strong className="block p-2 text-xs font-medium uppercase text-gray-400 dark:text-gray-500">
                                 Yleiset
                             </strong>
 
                             <button 
-                                className='flex w-full items-center gap-2 px-4 py-2 text-sm text-navlink hover:bg-contrast hover:text-primary' 
+                                className='flex w-full items-center gap-2 px-4 py-2 text-sm text-navlink hover:text-primary' 
                                 role="menuitem"
-                                onClick={() => setSharePopup(true)}
+                                onClick={handleSharePopup}
                             >
-                                <Share size={16} />
-                                Jaa tiedosto
+                                <Share2 size={16} />
+                                Jako asetukset
                             </button>
                             <button 
-                                className='flex w-full items-center gap-2 px-4 py-2 text-sm text-navlink hover:bg-contrast hover:text-primary' 
+                                className='flex w-full items-center gap-2 px-4 py-2 text-sm text-navlink hover:text-primary' 
                                 role="menuitem"
+                                onClick={handlePasswordPopup}
                             >
-                                <DownloadCloud size={16} />
-                                Lataa tiedosto
-                            </button>
-                            <button 
-                                className='flex w-full items-center gap-2 px-4 py-2 text-sm text-navlink hover:bg-contrast hover:text-primary' 
-                                role="menuitem"
-                            >
-                                <FileLock2 size={16} />
+                                <LockKeyhole size={16} />
                                 Aseta salasana
                             </button>
                         </div>
 
-                        <div className='bg-contrast pb-2'>
+                        <div className='bg-background pb-2'>
                             <strong className="block p-2 text-xs font-medium uppercase text-red-400 dark:text-red-300">
                                 Vaaravyöhyke
                             </strong>
 
                             <button
                             type="submit"
-                            className="flex w-full items-center gap-2 px-4 py-2 text-sm text-red-700 hover:bg-red-100 dark:text-red-500 dark:hover:bg-red-600/10"
+                            className="flex w-full items-center gap-2 px-4 py-2 text-sm text-red-500 hover:text-red-700"
                             role="menuitem"
                             >
-                            Poista tiedosto
+                                <Trash size={16} />
+                                Poista tiedosto
                             </button>                            
                         </div>
                     </div>
                 )}
             </div>
             {/* Popups */}
-            {sharePopup && <SharePopup file={file} open={setSharePopup} />}
-            
-
+            {sharePopup && <SharePopup file={file} setFile={setFile} setSharePopup={setSharePopup} />}
+            {passwordPopup && <PasswordPopup file={file} setFile={setFile} setPasswordPopup={setPasswordPopup} />}
         </div>
     )
 }

@@ -53,8 +53,8 @@ function page({ params }) {
     
     return (
         <main>
-            <FileNav file={file} />
-            <FilePreview file={file} />
+            <FileNav file={file} setFile={setFile} />
+            <FilePreview file={file} setFile={setFile} />
         </main>
     )
 }

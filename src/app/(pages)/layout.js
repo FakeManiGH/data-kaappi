@@ -1,9 +1,11 @@
 "use client"
-import React, { useEffect } from 'react'
+import React, { useEffect, useContext } from 'react'
 import SideNav from './_components/SideNav';
 import TopHeader from './_components/TopHeader';
 import Footer from './_components/Footer';
 import { BadgeInfo, Files, LayoutDashboard, UploadCloud } from 'lucide-react';
+import { useAlert } from '../contexts/AlertContext';
+import Alert from '../_components/_common/Alert';
 
 function layout({ children }) {
   const [currentIndex, setCurrentIndex] = React.useState('')
@@ -52,6 +54,7 @@ function layout({ children }) {
         {children}
       </div>
       <Footer />
+      <Alert />
     </>
   )
 }

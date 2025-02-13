@@ -14,7 +14,6 @@ function UploadForm() {
   const router = useRouter();
   const [files, setFiles] = useState([]);
   const [fileErrors, setFileErrors] = useState([]);
-  const [alert, setAlert] = useState({ isOpen: false, type: '', message: '', check: false });
   const [uploadProgress, setUploadProgress] = useState([]);
   const storage = getStorage(app);
   const { user } = useUser();
@@ -71,11 +70,9 @@ function UploadForm() {
             await saveFileData(file, downloadURL, uniqueFileName);
             setFileErrors([]);
             setFiles([]);
-            setAlert({ isOpen: true, type: 'success', message: 'Tiedostot ladattu onnistuneesti!', check: true });
             setTimeout(() => {
-              setAlert({ isOpen: false, type: '', message: '', check: false });
               router.push('/tiedostot');
-            }, 2000);
+            }, 1000);
           } catch (error) {
             console.error('Error getting download URL or saving file data:', error);
             setFileErrors((prevErrors) => [...prevErrors, error.message]);
@@ -135,7 +132,6 @@ function UploadForm() {
         <AlertMsg msg={error} success={false} key={index} />
       ))}
       <FilePreview files={files} removeFile={(file) => setFiles(files.filter(f => f !== file))} uploadProgress={uploadProgress} />
-      <Alert alert={alert} setAlert={setAlert} />
     </div>
   );
 }

@@ -22,7 +22,7 @@ function TopHeader({ currentIndex, setCurrentIndex, navList }) {
             onClick={handleDropdown}
           />
 
-          <Link href='/' className='flex items-center gap-2 md:hidden'>
+          <Link href='/kojelauta' className='flex items-center gap-2 md:hidden'>
             <Image src='/logo.svg' alt="Logo" width={40} height={40} />
             Data-Kaappi
           </Link>

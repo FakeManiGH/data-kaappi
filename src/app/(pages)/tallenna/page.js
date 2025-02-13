@@ -6,9 +6,9 @@ import UploadForm from './_components/UploadForm'
 function Upload() {
 
   return (
-    <main>
+    <main className='mt-4'>
       <h1 className='text-2xl sm:text-3xl'><strong>Tallenna tiedostoja</strong></h1>
-      <p className='text-sm sm:text-base'>Tallenna tiedostoja data-kaappiisi.</p>
+      <p className='text-sm'>Tallenna tiedostoja data-kaappiisi.</p>
       <UploadForm />
     </main>
   )

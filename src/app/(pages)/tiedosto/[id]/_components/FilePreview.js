@@ -1,87 +1,52 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { translateFileSize } from '@/utils/TranslateFileSize';
+import DownloadBtn from '@/app/_components/_common/DownloadBtn';
 
 function FilePreview({ file }) {
-  const renderPreview = () => {
-    if (!file || !file.fileType) return null;
-
-    if (file.fileType.startsWith('image/')) {
+  const returnPreviewFile = () => {
+    if (file.fileType.includes('image')) {
       return (
-        <div className="flex flex-col gap-4">
-          <img src={file.fileUrl} alt={file.fileName} className="max-w-40 h-auto select-none pointer-events-none" />
-          <div className='bg-contrast rounded-md p-4 flex flex-col gap-4'>
-            <h1 className='text-md sm:text-xl truncate'>{file.fileName}</h1>
-            <div className="flex flex-col text-sm">
-              <p className='flex gap-4 items-baseline justify-between'><strong className='whitespace-nowrap'>Koko:</strong> {translateFileSize(file.fileSize)}</p>
-              <p className='flex gap-4 items-baseline justify-between'><strong className='whitespace-nowrap'>Tyyppi:</strong> {file.fileType}</p>
-              <p className='flex gap-4 items-baseline justify-between'><strong className='whitespace-nowrap'>Näkyvyys:</strong> {file.shared ? 'Jaettu' : 'Yksityinen'}</p>
-              <p className='flex gap-4 items-baseline justify-between'><strong className='whitespace-nowrap'>Salasana:</strong> {file.password ? 'Kyllä' : 'Ei'}</p>
-            </div>
-          </div>
-        </div>
+        <img src={file.fileUrl} alt={file.fileName} className="max-w-52 h-auto rounded-lg" />
       );
-    } else if (file.fileType.startsWith('video/')) {
+    } else if (file.fileType.includes('video')) {
       return (
-        <div className="flex flex-col gap-4">
-          <h1 className='text-md sm:text-xl truncate'>{file.fileName}</h1>
-
-          <div className="flex flex-col text-sm">
-            <p className='flex gap-4 items-baseline justify-between'><strong className='whitespace-nowrap'>Koko:</strong> {translateFileSize(file.fileSize)}</p>
-            <p className='flex gap-4 items-baseline justify-between'><strong className='whitespace-nowrap'>Tyyppi:</strong> {file.fileType}</p>
-          </div>
-
-          <video controls className="max-w-full h-auto rounded-xl">
-            <source src={file.fileUrl} type={file.fileType} />
-            Your browser does not support the video tag.
-          </video>
-        </div>
+        <video src={file.fileUrl} controls className="max-w-52 h-auto rounded-lg" />
       );
-    } else if (file.fileType === 'application/pdf') {
+    } else if (file.fileType.includes('audio')) {
       return (
-        <div className="flex flex-col gap-4">
-          <h1 className='text-md sm:text-3xl truncate'>{file.fileName}</h1>
-
-          <div className="flex flex-col text-sm">
-            <p className='flex gap-4 items-baseline justify-between'><strong className='whitespace-nowrap'>Koko:</strong> {translateFileSize(file.fileSize)}</p>
-            <p className='flex gap-4 items-baseline justify-between'><strong className='whitespace-nowrap'>Tyyppi:</strong> {file.fileType}</p>
-          </div>
-
-          <embed
-            src={file.fileUrl}
-            type="application/pdf"
-            width="100%"
-            height="600px"
-            className='rounded-xl outline-none'
-          />
-        </div>
-      );
-    } else if (file.fileType === 'text/plain') {
-      return (
-        <div className="flex flex-col gap-4">
-          <h1 className='text-md sm:text-3xl truncate'>{file.fileName}</h1>
-
-          <div className="flex flex-col text-sm">
-            <p className='flex gap-4 items-baseline justify-between'><strong className='whitespace-nowrap'>Koko:</strong> {translateFileSize(file.fileSize)}</p>
-            <p className='flex gap-4 items-baseline justify-between'><strong className='whitespace-nowrap'>Tyyppi:</strong> {file.fileType}</p>
-          </div>
-
-          <embed
-            src={file.fileUrl}
-            title={file.fileName}
-            width="100%"
-            height="500px"
-            className='rounded-xl outline-none text-foreground'
-          />
-        </div>
+        <audio src={file.fileUrl} controls className="max-w-52 h-auto rounded-lg" />
       );
     } else {
-      return <p>File type not supported for preview.</p>;
+      return (
+        <img src='/icons/file.png' alt='File PNG illustration' className="max-w-52 h-auto" />
+      );
     }
-  };
+  }
 
   return (
-    <div className="file-preview">
-      {renderPreview()}
+    <div className="flex flex-col gap-4 w-full">
+      <div className="flex flex-col lg:flex-row gap-4 w-full">
+        {returnPreviewFile()}
+        <div className='w-full rounded-lg p-4 flex flex-col gap-4'>
+          <h1 className='text-md sm:text-xl truncate'>{file.fileName}</h1>
+          <a href={file.fileUrl} target="_blank" rel="noreferrer" className='text-sm text-primary underline'>Avaa välilehdessä</a>
+          <ul className="flex flex-col text-sm">
+            <li className='flex gap-4 items-baseline justify-between border-b border-dashed border-contrast2 p-1'>
+              <strong className='whitespace-nowrap'>Koko:</strong> {translateFileSize(file.fileSize)}
+            </li>
+            <li className='flex gap-4 items-baseline justify-between border-b border-dashed border-contrast2 p-1'>
+              <strong className='whitespace-nowrap'>Tyyppi:</strong> {file.fileType}
+            </li>
+            <li className="flex gap-1 items-baseline justify-between border-b border-dashed border-contrast2 p-1">
+              <strong className='whitespace-nowrap'>Näkyvyys:</strong> {file.shared ? 'Jaettu' : 'Yksityinen'}
+            </li>
+            <li className='flex gap-4 items-baseline justify-between p-1'>
+              <strong className='whitespace-nowrap'>Salasana suojattu:</strong> {file.password ? 'Kyllä ' : 'Ei'}
+            </li>
+          </ul>
+        </div>
+      </div>
+      <DownloadBtn url={file.fileUrl} fileName={file.fileName} />
     </div>
   );
 }
