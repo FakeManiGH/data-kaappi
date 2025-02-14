@@ -4,17 +4,15 @@ import SideNav from './_components/SideNav';
 import TopHeader from './_components/TopHeader';
 import Footer from './_components/Footer';
 import { BadgeInfo, Files, LayoutDashboard, UploadCloud } from 'lucide-react';
-import { useAlert } from '../contexts/AlertContext';
 import Alert from '../_components/_common/Alert';
 
 function layout({ children }) {
   const [currentIndex, setCurrentIndex] = React.useState('')
 
-  // Get current index
   useEffect(() => {
-    setCurrentIndex(window.location.pathname.split('/')[
-      window.location.pathname.split('/').length - 1
-    ])
+    const path = `/${window.location.pathname.split('/')[1]}`;
+    console.log(path)
+    setCurrentIndex(path);
   }, [])
 
   const navList = [
@@ -22,31 +20,31 @@ function layout({ children }) {
         id: 1,
         name: 'Kojelauta',
         icon: LayoutDashboard,
-        path: 'kojelauta'
+        path: '/kojelauta'
     },
     {
         id: 2,
         name: 'Tallenna',
         icon: UploadCloud,
-        path: 'tallenna'
+        path: '/tallenna'
     },
     {
         id: 3,
         name: 'Tiedostot',
         icon: Files,
-        path: 'tiedostot'
+        path: '/tiedostot'
     },
     {
         id: 4,
         name: 'Tietoa',
         icon: BadgeInfo,
-        path: 'tietoa'
+        path: '/tietoa'
     }
   ]
 
   return (
     <>
-      <div className="fixed inset-y-0 w-64 hidden md:flex flex-col h-full">
+      <div className="fixed inset-y-0 w-64 hidden md:flex flex-col">
         <SideNav currentIndex={currentIndex} setCurrentIndex={setCurrentIndex} navList={navList} />
       </div>
       <div className='md:ml-64'>

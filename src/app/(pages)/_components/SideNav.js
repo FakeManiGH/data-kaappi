@@ -5,18 +5,20 @@ import Link from 'next/link'
 function SideNav({ currentIndex, setCurrentIndex, navList }) {
     return (
         <div className='flex flex-col w-64 h-full border-r border-contrast2'>
-            <div className='p-4'>
-                <a href='/kojelauta' className='flex items-center gap-2'>
-                    <Image src='/logo.svg' alt="Logo" width={40} height={40} />
-                    Data-Kaappi
-                </a>
-            </div>
-            <div className='flex flex-col float-left w-full'>
+            <Link 
+                href='/' 
+                className='p-4 border-b border-contrast2 flex items-center gap-2 hover:bg-primary/50 transition-colors'
+                onClick={() => setCurrentIndex('/')}
+            >
+                <Image src='/logo.svg' alt="Logo" width={40} height={40} />
+                Data-Kaappi
+            </Link>
+            <div className='flex flex-col w-full mt-2'>
             {navList && navList.map((item) => (
                 <Link 
-                    href={`/${item.path}`} 
+                    href={item.path} 
                     key={item.id} 
-                    className={`flex gap-2 text-sm p-4 w-full hover:text-primary ${item.path == currentIndex ? 'text-primary' : 'text-navlink'}`}
+                    className={`flex items-center gap-2 p-4 px-5 w-full text-sm hover:text-primary ${currentIndex === item.path ? 'text-primary' : 'text-navlink'}`}
                     onClick={() => setCurrentIndex(item.path)}
                 >     
                     <item.icon />

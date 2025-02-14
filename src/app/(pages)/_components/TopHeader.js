@@ -13,8 +13,8 @@ function TopHeader({ currentIndex, setCurrentIndex, navList }) {
   }
 
   return (
-    <div className='relative bg-background'>
-      <div className='flex justify-between md:justify-end p-4 py-2 w-full items-center'>
+    <div className='relative z-10 bg-background'>
+      <div className='flex justify-between md:justify-end p-4 py-2 pt-4 w-full items-center'>
           <AlignJustify
             id='dropdownBtn'
             className='cursor-pointer md:hidden text-foreground dark:text-navlink transition hover:text-primary' 
@@ -38,9 +38,9 @@ function TopHeader({ currentIndex, setCurrentIndex, navList }) {
             >
               {navList && navList.map((item) => (
                 <Link
-                  href={`/${item.path}`}
+                  href={item.path}
                   key={item.id}
-                  className={`flex items-center text-sm w-full gap-2 p-4 hover:text-primary ${item.path == currentIndex ? 'text-primary' : 'text-navlink'}`}
+                  className={`flex items-center text-sm w-full gap-2 p-4 hover:text-primary ${currentIndex === item.path ? 'text-primary' : 'text-navlink'}`}
                   onClick={() => { setDropdown(false); setCurrentIndex(item.path); }}
                 >
                   <item.icon size='24' />

@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@clerk/nextjs": "^6.11.1",
+    "@clerk/themes": "^2.2.18",
     "firebase": "^11.3.0",
     "lucide-react": "^0.475.0",
     "next": "15.1.6",

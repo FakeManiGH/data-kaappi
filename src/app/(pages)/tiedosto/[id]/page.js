@@ -22,7 +22,6 @@ function page({ params }) {
         const docSnap = await getDoc(docRef)
 
         if (docSnap.exists()) {
-            console.log('Document data:', docSnap.data())
             setFile(docSnap.data())
             setLoading(false)
         } else {

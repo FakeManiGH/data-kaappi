@@ -9,12 +9,14 @@ import { validateFile } from '@/utils/FileValidation';
 import { app, db } from '@/../firebaseConfig';
 import { useUser } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
+import { useAlert } from '@/app/contexts/AlertContext';
 
 function UploadForm() {
   const router = useRouter();
   const [files, setFiles] = useState([]);
   const [fileErrors, setFileErrors] = useState([]);
   const [uploadProgress, setUploadProgress] = useState([]);
+  const { showAlert } = useAlert();
   const storage = getStorage(app);
   const { user } = useUser();
 
@@ -70,10 +72,13 @@ function UploadForm() {
             await saveFileData(file, downloadURL, uniqueFileName);
             setFileErrors([]);
             setFiles([]);
+            setUploadProgress([]);
+            showAlert('Tiedosto(t) tallennettu onnistuneesti!', 'success');
             setTimeout(() => {
               router.push('/tiedostot');
             }, 1000);
           } catch (error) {
+            showAlert('Tiedoston tallennus epäonnistui!', 'error');
             console.error('Error getting download URL or saving file data:', error);
             setFileErrors((prevErrors) => [...prevErrors, error.message]);
           }
@@ -112,7 +117,7 @@ function UploadForm() {
     <div className="flex flex-col items-center justify-center w-full">
       <form onSubmit={handleSubmit} className="w-full mb-1 text-center">
         <div className="flex items-center justify-center w-full">
-          <label htmlFor="dropzone-file" className="flex flex-col items-center justify-center w-full h-64 border-2 border-navlink border-dashed rounded-xl cursor-pointer hover:border-primary">
+          <label htmlFor="dropzone-file" className="flex flex-col items-center justify-center w-full h-64 border border-foreground border-dashed rounded-xl cursor-pointer hover:border-primary">
             <div className="flex flex-col items-center justify-center p-4 text-center pt-5 pb-6">
               <p className="mb-2 text-xl text-foreground">
                 <strong className="text-primary">Klikkaa</strong> tai <strong className="text-primary">tiputa</strong> tiedostoja
