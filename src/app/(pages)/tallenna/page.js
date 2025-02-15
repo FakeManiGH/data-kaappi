@@ -3,9 +3,7 @@ import React from 'react'
 import UploadForm from './_components/UploadForm'
 
 
-
-function Upload() {
-
+function Page() {
   return (
     <main className='mt-4'>
       <h1 className='text-2xl md:text-3xl'><strong>Tallenna tiedostoja</strong></h1>
@@ -15,4 +13,4 @@ function Upload() {
   )
 }
 
-export default Upload;
+export default Page;

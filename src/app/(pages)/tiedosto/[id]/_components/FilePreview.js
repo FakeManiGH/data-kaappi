@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { translateFileSize } from '@/utils/TranslateFileSize';
 import DownloadBtn from '@/app/_components/_common/DownloadBtn';
+import { Eye } from 'lucide-react';
 
 function FilePreview({ file }) {
   const returnPreviewFile = () => {
     if (file.fileType.includes('image')) {
       return (
-        <img src={file.fileUrl} alt={file.fileName} className="max-w-52 h-auto rounded-lg" />
+        <img src={file.fileUrl} alt={file.fileName} className="max-w-52 object-contain h-auto rounded-lg" />
       );
     } else if (file.fileType.includes('video')) {
       return (
@@ -29,7 +30,7 @@ function FilePreview({ file }) {
         {returnPreviewFile()}
         <div className='w-full rounded-lg p-4 flex flex-col gap-4'>
           <h1 className='text-md sm:text-xl truncate'>{file.fileName}</h1>
-          <a href={file.fileUrl} target="_blank" rel="noreferrer" className='text-sm text-primary underline'>Avaa välilehdessä</a>
+          <a href={file.fileUrl} target="_blank" rel="noreferrer" className='flex items-center gap-1 w-fit text-sm text-primary hover:text-primary/90'><Eye /> Esikatsele</a>
           <ul className="flex flex-col text-sm">
             <li className='flex gap-4 items-baseline justify-between border-b border-dashed border-contrast2 p-1'>
               <strong className='whitespace-nowrap'>Koko:</strong> {translateFileSize(file.fileSize)}

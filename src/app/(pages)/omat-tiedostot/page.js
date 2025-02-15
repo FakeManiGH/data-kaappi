@@ -3,8 +3,7 @@ import React, { useEffect, useState } from 'react'
 import FileNav from './_components/FileNav'
 import FileContainer from './_components/FileContainer'
 import { useUser } from '@clerk/nextjs'
-import { collection, query, where, getDocs } from "firebase/firestore";
-import { db } from '@/../firebaseConfig';
+import { getFiles } from '@/api/api'
 import PageLoading from '@/app/_components/_common/PageLoading'
 
 function Page() {
@@ -13,24 +12,15 @@ function Page() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    if (isLoaded && user) {
-      getFiles()
+    const fetchFiles = async () => {
+      if (isLoaded && user) {
+        const userFiles = await getFiles(user.id)
+        setFiles(userFiles)
+        setLoading(false)
+      }
     }
+    fetchFiles()
   }, [isLoaded, user])
-
-  const getFiles = async () => {
-    setLoading(true)
-    try {
-      const q = query(collection(db, "files"), where("owner", "==", user.id));
-      const querySnapshot = await getDocs(q);
-      const filesData = querySnapshot.docs.map(doc => doc.data())
-      setFiles(filesData)
-    } catch (error) {
-      console.error("Error fetching files: ", error)
-    } finally {
-      setLoading(false)
-    }
-  }
     
   return (
     <main className='mt-4'>
@@ -38,7 +28,7 @@ function Page() {
       {loading ? (
         <PageLoading />
       ) : (
-        <FileContainer files={files} />
+        <FileContainer files={files} setFiles={setFiles} />
       )}
     </main>
   )

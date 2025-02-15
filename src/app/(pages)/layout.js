@@ -3,7 +3,7 @@ import React, { useEffect, useContext } from 'react'
 import SideNav from './_components/SideNav';
 import TopHeader from './_components/TopHeader';
 import Footer from './_components/Footer';
-import { BadgeInfo, Files, LayoutDashboard, UploadCloud } from 'lucide-react';
+import { BadgeInfo, Files, LayoutDashboard, PackageOpen, UploadCloud } from 'lucide-react';
 import Alert from '../_components/_common/Alert';
 
 function layout({ children }) {
@@ -30,12 +30,18 @@ function layout({ children }) {
     },
     {
         id: 3,
-        name: 'Tiedostot',
+        name: 'Omat tiedostot',
         icon: Files,
-        path: '/tiedostot'
+        path: '/omat-tiedostot'
     },
     {
-        id: 4,
+        id:4,
+        name: 'Jaetut tiedostot',
+        icon: PackageOpen,
+        path: '/jaetut-tiedostot'
+    },
+    {
+        id: 5,
         name: 'Tietoa',
         icon: BadgeInfo,
         path: '/tietoa'

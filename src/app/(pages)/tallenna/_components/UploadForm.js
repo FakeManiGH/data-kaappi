@@ -70,13 +70,13 @@ function UploadForm() {
           try {
             const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
             await saveFileData(file, downloadURL, uniqueFileName);
-            setFileErrors([]);
-            setFiles([]);
-            setUploadProgress([]);
             showAlert('Tiedosto(t) tallennettu onnistuneesti!', 'success');
             setTimeout(() => {
+              setFileErrors([]);
+              setFiles([]);
+              setUploadProgress([]);
               router.push('/tiedostot');
-            }, 1000);
+            }, 2000);
           } catch (error) {
             showAlert('Tiedoston tallennus epäonnistui!', 'error');
             console.error('Error getting download URL or saving file data:', error);
@@ -99,8 +99,8 @@ function UploadForm() {
       fileSize: file.size,
       fileType: file.type,
       fileUrl: fileUrl,
+      owner: user.id,
       userEmail: user.primaryEmailAddress.emailAddress,
-      userName: user.fullName,
       shared: false,
       password: '',
       shortUrl: shortUrl,

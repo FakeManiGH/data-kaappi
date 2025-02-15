@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from 'react'
-import { ArrowLeftSquare, CheckSquare2, LockKeyhole, Settings, Share2, Trash } from 'lucide-react'
+import { ArrowDownWideNarrow, ArrowUpWideNarrow, CalendarArrowDown, CalendarArrowUp, CheckSquare2, LockKeyhole, SlidersHorizontal, Trash } from 'lucide-react'
 import Link from 'next/link'
 
-function FileNav({ file, setFile }) {
+function FileNav({ files }) {
     const [dropMenu, setDropMenu] = useState(false)
-    const [sharePopup, setSharePopup] = useState(false)
-    const [passwordPopup, setPasswordPopup] = useState(false)
 
     useEffect(() => {
         const handleClick = (e) => {
@@ -19,8 +17,8 @@ function FileNav({ file, setFile }) {
     }, [])
 
     return (
-        <div className='flex items-baseline justify-between mb-4 border-b border-contrast2'>
-            <h1 className='text-2xl md:text-3xl'><strong>Selaa tiedostoja</strong></h1>
+        <div className='flex items-baseline justify-between mb-4 gap-4 border-b border-contrast2'>
+            <h1 className='text-2xl md:text-3xl'><strong>Omat tiedostot</strong></h1>
 
             <div className="relative">
                 <button 
@@ -28,49 +26,48 @@ function FileNav({ file, setFile }) {
                     role="button"
                     onClick={() => setDropMenu(!dropMenu)}
                 >
-                    <Settings size={20} />
-                    Toiminnot
+                    <SlidersHorizontal size={20} />
+                    Järjestä
                 </button>
 
                 {dropMenu && (
                     <div
-                        className="absolute z-10 end-0 w-56 divide-y divide-contrast2 rounded-t-none rounded-b-xl overflow-hidden border border-contrast2 bg-background shadow-lg"
+                        className="absolute z-20 end-0 w-56 pb-2 rounded-t-none rounded-b-xl overflow-hidden border border-contrast2 bg-background shadow-lg shadow-black/25"
                         role="menu"
                     >
-                        <div className='bg-background shadow-lg shadow-black/50'>
+                        <div className='bg-background'>
                             <strong className="block p-2 text-xs font-medium uppercase text-gray-400 dark:text-gray-500">
-                                Yleiset
+                                Järjestä tiedostot
                             </strong>
 
                             <button 
                                 className='flex w-full items-center gap-2 px-4 py-2 text-sm text-navlink hover:text-primary' 
                                 role="menuitem"
                             >
-                                <CheckSquare2 size={16} />
-                                Valitse tiedostoja
+                                <ArrowDownWideNarrow size={16} />
+                                A-Ö
                             </button>
                             <button 
                                 className='flex w-full items-center gap-2 px-4 py-2 text-sm text-navlink hover:text-primary' 
                                 role="menuitem"
                             >
-                                <LockKeyhole size={16} />
-                                Aseta salasana
+                                <ArrowUpWideNarrow size={16} />
+                                Ö-A
                             </button>
-                        </div>
-
-                        <div className='bg-background pb-2'>
-                            <strong className="block p-2 text-xs font-medium uppercase text-red-400 dark:text-red-300">
-                                Vaaravyöhyke
-                            </strong>
-
-                            <button
-                            type="submit"
-                            className="flex w-full items-center gap-2 px-4 py-2 text-sm text-red-500 hover:text-red-700"
-                            role="menuitem"
+                            <button 
+                                className='flex w-full items-center gap-2 px-4 py-2 text-sm text-navlink hover:text-primary' 
+                                role="menuitem"
                             >
-                                <Trash size={16} />
-                                Poista tiedosto
-                            </button>                            
+                                <CalendarArrowDown size={16} />
+                                Uusin ensin
+                            </button>
+                            <button 
+                                className='flex w-full items-center gap-2 px-4 py-2 text-sm text-navlink hover:text-primary' 
+                                role="menuitem"
+                            >
+                                <CalendarArrowUp size={16} />
+                                Vanhin ensin
+                            </button>
                         </div>
                     </div>
                 )}
