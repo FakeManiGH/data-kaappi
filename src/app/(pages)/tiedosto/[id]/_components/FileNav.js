@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { ArrowLeftSquare, LockKeyhole, Settings, Share2, Trash } from 'lucide-react'
 import Link from 'next/link'
+import { useNavigation } from '@/app/contexts/NavigationContext'
 import SharePopup from './SharePopup'
 import PasswordPopup from './PasswordPopup'
 
@@ -8,6 +9,7 @@ function FileNav({ file, setFile }) {
     const [dropMenu, setDropMenu] = useState(false)
     const [sharePopup, setSharePopup] = useState(false)
     const [passwordPopup, setPasswordPopup] = useState(false)
+    const { setCurrentIndex } = useNavigation()
 
     useEffect(() => {
         const handleClick = (e) => {
@@ -32,7 +34,7 @@ function FileNav({ file, setFile }) {
 
     return (
         <div className='flex items-center justify-between mb-4 border-b border-contrast2'>
-            <Link href="/tiedostot" className='flex items-center text-sm text-navlink space-x-2 gap-1 hover:text-primary'>
+            <Link href="/omat-tiedostot" onClick={() => setCurrentIndex('/omat-tiedostot')} className='flex items-center text-sm text-navlink space-x-2 gap-1 hover:text-primary'>
                 <ArrowLeftSquare />
                 Takaisin tiedostoihin
             </Link>

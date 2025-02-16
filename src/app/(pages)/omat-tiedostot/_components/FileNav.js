@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { ArrowDownWideNarrow, ArrowUpWideNarrow, CalendarArrowDown, CalendarArrowUp, CheckSquare2, LockKeyhole, SlidersHorizontal, Trash } from 'lucide-react'
+import { ArrowDownWideNarrow, ArrowUpWideNarrow, CalendarArrowDown, CalendarArrowUp, CheckSquare2, LockKeyhole, Share2, SlidersHorizontal, Trash } from 'lucide-react'
 import Link from 'next/link'
 
 function FileNav({ files }) {
@@ -17,7 +17,7 @@ function FileNav({ files }) {
     }, [])
 
     return (
-        <div className='flex items-baseline justify-between mb-4 gap-4 border-b border-contrast2'>
+        <div className='flex items-baseline justify-between mb-2 gap-4 border-b border-contrast2'>
             <h1 className='text-2xl md:text-3xl'><strong>Omat tiedostot</strong></h1>
 
             <div className="relative">
@@ -27,17 +27,17 @@ function FileNav({ files }) {
                     onClick={() => setDropMenu(!dropMenu)}
                 >
                     <SlidersHorizontal size={20} />
-                    Järjestä
+                    Hallitse
                 </button>
 
                 {dropMenu && (
                     <div
-                        className="absolute z-20 end-0 w-56 pb-2 rounded-t-none rounded-b-xl overflow-hidden border border-contrast2 bg-background shadow-lg shadow-black/25"
+                        className="absolute z-20 end-0 w-56 pb-2 rounded-t-none rounded-b-xl divide-y divide-contrast2 overflow-hidden border border-contrast2 bg-background shadow-lg shadow-black/25"
                         role="menu"
                     >
                         <div className='bg-background'>
                             <strong className="block p-2 text-xs font-medium uppercase text-gray-400 dark:text-gray-500">
-                                Järjestä tiedostot
+                                Järjestä
                             </strong>
 
                             <button 
@@ -67,6 +67,34 @@ function FileNav({ files }) {
                             >
                                 <CalendarArrowUp size={16} />
                                 Vanhin ensin
+                            </button>
+                        </div>
+
+                        <div className='bg-background'>
+                            <strong className="block p-2 text-xs font-medium uppercase text-gray-400 dark:text-gray-500">
+                                Näytä
+                            </strong>
+
+                            <button 
+                                className='flex w-full items-center gap-2 px-4 py-2 text-sm text-navlink hover:text-primary' 
+                                role="menuitem"
+                            >
+                                <CheckSquare2 size={16} />
+                                Valitut
+                            </button>
+                            <button
+                                className='flex w-full items-center gap-2 px-4 py-2 text-sm text-navlink hover:text-primary' 
+                                role="menuitem"
+                            >
+                                <LockKeyhole size={16} />
+                                Salasanasuojatut
+                            </button>
+                            <button
+                                className='flex w-full items-center gap-2 px-4 py-2 text-sm text-navlink hover:text-primary' 
+                                role="menuitem"
+                            >   
+                                <Share2 size={16} />
+                                Jaetut
                             </button>
                         </div>
                     </div>

@@ -3,35 +3,36 @@ import Constant from '../../utils/Constant'
 
 function Hero() {
     return (
-        <section>
-            <div className="mx-auto max-w-screen-xl px-4 py-32 lg:flex">
-                <div className="mx-auto max-w-xl text-center">
+        <main>
+            <div className="flex flex-col items-center gap-6 mx-auto mt-10 max-w-2xl text-center">
+                <img className="w-40" src="/logo.svg" alt="logo" />
+
                 <h1 className="text-3xl font-extrabold sm:text-5xl">
-                    <strong className='text-primary'>Tallenna</strong>, <strong className='text-primary'>säilytä</strong> ja <strong className='text-primary'>jaa</strong> tiedostoja helposti kaikilla laitteillasi.
+                    <strong className='text-primary'>Tallenna</strong> ja <strong className='text-primary'>säilytä</strong> tärkeimmät tiedostosi 
+                    turvallisesti.
                 </h1>
 
-                <p className="mt-6 sm:text-xl/relaxed">
-                    {Constant.desc}
+                <p className="sm:text-xl/relaxed">
+                    Lisäksi voit <strong>jakaa</strong> tiedostoja helposti läheistesi kanssa ja <strong>lisä-suojata</strong> tärkeimmät tiedostosi salasanalla.
                 </p>
 
-                <div className="mt-8 flex flex-wrap justify-center gap-4">
+                <div className="flex flex-col items-center gap-3 w-full">
                     <a
-                    className="block w-full rounded-full bg-primary px-12 py-3 text-sm font-semibold text-white shadow hover:bg-primary/90 focus:outline-none focus:ring active:bg-red-500 sm:w-auto"
-                    href="/tallenna"
+                        className="flex items-center justify-center w-full sm:w-72 rounded-full bg-primary text-white px-12 py-3 text-lg font-semibold hover:bg-primary/90 active:bg-primary/90"
+                        href="/tallenna"
                     >
-                    Tallenna tiedosto
+                        Aloita tästä
                     </a>
 
                     <a
-                    className="block w-full rounded-full bg-secondary px-12 py-3 text-sm font-semibold text-white shadow hover:bg-secondary/90 focus:outline-none focus:ring active:text-red-500 sm:w-auto"
-                    href="/tietoa"
+                        className="flex items-center justify-center w-full sm:w-64 rounded-full bg-secondary text-white px-12 py-3 text-sm font-normal hover:bg-secondary/90 active:bg-secondary/90"
+                        href="/tietoa"
                     >
-                    Lue lisää
+                        Lue lisää
                     </a>
                 </div>
-                </div>
             </div>
-        </section>
+        </main>
     )
 }
 

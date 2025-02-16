@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { AlertProvider } from './contexts/AlertContext';
 import { ClerkProvider } from "@clerk/nextjs";
+import { NavigationProvider } from './contexts/NavigationContext';
 import { dark } from "@clerk/themes";
 
 export function Providers({ children }) {
@@ -46,9 +47,11 @@ export function Providers({ children }) {
         },
       }
     }>
+    <NavigationProvider>
     <AlertProvider>
       {children}
     </AlertProvider>
+    </NavigationProvider>
     </ClerkProvider>
   )
 }

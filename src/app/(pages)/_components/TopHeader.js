@@ -4,9 +4,11 @@ import Image from 'next/image'
 import { UserButton } from '@clerk/nextjs';
 import React, { useState } from 'react'
 import Link from 'next/link';
+import { useNavigation } from '@/app/contexts/NavigationContext'
 
-function TopHeader({ currentIndex, setCurrentIndex, navList }) {
+function TopHeader() {
   const [dropdown, setDropdown] = useState(false)
+  const { navList, currentIndex, setCurrentIndex } = useNavigation()
 
   const handleDropdown = () => {
     setDropdown(!dropdown)

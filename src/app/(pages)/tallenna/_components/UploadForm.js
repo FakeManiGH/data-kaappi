@@ -4,21 +4,21 @@ import { getStorage, ref, uploadBytesResumable, getDownloadURL } from 'firebase/
 import { doc, setDoc } from "firebase/firestore";
 import FilePreview from './FilePreview';
 import AlertMsg from './AlertMsg';
-import Alert from '@/app/_components/_common/Alert';
 import { validateFile } from '@/utils/FileValidation';
 import { app, db } from '@/../firebaseConfig';
 import { useUser } from '@clerk/nextjs';
-import { useRouter } from 'next/navigation';
 import { useAlert } from '@/app/contexts/AlertContext';
+import { useNavigation } from '@/app/contexts/NavigationContext'
+import { formatDateToCollection } from '@/utils/TranslateData';
 
 function UploadForm() {
-  const router = useRouter();
   const [files, setFiles] = useState([]);
   const [fileErrors, setFileErrors] = useState([]);
   const [uploadProgress, setUploadProgress] = useState([]);
   const { showAlert } = useAlert();
   const storage = getStorage(app);
   const { user } = useUser();
+  const { navigatePage } = useNavigation();
 
   // Handle file change
   const handleFileChange = (event) => {
@@ -35,56 +35,65 @@ function UploadForm() {
       } else {
         filesArray.push(file);
       }
+    }
 
     setFiles(filesArray);
     setFileErrors(fileErrors);
     setUploadProgress(new Array(filesArray.length).fill(0));
-    };
   };
 
   // Upload files to Firebase Storage
-  const uploadFiles = (files) => {
-    files.forEach((file, index) => {
-      const metadata = {
-        contentType: file?.type
-      };
-      const uniqueFileName = `${file?.name}_${generateRandomString(6)}`;
-      const fileRef = ref(storage, 'file-base/' + uniqueFileName);
-      const uploadTask = uploadBytesResumable(fileRef, file, metadata);
+  const uploadFiles = async (files) => {
+    const uploadPromises = files.map((file, index) => {
+      return new Promise((resolve, reject) => {
+        const metadata = {
+          contentType: file?.type
+        };
+        const uniqueFileName = `${file?.name}_${generateRandomString(6)}`;
+        const fileRef = ref(storage, 'file-base/' + uniqueFileName);
+        const uploadTask = uploadBytesResumable(fileRef, file, metadata);
 
-      uploadTask.on('state_changed',
-        (snapshot) => {
-          // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
-          const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-          setUploadProgress((prevProgress) => {
-            const newProgress = [...prevProgress];
-            newProgress[index] = progress;
-            return newProgress;
-          });
-        },
-        (error) => {
-          console.error('Upload failed:', error);
-          setFileErrors((prevErrors) => [...prevErrors, error.message]);
-        },
-        async () => {
-          try {
-            const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-            await saveFileData(file, downloadURL, uniqueFileName);
-            showAlert('Tiedosto(t) tallennettu onnistuneesti!', 'success');
-            setTimeout(() => {
-              setFileErrors([]);
-              setFiles([]);
-              setUploadProgress([]);
-              router.push('/tiedostot');
-            }, 2000);
-          } catch (error) {
-            showAlert('Tiedoston tallennus epäonnistui!', 'error');
-            console.error('Error getting download URL or saving file data:', error);
+        uploadTask.on('state_changed',
+          (snapshot) => {
+            const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+            setUploadProgress((prevProgress) => {
+              const newProgress = [...prevProgress];
+              newProgress[index] = progress;
+              return newProgress;
+            });
+          },
+          (error) => {
+            console.error('Upload failed:', error);
             setFileErrors((prevErrors) => [...prevErrors, error.message]);
+            reject(error);
+          },
+          async () => {
+            try {
+              const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+              await saveFileData(file, downloadURL, uniqueFileName);
+              resolve();
+            } catch (error) {
+              console.error('Error getting download URL or saving file data:', error);
+              setFileErrors((prevErrors) => [...prevErrors, error.message]);
+              reject(error);
+            }
           }
-        }
-      );
+        );
+      });
     });
+
+    try {
+      await Promise.all(uploadPromises);
+      showAlert('Tiedosto(t) tallennettu onnistuneesti!', 'success');
+      setTimeout(() => {
+        setFileErrors([]);
+        setFiles([]);
+        setUploadProgress([]);
+        navigatePage('/omat-tiedostot');
+      }, 2000);
+    } catch (error) {
+      showAlert('Tiedoston tallennus epäonnistui!', 'error');
+    }
   };
 
   // Save file data to Firestore
@@ -97,6 +106,7 @@ function UploadForm() {
       fileID: docID,
       fileName: uniqueFileName,
       fileSize: file.size,
+      createdAt: formatDateToCollection(new Date()),
       fileType: file.type,
       fileUrl: fileUrl,
       owner: user.id,

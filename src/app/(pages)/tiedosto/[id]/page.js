@@ -7,9 +7,11 @@ import { ArrowLeftSquare, File, FileWarning, Settings, Share } from 'lucide-reac
 import FilePreview from './_components/FilePreview'
 import FileNav from './_components/FileNav'
 import PageLoading from '@/app/_components/_common/PageLoading'
+import { useNavigation } from '@/app/contexts/NavigationContext'
 
 function page({ params }) {
     const { id } = use(params)
+    const { setCurrentIndex } = useNavigation()
     const [file, setFile] = useState(null)
     const [loading, setLoading] = useState(true)
 
@@ -38,7 +40,7 @@ function page({ params }) {
 
     if (!file) return (
         <main >
-            <Link href="/tiedostot" className='flex items-center pb-2 text-sm text-navlink space-x-2 gap-1 hover:text-primary border-b border-contrast2'>
+            <Link href="/omat-tiedostot" onClick={() => setCurrentIndex('/omat-tiedostot')} className='flex items-center pb-2 text-sm text-navlink space-x-2 gap-1 hover:text-primary border-b border-contrast2'>
                 <ArrowLeftSquare size={24} />
                 Palaa tiedostoihin
             </Link>

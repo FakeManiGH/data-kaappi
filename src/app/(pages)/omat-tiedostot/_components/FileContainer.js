@@ -6,12 +6,15 @@ import { getCardPreview } from '@/utils/FilePreview'
 import { deleteFile, getFiles } from '@/api/api'
 import { useUser } from '@clerk/nextjs'
 import { useAlert } from '@/app/contexts/AlertContext'
+import { useNavigation } from '@/app/contexts/NavigationContext'
+import { formatDateFromCollection, translateFileSize, cleanDataType } from '@/utils/TranslateData'
 
-function FileContainer({ files, setFiles }) {
+function FileContainer({ files, setFiles, setFilteredFiles }) {
     const [view, setView] = useState('grid')
     const [selectedFiles, setSelectedFiles] = useState([])
     const { user } = useUser()
     const { showAlert } = useAlert()
+    const { setCurrentIndex } = useNavigation()
 
     const handleFileSelect = (fileID) => {
         if (selectedFiles.includes(fileID)) {
@@ -22,19 +25,25 @@ function FileContainer({ files, setFiles }) {
     }
 
     const handleDeleteFiles = async () => {
-        await Promise.all(selectedFiles.map((file) => deleteFile(file)))
-        let updatedFiles = await getFiles(user.id)
-        setFiles(updatedFiles)
-        showAlert('Valitut tiedostot poistettu.', 'success')
-        setSelectedFiles([])
+        try {
+            await Promise.all(selectedFiles.map((file) => deleteFile(file)))
+            let updatedFiles = await getFiles(user.id)
+            setFiles(updatedFiles)
+            setFilteredFiles(updatedFiles)
+            showAlert('Valitut tiedostot poistettu.', 'success')
+        } catch (error) {
+            showAlert('Tiedostojen poistaminen epäonnistui.', 'error')
+        } finally {
+            setSelectedFiles([])
+        }
     }
 
     return (
         <>
-        <nav className='sticky top-0 py-3 z-10 bg-background bg-opacity-75 flex items-center justify-between gap-4'>
+        <nav className={`flex items-center justify-between gap-4 py-2 z-10 bg-background bg-opacity-75 ${selectedFiles.length > 0 && 'sticky top-0'}`}>
             <div className='flex items-center gap-1'>
-                <button className={`p-2 border border-contrast2 rounded-lg ${view === 'grid' && 'bg-primary text-white'}`} onClick={() => setView('grid')}><Grid size={20} /></button>
-                <button className={`p-2 border border-contrast2 rounded-lg ${view === 'list' && 'bg-primary text-white'}` } onClick={() => setView('list')}><List size={20} /></button>
+                <button className={`p-2 border border-contrast2 rounded-lg ${view === 'grid' && 'bg-primary text-white border-primary'}`} onClick={() => setView('grid')}><Grid size={20} /></button>
+                <button className={`p-2 border border-contrast2 rounded-lg ${view === 'list' && 'bg-primary text-white border-primary'}` } onClick={() => setView('list')}><List size={20} /></button>
             </div>
 
             {selectedFiles.length > 0 && 
@@ -68,17 +77,18 @@ function FileContainer({ files, setFiles }) {
             {files.map((file) => (
                 <div 
                     key={file.fileID} 
-                    className={`relative flex flex-col gap-2 group overflow-hidden justify-between p-4 
+                    className={`relative flex flex-col gap-2 group p-2 overflow-hidden
                         bg-background rounded-xl border hover:shadow-black/25 hover:shadow-md 
                         ${selectedFiles.includes(file) 
                             ? 'border-primary hover:border-primary shadow-black/25 shadow-md' 
                             : 'border-transparent hover:border-contrast2'
                         }`}
                 >   
-                    <div className='absolute flex flex-col items-center top-0 left-0 p-2'>
-                        {file.shared && <span title='Jaettu' className='text-xs p-1 text-foreground'><Share2 size={18} /></span>}
-                        {file.password && <span title='Salasana suojattu' className='text-xs p-1 text-foreground'><LockKeyhole size={18} /></span>}
+                    <div className={`absolute flex flex-col items-center bg-background rounded-lg top-0 left-0 gap-1 ${file.shared || file.password ? 'p-2' : 'p-0'}`}>
+                        {file.shared && <span title='Jaettu' className='text-xs text-success'><Share2 size={18} /></span>}
+                        {file.password && <span title='Salasana suojattu' className='text-xs text-success'><LockKeyhole size={18} /></span>}
                     </div>
+
                     <div className={`absolute flex sm:group-hover:flex top-0 right-0 p-3 bg-background rounded-lg ${selectedFiles.includes(file) ? 'md:flex' : 'md:hidden'}`}>
                         <label htmlFor="file" className="sr-only">Valitse tiedosto</label>
                         <input 
@@ -89,19 +99,27 @@ function FileContainer({ files, setFiles }) {
                             checked={selectedFiles.includes(file)} 
                         />
                     </div>
-                    <div className='flex h-32'>
+
+                    <Link 
+                        className='flex flex-col gap-2 object-contain hover:text-primary'
+                        href={`/tiedosto/${file.fileID}`}
+                        onClick={(e) => {e.stopPropagation(), setCurrentIndex(`/tiedosto/${file.fileID}`)}}
+                    >
                         {getCardPreview({ file })}
-                    </div>
-                    <div className='flex flex-col gap-1'>
+                        <p className="text-sm font-semibold hover:text-primary whitespace-wrap">
+                            {file.fileName}
+                        </p>
+                    </Link>
+
+                    {/* <div className='flex flex-wrap gap-1'>
                         <Link 
                             href={`/tiedosto/${file.fileID}`} 
-                            className="text-sm font-bold hover:text-primary"
-                            onClick={(e) => e.stopPropagation()}
+                            className="text-sm font-semibold hover:text-primary whitespace-wrap"
+                            onClick={(e) => {e.stopPropagation(), setCurrentIndex(`/tiedosto/${file.fileID}`)}}
                         >
-                            {file.fileName}
+                            
                         </Link>
-                        <p className="text-sm text-navlink">{file.fileType}</p>
-                    </div>
+                    </div> */}
                 </div>
             ))}
         </div>
@@ -113,22 +131,33 @@ function FileContainer({ files, setFiles }) {
             {files.map((file) => (
                 <div 
                     key={file.fileID} 
-                    className={`relative flex flex-col overflow-hidden justify-between border-2 border-transparent gap-2 p-4 
-                        bg-background rounded-xl shadow-black/25 shadow-md hover:border-2 ${selectedFiles.includes(file) ? 'border-primary' : 'border-transparent'}`}
+                    className={`relative grid grid-cols-1 md:grid-cols-2 gap-2 py-2 bg-background border-b border-contrast2 ${selectedFiles.includes(file) && 'border-primary'}`}
                 >   
-                    <div className='absolute top-2 right-2'>
+                    <div className='flex items-center gap-4 overflow-hidden'>
                         <label htmlFor="file" className="sr-only">Valitse tiedosto</label>
                         <input 
                             type="checkbox" 
                             name='file' 
-                            className="w-4 h-4" 
+                            className="w-4 h-4 p-2" 
                             onChange={() => handleFileSelect(file)} 
                             checked={selectedFiles.includes(file)} 
                         />
+                        <img src={getFileIcon(file.fileType)} alt={file.fileName} className="w-7 h-auto" />
+                        <Link 
+                            href={`/tiedosto/${file.fileID}`} 
+                            className="text-sm font-bold hover:text-primary truncate-2-row text-ellipsis"
+                            onClick={(e) => {e.stopPropagation(), setCurrentIndex(`/tiedosto/${file.fileID}`)}}
+                        >
+                            {file.fileName}
+                        </Link>
                     </div>
-                    <img src={getFileIcon(file.fileType)} alt={file.fileName} className="w-14 h-auto" />
-                    <h3 className="text-sm font-bold">{file.fileName}</h3>
-                    <p className="text-sm text-navlink">{file.fileType}</p>
+                    <div className='flex items-center gap-3 justify-start md:justify-end'>
+                        {file.shared && <p title='Jaettu' className='text-xs text-success'><Share2 size={18} /></p>}
+                        {file.password && <p title='Salasana suojattu' className='text-xs text-success'><LockKeyhole size={18} /></p>}
+                        <p className='text-sm whitespace-nowrap text-navlink'>{formatDateFromCollection(file.createdAt)}</p>
+                        <p className="text-sm whitespace-nowrap text-navlink">{cleanDataType(file.fileType)}</p>
+                        <p className="text-sm whitespace-nowrap text-navlink">{translateFileSize(file.fileSize)}</p>
+                    </div>
                 </div>
             ))}
         </div>

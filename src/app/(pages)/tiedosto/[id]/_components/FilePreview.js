@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { translateFileSize } from '@/utils/TranslateFileSize';
+import { translateFileSize } from '@/utils/TranslateData';
 import DownloadBtn from '@/app/_components/_common/DownloadBtn';
 import { Eye } from 'lucide-react';
 

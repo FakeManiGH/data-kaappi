@@ -1,8 +1,10 @@
-import { UserButton } from '@clerk/nextjs'
 import Image from 'next/image'
 import Link from 'next/link'
+import { useNavigation } from '@/app/contexts/NavigationContext'
 
-function SideNav({ currentIndex, setCurrentIndex, navList }) {
+function SideNav() {
+    const { navList, currentIndex, setCurrentIndex } = useNavigation()
+
     return (
         <div className='flex flex-col w-64 h-full border-r border-contrast2'>
             <Link 

@@ -5,10 +5,12 @@ import FileContainer from './_components/FileContainer'
 import { useUser } from '@clerk/nextjs'
 import { getFiles } from '@/api/api'
 import PageLoading from '@/app/_components/_common/PageLoading'
+import SearchBar from './_components/SearchBar'
 
 function Page() {
   const { user, isLoaded } = useUser()
   const [files, setFiles] = useState([])
+  const [filteredFiles, setFilteredFiles] = useState([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -16,6 +18,7 @@ function Page() {
       if (isLoaded && user) {
         const userFiles = await getFiles(user.id)
         setFiles(userFiles)
+        setFilteredFiles(userFiles)
         setLoading(false)
       }
     }
@@ -23,12 +26,13 @@ function Page() {
   }, [isLoaded, user])
     
   return (
-    <main className='mt-4'>
-      <FileNav />
+    <main>
+      <FileNav files={files} />
+      <SearchBar files={files} setFilteredFiles={setFilteredFiles} />
       {loading ? (
         <PageLoading />
       ) : (
-        <FileContainer files={files} setFiles={setFiles} />
+        <FileContainer files={filteredFiles} setFiles={setFiles} setFilteredFiles={setFilteredFiles} />
       )}
     </main>
   )
