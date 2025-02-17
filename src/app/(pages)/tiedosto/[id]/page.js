@@ -32,11 +32,7 @@ function page({ params }) {
         }
     }
 
-    if (loading) return (
-        <main>
-            <PageLoading />
-        </main>
-    )
+    if (loading) return <PageLoading />
 
     if (!file) return (
         <main >

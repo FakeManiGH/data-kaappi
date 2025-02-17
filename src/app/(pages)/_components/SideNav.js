@@ -9,7 +9,7 @@ function SideNav() {
         <div className='flex flex-col w-64 h-full border-r border-contrast2'>
             <Link 
                 href='/' 
-                className='p-4 border-b border-contrast2 flex items-center gap-2 hover:bg-primary/50 transition-colors'
+                className='p-4 border-b border-contrast2 flex items-center gap-2 hover:text-primary transition-colors'
                 onClick={() => setCurrentIndex('/')}
             >
                 <Image src='/logo.svg' alt="Logo" width={40} height={40} />

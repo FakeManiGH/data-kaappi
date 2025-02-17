@@ -7,9 +7,11 @@ import { deleteFile, getFiles } from '@/api/api'
 import { useUser } from '@clerk/nextjs'
 import { useAlert } from '@/app/contexts/AlertContext'
 import { useNavigation } from '@/app/contexts/NavigationContext'
-import { formatDateFromCollection, translateFileSize, cleanDataType } from '@/utils/TranslateData'
+import { formatDateFromCollection, translateFileSize, cleanDataType } from '@/utils/DataTranslation'
+import { set } from 'date-fns'
 
-function FileContainer({ files, setFiles, setFilteredFiles }) {
+function FileContainer({ files, setFiles }) {
+    const [loading, setLoading] = useState(false)
     const [view, setView] = useState('grid')
     const [selectedFiles, setSelectedFiles] = useState([])
     const { user } = useUser()
@@ -26,17 +28,20 @@ function FileContainer({ files, setFiles, setFilteredFiles }) {
 
     const handleDeleteFiles = async () => {
         try {
+            setLoading(true)
             await Promise.all(selectedFiles.map((file) => deleteFile(file)))
             let updatedFiles = await getFiles(user.id)
             setFiles(updatedFiles)
-            setFilteredFiles(updatedFiles)
             showAlert('Valitut tiedostot poistettu.', 'success')
         } catch (error) {
             showAlert('Tiedostojen poistaminen epäonnistui.', 'error')
         } finally {
+            setLoading(false)
             setSelectedFiles([])
         }
     }
+
+    if (loading) return <PageLoading />
 
     return (
         <>
@@ -110,16 +115,6 @@ function FileContainer({ files, setFiles, setFilteredFiles }) {
                             {file.fileName}
                         </p>
                     </Link>
-
-                    {/* <div className='flex flex-wrap gap-1'>
-                        <Link 
-                            href={`/tiedosto/${file.fileID}`} 
-                            className="text-sm font-semibold hover:text-primary whitespace-wrap"
-                            onClick={(e) => {e.stopPropagation(), setCurrentIndex(`/tiedosto/${file.fileID}`)}}
-                        >
-                            
-                        </Link>
-                    </div> */}
                 </div>
             ))}
         </div>

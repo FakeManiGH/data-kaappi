@@ -23,3 +23,13 @@ export const formatDateFromCollection = (dateString) => {
 export const cleanDataType = (type) => {
     return type.split('/')[1].toUpperCase();
 }
+
+export const simplifyFileType = (type) => {
+    if (type.includes('image') || type.includes('video') || type.includes('audio')) {
+        return 'media';
+    } else if (type.includes('application') || type.includes('text')) {
+        return 'document';
+    } else {
+        return 'other';
+    }
+}

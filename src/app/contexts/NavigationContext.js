@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react';
-import { BadgeInfo, Files, LayoutDashboard, PackageOpen, UploadCloud } from 'lucide-react';
+import { BadgeInfo, FolderSymlink, LayoutDashboard, PackageOpen, UploadCloud } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 const NavigationContext = createContext();
@@ -29,7 +29,7 @@ export const NavigationProvider = ({ children }) => {
         {
             id: 3,
             name: 'Omat tiedostot',
-            icon: Files,
+            icon: FolderSymlink,
             path: '/omat-tiedostot'
         },
         {

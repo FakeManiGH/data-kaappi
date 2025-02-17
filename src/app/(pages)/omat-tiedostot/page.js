@@ -6,11 +6,14 @@ import { useUser } from '@clerk/nextjs'
 import { getFiles } from '@/api/api'
 import PageLoading from '@/app/_components/_common/PageLoading'
 import SearchBar from './_components/SearchBar'
+import { set } from 'date-fns'
 
 function Page() {
   const { user, isLoaded } = useUser()
   const [files, setFiles] = useState([])
   const [filteredFiles, setFilteredFiles] = useState([])
+  const [searchedFiles, setSearchedFiles] = useState([])
+  const [search, setSearch] = useState(false)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -27,12 +30,12 @@ function Page() {
     
   return (
     <main>
-      <FileNav files={files} />
-      <SearchBar files={files} setFilteredFiles={setFilteredFiles} />
+      <FileNav files={files} setFilteredFiles={setFilteredFiles} />
+      <SearchBar files={filteredFiles} setSearchedFiles={setSearchedFiles} setSearch={setSearch}/>
       {loading ? (
         <PageLoading />
       ) : (
-        <FileContainer files={filteredFiles} setFiles={setFiles} setFilteredFiles={setFilteredFiles} />
+        <FileContainer files={search ? searchedFiles : filteredFiles} setFiles={setFiles} />
       )}
     </main>
   )
