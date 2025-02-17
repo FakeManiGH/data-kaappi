@@ -8,8 +8,10 @@ function FilePreview({ file }) {
 
   return (
     <div className="flex flex-col gap-4 w-full">
-      <div className="flex flex-col lg:flex-row gap-4 w-full">
-        {getFilepagePreview(file)}
+      <div className="flex flex-col lg:flex-row gap-4 w-full max-w-full">
+        <div className="flex items-center justify-center">
+          {getFilepagePreview(file)}
+        </div>
         <div className='w-full rounded-lg p-4 flex flex-col gap-4'>
           <h1 className='text-md sm:text-xl truncate'>{file.fileName}</h1>
           <a href={file.fileUrl} target="_blank" rel="noreferrer" className='flex items-center gap-1 w-fit text-sm text-primary hover:text-primary/90'><Eye /> Esikatsele</a>

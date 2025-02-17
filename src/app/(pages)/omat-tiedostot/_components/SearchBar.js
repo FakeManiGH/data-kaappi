@@ -1,20 +1,27 @@
 import { Search } from 'lucide-react'
 import React from 'react'
-import { parse, set } from 'date-fns'
 
-function SearchBar({ files, setSearchedFiles, setSearch }) {
+function SearchBar({ fileState, setFileState }) {
 
     const handleSearch = (e) => {
-        if (e.target.value.length > 1) {
-            const searchValue = e.target.value.toLowerCase()
-            const filtered = files.filter((file) => {
+        const searchValue = e.target.value.toLowerCase()
+        const filesToSearch = fileState.filteredFiles.length > 0 ? fileState.filteredFiles : fileState.files
+
+        if (searchValue.length > 1) {
+            const searchedFiles = filesToSearch.filter((file) => {
                 return file.fileName.toLowerCase().includes(searchValue)
             })
-            setSearchedFiles(filtered)
-            setSearch(true)
+            setFileState(prevState => ({
+                ...prevState,
+                searchedFiles,
+                searched: true
+            }))
         } else {
-            setSearchedFiles(files)
-            setSearch(false)
+            setFileState(prevState => ({
+                ...prevState,
+                searchedFiles: [],
+                searched: false
+            }))
         }
     }
 

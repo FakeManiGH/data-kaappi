@@ -1,7 +1,7 @@
 import { getStorage, ref, deleteObject } from "firebase/storage";
-import { doc, deleteDoc } from "firebase/firestore";
+import { doc, deleteDoc, getDoc } from "firebase/firestore";
 import { collection, query, where, getDocs } from "firebase/firestore";
-import { app, db } from '@/../firebaseConfig';
+import { db } from '@/../firebaseConfig';
 
 // Config
 const storage = getStorage();
@@ -17,6 +17,18 @@ export const deleteFile = async (file) => {
     } catch (error) {
         console.error("Error deleting file: ", error)
     }   
+}
+
+
+// Get file
+export const getFileInfo = async (docID) => {
+    try {
+        const docRef = doc(db, 'files', docID)
+        const docSnap = await getDoc(docRef)
+        return docSnap.data()
+    } catch (error) {
+        console.error("Error fetching file: ", error)
+    }
 }
 
 

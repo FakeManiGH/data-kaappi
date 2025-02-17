@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import { simplifyFileType } from '@/utils/DataTranslation'
-import { CheckSquare2, FileText, ImagePlay, ListCheck, ListFilter, LockKeyhole, Share2 } from 'lucide-react'
-import { set } from 'date-fns'
+import { FileText, ImagePlay, ListCheck, ListFilter, LockKeyhole, Share2 } from 'lucide-react'
 
-function FileNav({ files, setFilteredFiles }) {
+function FileNav({ fileState, setFileState }) {
     const [dropMenu, setDropMenu] = useState(false)
-    const [fileFilter, setFileFilter] = useState('all')
 
     useEffect(() => {
         const handleClick = (e) => {
@@ -20,27 +18,51 @@ function FileNav({ files, setFilteredFiles }) {
 
     // Filetype filter
     const addTypeFilter = (filter) => {
-        setFileFilter(filter)
         if (filter === 'all') {
-            setFilteredFiles(files)
+            setFileState(prevState => ({
+                ...prevState,
+                filteredFiles: [],
+                filter: 'all'
+            }))
         } else {
-            let filtered = files.filter((file) => simplifyFileType(file.fileType) === filter)
-            setFilteredFiles(filtered)
+            const filtered = fileState.files.filter((file) => simplifyFileType(file.fileType) === filter)
+            setFileState(prevState => ({
+                ...prevState,
+                filteredFiles: filtered,
+                filter
+            }))
         }
         setDropMenu(false)
     }
 
     // Preference filter
     const addPreferenceFilter = (filter) => {
-        setFileFilter(filter)
-        if (filter === 'password') {
-            let filtered = files.filter((file) => file.password)
-            setFilteredFiles(filtered)
+        if (filter === 'all') {
+            setFileState(prevState => ({
+                ...prevState,
+                filteredFiles: [],
+                filter: 'all'
+            }))
+        } else if (filter === 'password') {
+            const filtered = fileState.files.filter((file) => file.password)
+            setFileState(prevState => ({
+                ...prevState,
+                filteredFiles: filtered,
+                filter
+            }))
         } else if (filter === 'shared') {
-            let filtered = files.filter((file) => file.shared)
-            setFilteredFiles(filtered)
+            const filtered = fileState.files.filter((file) => file.shared)
+            setFileState(prevState => ({
+                ...prevState,
+                filteredFiles: filtered,
+                filter
+            }))
         } else {
-            setFilteredFiles(files)
+            setFileState(prevState => ({
+                ...prevState,
+                filteredFiles: [],
+                filter: 'all'
+            }))
         }
         setDropMenu(false)
     }
@@ -71,8 +93,8 @@ function FileNav({ files, setFilteredFiles }) {
                     role="button"
                     onClick={() => setDropMenu(!dropMenu)}
                 >   
-                    {fileFilter && fileFilter !== 'all' && <p className='text-green-600 absolute top-[-8px] left-2'> {translateFilter(fileFilter)}</p>}
-                    <ListFilter size={20} className={fileFilter !== 'all' ? 'text-green-600' : 'text-navlink'} />
+                    {fileState.filter && fileState.filter !== 'all' && <p className='text-green-600 dark:text-green-500 absolute top-[-8px] left-2'>{translateFilter(fileState.filter)}</p>}
+                    <ListFilter size={20} className={fileState.filter !== 'all' ? 'text-green-600 dark:text-green-500' : 'text-navlink'} />
                     Rajaa näkymää
                 </button>
 
@@ -87,7 +109,7 @@ function FileNav({ files, setFilteredFiles }) {
                             </strong>
 
                             <button 
-                                className={`flex w-full items-center gap-2 px-4 py-2 text-sm text-navlink hover:text-green-600 ${fileFilter === 'all' && 'text-green-600'}`} 
+                                className={`flex w-full items-center gap-2 px-4 py-2 text-sm hover:text-green-600 ${fileState.filter === 'all' ? 'text-green-600' : 'text-navlink'}`} 
                                 role="menuitem"
                                 onClick={() => addTypeFilter('all')}
                             >
@@ -95,7 +117,7 @@ function FileNav({ files, setFilteredFiles }) {
                                 Kaikki
                             </button>
                             <button 
-                                className={`flex w-full items-center gap-2 px-4 py-2 text-sm text-navlink hover:text-green-600 ${fileFilter === 'media' && 'text-green-600'}`} 
+                                className={`flex w-full items-center gap-2 px-4 py-2 text-sm hover:text-green-600 ${fileState.filter === 'media' ? 'text-green-600' : 'text-navlink'}`} 
                                 role="menuitem"
                                 onClick={() => addTypeFilter('media')}
                             >
@@ -103,7 +125,7 @@ function FileNav({ files, setFilteredFiles }) {
                                 Media
                             </button>
                             <button 
-                                className={`flex w-full items-center gap-2 px-4 py-2 text-sm text-navlink hover:text-green-600 ${fileFilter === 'document' && 'text-green-600'}`}  
+                                className={`flex w-full items-center gap-2 px-4 py-2 text-sm hover:text-green-600 ${fileState.filter === 'document' ? 'text-green-600' : 'text-navlink'}`}  
                                 role="menuitem"
                                 onClick={() => addTypeFilter('document')}
                             >
@@ -118,7 +140,7 @@ function FileNav({ files, setFilteredFiles }) {
                             </strong>
                             
                             <button
-                                className={`flex w-full items-center gap-2 px-4 py-2 text-sm text-navlink hover:text-green-600 ${fileFilter === 'password' && 'text-green-600'}`} 
+                                className={`flex w-full items-center gap-2 px-4 py-2 text-sm hover:text-green-600 ${fileState.filter === 'password' ? 'text-green-600' : 'text-navlink'}`} 
                                 role="menuitem"
                                 onClick={() => addPreferenceFilter('password')}
                             >
@@ -126,7 +148,7 @@ function FileNav({ files, setFilteredFiles }) {
                                 Salasanasuojatut
                             </button>
                             <button
-                                className={`flex w-full items-center gap-2 px-4 py-2 text-sm text-navlink hover:text-green-600 ${fileFilter === 'shared' && 'text-green-600'}`} 
+                                className={`flex w-full items-center gap-2 px-4 py-2 text-sm hover:text-green-600 ${fileState.filter === 'shared' ? 'text-green-600' : 'text-navlink'}`} 
                                 role="menuitem"
                                 onClick={() => addPreferenceFilter('shared')}
                             >   

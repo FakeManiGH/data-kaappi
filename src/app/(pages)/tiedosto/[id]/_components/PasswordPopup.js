@@ -19,7 +19,7 @@ function SharePopup({ file, setFile, setPasswordPopup }) {
     }, [])
 
     return (
-    <div id="overlay" className="fixed inset-0 z-40 text-sm bg-black/50 flex items-center justify-center">
+    <div id="overlay" className="fixed inset-0 z-50 text-sm bg-black/50 flex items-center justify-center">
         <div className="relative w-full max-w-4xl mx-4 bg-background shadow-black/25 shadow-lg rounded-xl">
             <button
             className="absolute z-50 top-[-40px] right-0 p-1 text-white bg-red-500 hover:bg-red-500/90 rounded-full shadow-md shadow-black/35"

@@ -3,64 +3,81 @@ import { getFileIcon } from '@/utils/GetFileIcon'
 import { Grid, List, LockKeyhole, Share2, Trash, X } from 'lucide-react'
 import Link from 'next/link'
 import { getCardPreview } from '@/utils/FilePreview'
-import { deleteFile, getFiles } from '@/api/api'
-import { useUser } from '@clerk/nextjs'
 import { useAlert } from '@/app/contexts/AlertContext'
+import { deleteFile, getFiles } from '@/api/api'
 import { useNavigation } from '@/app/contexts/NavigationContext'
 import { formatDateFromCollection, translateFileSize, cleanDataType } from '@/utils/DataTranslation'
+import DeleteConfirmPopup from './DeleteConfirmPopup'
+import PageLoading from '@/app/_components/_common/PageLoading'
 import { set } from 'date-fns'
 
-function FileContainer({ files, setFiles }) {
-    const [loading, setLoading] = useState(false)
-    const [view, setView] = useState('grid')
-    const [selectedFiles, setSelectedFiles] = useState([])
-    const { user } = useUser()
-    const { showAlert } = useAlert()
-    const { setCurrentIndex } = useNavigation()
 
+function FileContainer({ fileState, setFileState }) {
+    const [view, setView] = useState('grid')
+    const [deletePopup, setDeletePopup] = useState(false)
+    const [ localLoading, setLocalLoading ] = useState(false)
+    const { setCurrentIndex } = useNavigation()
+    const { showAlert } = useAlert()
+
+    // Determine which files to display
+    const displayFiles = fileState.searched ? fileState.searchedFiles : (fileState.filteredFiles.length > 0 ? fileState.filteredFiles : fileState.files)
+
+    // Handle file selection
     const handleFileSelect = (fileID) => {
-        if (selectedFiles.includes(fileID)) {
-            setSelectedFiles(selectedFiles.filter((id) => id !== fileID))
+        if (fileState.selectedFiles.includes(fileID)) {
+            setFileState(prevState => ({
+                ...prevState,
+                selectedFiles: prevState.selectedFiles.filter(file => file !== fileID)
+            }))
         } else {
-            setSelectedFiles([...selectedFiles, fileID])
+            setFileState(prevState => ({
+                ...prevState,
+                selectedFiles: [...prevState.selectedFiles, fileID]
+            }))
         }
     }
 
+    // Handle delete files
     const handleDeleteFiles = async () => {
         try {
-            setLoading(true)
-            await Promise.all(selectedFiles.map((file) => deleteFile(file)))
-            let updatedFiles = await getFiles(user.id)
-            setFiles(updatedFiles)
+            setLocalLoading(true)
+            await Promise.all(fileState.selectedFiles.map((file) => deleteFile(file)))
+            // remove deleted files from state (files/filteredFiles/searchedFiles)
+            setFileState(prevState => ({
+                ...prevState,
+                files: prevState.files.filter(file => !prevState.selectedFiles.includes(file)),
+                filteredFiles: prevState.filteredFiles.filter(file => !prevState.selectedFiles.includes(file)),
+                searchedFiles: prevState.searchedFiles.filter(file => !prevState.selectedFiles.includes(file)),
+                selectedFiles: []
+            }))
             showAlert('Valitut tiedostot poistettu.', 'success')
         } catch (error) {
+            console.log("Error deleting files: ", error)
             showAlert('Tiedostojen poistaminen epäonnistui.', 'error')
         } finally {
-            setLoading(false)
-            setSelectedFiles([])
+            setDeletePopup(false)
+            setLocalLoading(false)
         }
     }
-
-    if (loading) return <PageLoading />
 
     return (
         <>
-        <nav className={`flex items-center justify-between gap-4 py-2 z-10 bg-background bg-opacity-75 ${selectedFiles.length > 0 && 'sticky top-0'}`}>
+        <nav className={`flex items-center justify-between gap-4 py-2 z-10 bg-background bg-opacity-75 ${fileState.selectedFiles.length > 0 && 'sticky top-0'}`}>
             <div className='flex items-center gap-1'>
                 <button className={`p-2 border border-contrast2 rounded-lg ${view === 'grid' && 'bg-primary text-white border-primary'}`} onClick={() => setView('grid')}><Grid size={20} /></button>
                 <button className={`p-2 border border-contrast2 rounded-lg ${view === 'list' && 'bg-primary text-white border-primary'}` } onClick={() => setView('list')}><List size={20} /></button>
             </div>
 
-            {selectedFiles.length > 0 && 
+            {fileState.selectedFiles.length > 0 && 
                 <div className='flex items-center gap-1 text-sm'>
-                    <button className='flex items-center gap-1 p-2 px-3 border border-contrast2 rounded-full group' onClick={() => setSelectedFiles([])}>
+                    <button className='flex items-center gap-1 p-2 px-3 border border-contrast2 rounded-full group' onClick={() => setFileState(prevState => ({...prevState, selectedFiles: []}))}>
                         <X size={20} className='group-hover:text-primary' />
-                        {selectedFiles.length} valittu
+                        {fileState.selectedFiles.length} valittu
                     </button>
                 
                     <button 
                         className='flex items-center gap-1 p-2 px-3 rounded-full bg-red-500 text-white hover:bg-red-600'
-                        onClick={handleDeleteFiles}
+                        onClick={() => setDeletePopup(true)}
                     >
                         <Trash size={20} className='' /> 
                         Poista
@@ -68,23 +85,27 @@ function FileContainer({ files, setFiles }) {
                 </div>
             }
         </nav>
+
+        {/* Loading */}
+        {localLoading && <PageLoading />}
         
         {/* No files */}
-        {files.length === 0 &&
-            <div className='flex items-center justify-center h-96'>
-                <p className='text-lg text-navlink'>Ei tiedostoja</p>
-            </div>
-        }
+        {!fileState.files.length && (
+          <div className='flex items-center justify-center h-96'>
+            <p className='text-lg text-navlink'>Ei tiedostoja</p>
+          </div>
+        )}
 
         {/* Grid view */}
-        {view === 'grid' && files.length > 0 &&
+        {view === 'grid' && displayFiles.length > 0 &&
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5 xl:grid-cols-7">
-            {files.map((file) => (
+
+            {displayFiles.map((file) => (
                 <div 
                     key={file.fileID} 
                     className={`relative flex flex-col gap-2 group p-2 overflow-hidden
                         bg-background rounded-xl border hover:shadow-black/25 hover:shadow-md 
-                        ${selectedFiles.includes(file) 
+                        ${fileState.selectedFiles.includes(file) 
                             ? 'border-primary hover:border-primary shadow-black/25 shadow-md' 
                             : 'border-transparent hover:border-contrast2'
                         }`}
@@ -94,14 +115,14 @@ function FileContainer({ files, setFiles }) {
                         {file.password && <span title='Salasana suojattu' className='text-xs text-success'><LockKeyhole size={18} /></span>}
                     </div>
 
-                    <div className={`absolute flex sm:group-hover:flex top-0 right-0 p-3 bg-background rounded-lg ${selectedFiles.includes(file) ? 'md:flex' : 'md:hidden'}`}>
+                    <div className={`absolute flex sm:group-hover:flex top-0 right-0 p-3 bg-background rounded-lg ${fileState.selectedFiles.includes(file) ? 'md:flex' : 'md:hidden'}`}>
                         <label htmlFor="file" className="sr-only">Valitse tiedosto</label>
                         <input 
                             type="checkbox" 
                             name='file' 
                             className="w-4 h-4" 
                             onChange={() => handleFileSelect(file)} 
-                            checked={selectedFiles.includes(file)} 
+                            checked={fileState.selectedFiles.includes(file)} 
                         />
                     </div>
 
@@ -121,12 +142,12 @@ function FileContainer({ files, setFiles }) {
         }
 
         {/* List view */}
-        {view === 'list' && files.length > 0 &&
+        {view === 'list' && displayFiles.length > 0 &&
         <div className='flex flex-col gap-4'>
-            {files.map((file) => (
+            {displayFiles.map((file) => (
                 <div 
                     key={file.fileID} 
-                    className={`relative grid grid-cols-1 md:grid-cols-2 gap-2 py-2 bg-background border-b border-contrast2 ${selectedFiles.includes(file) && 'border-primary'}`}
+                    className={`relative grid grid-cols-1 md:grid-cols-2 gap-2 py-2 bg-background border-b border-contrast2 ${fileState.selectedFiles.includes(file) && 'border-primary'}`}
                 >   
                     <div className='flex items-center gap-4 overflow-hidden'>
                         <label htmlFor="file" className="sr-only">Valitse tiedosto</label>
@@ -135,7 +156,7 @@ function FileContainer({ files, setFiles }) {
                             name='file' 
                             className="w-4 h-4 p-2" 
                             onChange={() => handleFileSelect(file)} 
-                            checked={selectedFiles.includes(file)} 
+                            checked={fileState.selectedFiles.includes(file)} 
                         />
                         <img src={getFileIcon(file.fileType)} alt={file.fileName} className="w-7 h-auto" />
                         <Link 
@@ -157,6 +178,14 @@ function FileContainer({ files, setFiles }) {
             ))}
         </div>
         }
+        {deletePopup && 
+            <DeleteConfirmPopup 
+                selectedFiles={fileState.selectedFiles} 
+                handleDeleteFiles={handleDeleteFiles}
+                setDeletePopup={setDeletePopup}
+            />
+        }
+
         </>
     )
 }

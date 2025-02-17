@@ -1,13 +1,12 @@
 "use client"
 import React, { useEffect, use, useState } from 'react'
-import { getDoc, doc } from 'firebase/firestore'
-import { db } from '@/../firebaseConfig'
 import Link from 'next/link'
 import { ArrowLeftSquare, File, FileWarning, Settings, Share } from 'lucide-react'
 import FilePreview from './_components/FilePreview'
 import FileNav from './_components/FileNav'
 import PageLoading from '@/app/_components/_common/PageLoading'
 import { useNavigation } from '@/app/contexts/NavigationContext'
+import { getFileInfo,  } from '@/api/api'
 
 function page({ params }) {
     const { id } = use(params)
@@ -16,21 +15,19 @@ function page({ params }) {
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
-        id && getFileInfo()
-    }, [])
-
-    const getFileInfo = async () => {
-        const docRef = doc(db, 'files', id)
-        const docSnap = await getDoc(docRef)
-
-        if (docSnap.exists()) {
-            setFile(docSnap.data())
-            setLoading(false)
-        } else {
-            setLoading(false)
-            console.log('No such document!')
+        const getFile = async (id) => {
+            try {
+                const fileData = await getFileInfo(id)
+                setFile(fileData)
+                setLoading(false)
+            } catch (error) {
+                console.error("Error fetching file: ", error)
+                setLoading(false)
+            } 
         }
-    }
+
+        id && getFile(id)
+    }, [id])
 
     if (loading) return <PageLoading />
 
