@@ -47,6 +47,7 @@ function page({ params }) {
     
     return (
         <main>
+            <h1 className='text-2xl md:text-3xl'><strong>{file.fileName}</strong></h1>
             <FileNav file={file} setFile={setFile} />
             <FilePreview file={file} setFile={setFile} />
         </main>

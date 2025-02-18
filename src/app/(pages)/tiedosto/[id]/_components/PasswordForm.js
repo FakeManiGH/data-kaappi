@@ -61,7 +61,7 @@ function PasswordForm({ file, setFile, setPasswordPopup }) {
                     </span>
                 </div>
                 <div className='flex items-center gap-4'>
-                    <button type='submit' className="flex justify-center whitespace-nowrap text-white w-[30%] min-w-fit bg-primary rounded-full p-2 px-4 hover:bg-primary/90">
+                    <button type='submit' className="flex justify-center whitespace-nowrap text-white w-[30%] min-w-fit bg-primary rounded-full p-2 px-4 hover:bg-primary/90 mt-1">
                         Tallenna
                     </button>
                     {password && (

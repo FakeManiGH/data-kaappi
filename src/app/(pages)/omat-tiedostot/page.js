@@ -14,8 +14,10 @@ function Page() {
     filteredFiles: [],
     searchedFiles: [],
     filter: 'all',
+    filtered: false,
     searched: false,
     selectedFiles: [],
+    selecting: false,
     loading: true,
   })
 

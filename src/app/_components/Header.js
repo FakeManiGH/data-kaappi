@@ -16,12 +16,12 @@ function Header() {
         <div className="relative flex items-center justify-between p-4 max-w-7xl mx-auto">
             <div className="flex items-center gap-2">
                 <Image src='/logo.svg' alt="Logo" width={40} height={40} />
-                <p>Data-Kaappi</p>
+                <p className='font-bold'>Data-Kaappi</p>
             </div>
 
-            <div className="md:flex md:items-center md:gap-8">
-                <nav aria-label="Global" className="hidden md:block">
-                    <ul className="flex items-center gap-6 text-md">
+            <div className="flex items-center gap-6">
+                <nav aria-label="Global" className="hidden lg:block">
+                    <ul className="flex items-center gap-6">
                         {navList && navList.map((item) => (
                             <li key={item.id}>
                                 <Link 
@@ -55,24 +55,23 @@ function Header() {
                         </Link>
                     )}
 
-                    <div className="md:hidden">
-                        <button className="rounded bg-dark p-2">
-                            <AlignJustify 
-                                className='cursor-pointer md:hidden text-foreground dark:text-gray-200 transition hover:text-primary' 
-                                size={30}
-                                onClick={() => setDropdown(!dropdown)}
-                            />
+                    <div className="lg:hidden">
+                        <button 
+                            className={`p-2 cursor-pointer transition hover:text-primary ${dropdown ? 'text-primary' : 'text-foreground'}`}
+                            onClick={() => setDropdown(!dropdown)}
+                        >
+                            <AlignJustify size={30} />
                         </button>
                         {dropdown && (
                         <nav 
-                            className="absolute top-full start-0 w-full z-50 shadow-md shadow-black/20 bg-background md:hidden overflow-hidden border border-t-0 border-contrast2" 
+                            className="absolute top-full start-0 w-full z-50 shadow-md shadow-black/50 bg-background overflow-hidden border-b border-contrast2" 
                             role="menu"
                         >
                             {navList && navList.map((item) => (
                                 <Link
                                     href={item.path}
                                     key={item.id}
-                                    className="flex items-center text-sm w-full gap-2 p-4 hover:text-primary"
+                                    className="flex items-center justify-end text-sm w-full gap-2 py-4 px-8 hover:text-primary"
                                     onClick={() => {setDropdown(false), setCurrentIndex(item.path)}}
                                 >
                                     <item.icon size='20' />

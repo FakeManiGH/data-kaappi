@@ -18,7 +18,7 @@ function Hero() {
 
                 <div className="flex flex-col items-center gap-3 w-full">
                     <a
-                        className="flex items-center justify-center w-full sm:w-72 rounded-full bg-primary text-white px-12 py-3 text-lg font-semibold hover:bg-primary/90 active:bg-primary/90"
+                        className="flex items-center justify-center w-full sm:w-72 rounded-full bg-primary text-white px-12 py-3 text-md md:text-xl font-semibold hover:bg-primary/90 active:bg-primary/90"
                         href="/tallenna"
                     >
                         Aloita tästä

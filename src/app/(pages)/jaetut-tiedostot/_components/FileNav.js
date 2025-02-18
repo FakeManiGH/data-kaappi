@@ -91,7 +91,7 @@ function FileNav({ fileState, setFileState }) {
 
     return (
         <div className='relative flex flex-wrap items-baseline justify-between mb-2 border-b border-contrast2'>
-            <h1 className='text-2xl md:text-3xl'><strong>Omat tiedostot</strong></h1>
+            <h1 className='text-2xl md:text-3xl'><strong>Jaetut tiedostot</strong></h1>
 
             <div className="relative">
                 <button 

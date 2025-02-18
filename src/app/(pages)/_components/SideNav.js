@@ -20,7 +20,7 @@ function SideNav() {
                 <Link 
                     href={item.path} 
                     key={item.id} 
-                    className={`flex items-center gap-2 p-4 px-5 w-full text-sm hover:text-primary ${currentIndex === item.path ? 'text-primary' : 'text-navlink'}`}
+                    className={`flex items-center gap-2 p-4 px-5 w-full hover:text-primary ${currentIndex === item.path ? 'text-primary' : 'text-navlink'}`}
                     onClick={() => setCurrentIndex(item.path)}
                 >     
                     <item.icon />

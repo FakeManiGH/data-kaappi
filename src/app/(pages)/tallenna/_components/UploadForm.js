@@ -159,8 +159,8 @@ function UploadForm() {
           onDragEnter={handleDragEnter}
           onDragLeave={handleDragLeave}
         >
-          <label htmlFor="dropzone-file" className={`flex flex-col items-center justify-center w-full h-64 border border-foreground border-dashed rounded-xl cursor-pointer hover:border-primary hover:bg-primary/25
-            ${isDragging ? 'bg-primary/25 border-primary' : 'border-foreground'}`}>
+          <label htmlFor="dropzone-file" className={`flex flex-col items-center justify-center w-full h-64 border border-foreground border-dashed rounded-xl cursor-pointer hover:border-primary hover:bg-primary/25 hover:dark:bg-white/10
+            ${isDragging ? 'bg-primary/25 dark:bg-white/10 border-primary' : 'border-foreground'}`}>
             <div className="flex flex-col items-center justify-center p-4 text-center pt-5 pb-6">
               {isDragging ?   
                 <p className="flex items-center gap-2 mb-2 text-xl text-foreground">

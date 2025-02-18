@@ -24,9 +24,13 @@ function TopHeader() {
             onClick={handleDropdown}
           />
 
-          <Link href='/kojelauta' className='flex items-center gap-2 md:hidden'>
-            <Image src='/logo.svg' alt="Logo" width={40} height={40} />
-            Data-Kaappi
+          <Link 
+            href='/' 
+            className='flex items-center gap-2 md:hidden'
+            onClick={() => setCurrentIndex('/')}
+          >
+              <Image src='/logo.svg' alt="Logo" width={40} height={40} />
+              Data-Kaappi
           </Link>
 
           <UserButton />

@@ -1,5 +1,5 @@
 import CopyClipboard from '@/app/_components/_common/CopyClipboard'
-import { AtSign, FileLock2Icon, X } from 'lucide-react'
+import { LockKeyhole, X } from 'lucide-react'
 import React, { useEffect } from 'react'
 import PasswordForm from './PasswordForm'
 
@@ -19,27 +19,29 @@ function SharePopup({ file, setFile, setPasswordPopup }) {
     }, [])
 
     return (
-    <div id="overlay" className="fixed inset-0 z-50 text-sm bg-black/50 flex items-center justify-center">
-        <div className="relative w-full max-w-4xl mx-4 bg-background shadow-black/25 shadow-lg rounded-xl">
-            <button
-            className="absolute z-50 top-[-40px] right-0 p-1 text-white bg-red-500 hover:bg-red-500/90 rounded-full shadow-md shadow-black/35"
-            onClick={() => setPasswordPopup(false)}
-            >
-                <X size={24} />
-            </button>
-
-            <div className="relative flex flex-col w-full bg-background rounded-xl overflow-hidden">
-                <div className="flex items-center justify-between p-3 px-4">
-                    <h2 className="text-2xl font-bold">Aseta tiedostolle salasana</h2>
-                    <FileLock2Icon size={24} />
+        <div id="overlay" tabIndex="-1" aria-hidden="true" className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center">
+            <div className="relative flex flex-col max-w-2xl w-full h-[calc(100%-2rem)] max-h-[calc(100%-2rem)] sm:h-fit bg-background rounded-xl overflow-y-auto m-4">
+                <div className="flex items-center justify-between gap-2 p-3 px-4">
+                    <LockKeyhole size={24} />
+                    <h2 className="text-xl font-bold">Aseta salasana</h2>
+                    <button
+                        className="p-1 text-white bg-red-500 hover:bg-red-600 rounded-full"
+                        onClick={() => setPasswordPopup(false)}
+                    >
+                        <X size={24} />
+                    </button>
                 </div>
 
-                <div className="flex flex-col gap-2 p-4">
+                <ul className='flex flex-col gap-1 p-4 py-2 list-disc list-inside text-sm'>
+                    <li>Suojaa tiedosto ulkopuolisilta antamalla sille salasana.</li>
+                    <li>Muut kuin tiedoston omistaja ei pääse tiedostoon käsiksi ilman salasanaa.</li>
+                </ul>
+
+                <div className="flex flex-col gap-2 p-4 pt-2">
                     <PasswordForm file={file} setFile={setFile} setPasswordPopup={setPasswordPopup} />
                 </div>
             </div>
         </div>
-    </div>
     )
 }
 
