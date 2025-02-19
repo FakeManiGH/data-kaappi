@@ -1,7 +1,7 @@
 import { parse, format } from 'date-fns';
 
 export const translateFileSize = (bytes) => {
-    if (bytes === 0) return '0 Bytes';
+    if (bytes === 0) return '0 Bittiä';
     
     const k = 1024;
     const sizes = ['Bittiä', 'Kt', 'Mt', 'Gt', 'Tt'];

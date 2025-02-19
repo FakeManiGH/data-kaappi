@@ -26,7 +26,11 @@ export function Providers({ children }) {
   const bgColor = theme === dark ? "#171717" : "#ffffff";
 
   return (
-    <ClerkProvider appearance={
+    <ClerkProvider 
+      signInFallbackRedirectUrl='/kojelauta'
+      signUpFallbackRedirectUrl='/tervetuloa'
+      afterSignOutUrl='/'
+      appearance={
       {
         baseTheme: theme,
         variables: {

@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 import FileNav from './_components/FileNav'
 import FileContainer from './_components/FileContainer'
 import { useUser } from '@clerk/nextjs'
-import { getFiles } from '@/api/api'
+import { getSharedFiles } from '@/api/api'
 import PageLoading from '@/app/_components/_common/PageLoading'
 import SearchBar from './_components/SearchBar'
 
@@ -23,20 +23,17 @@ function Page() {
 
   useEffect(() => {
     const fetchFiles = async () => {
-      if (isLoaded && user) {
-        const userFiles = await getFiles(user.id)
-        setFileState(prevState => ({
-          ...prevState,
-          files: userFiles,
-          filteredFiles: userFiles,
-          loading: false,
-        }))
-      }
+      const userFiles = await getSharedFiles()
+      setFileState(prevState => ({
+        ...prevState,
+        files: userFiles,
+        filteredFiles: userFiles,
+        loading: false,
+      }))
     }
     fetchFiles()
-  }, [isLoaded, user])
+  }, [])
 
-  if (!isLoaded) return <PageLoading />
   if (fileState.loading) return <PageLoading />
     
   return (

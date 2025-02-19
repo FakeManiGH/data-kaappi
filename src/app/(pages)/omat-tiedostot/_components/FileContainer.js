@@ -8,7 +8,6 @@ import { deleteFile, getFiles } from '@/api/api'
 import { useNavigation } from '@/app/contexts/NavigationContext'
 import { formatDateFromCollection, translateFileSize, cleanDataType } from '@/utils/DataTranslation'
 import DeleteConfirmPopup from './DeleteConfirmPopup'
-import PageLoading from '@/app/_components/_common/PageLoading'
 
 function FileContainer({ fileState, setFileState }) {
     const [view, setView] = useState('grid')
@@ -20,12 +19,12 @@ function FileContainer({ fileState, setFileState }) {
     const displayFiles = fileState.searched ? fileState.searchedFiles : (fileState.filteredFiles.length > 0 ? fileState.filteredFiles : fileState.files)
 
     // Handle file selection
-    const handleFileSelect = (fileID) => {
+    const handleFileSelect = (file) => {
         setFileState(prevState => {
-            const isSelected = prevState.selectedFiles.includes(fileID)
+            const isSelected = prevState.selectedFiles.includes(file)
             const selectedFiles = isSelected
-                ? prevState.selectedFiles.filter(file => file !== fileID)
-                : [...prevState.selectedFiles, fileID]
+                ? prevState.selectedFiles.filter(file => file !== file)
+                : [...prevState.selectedFiles, file]
 
             return {
                 ...prevState,
@@ -38,14 +37,15 @@ function FileContainer({ fileState, setFileState }) {
     // Handle delete files
     const handleDeleteFiles = async () => {
         try {
-            await Promise.all(fileState.selectedFiles.map((fileID) => deleteFile(fileID)))
+            await Promise.all(fileState.selectedFiles.map((file) => deleteFile(file)))
             // remove deleted files from state (files/filteredFiles/searchedFiles)
             setFileState(prevState => ({
                 ...prevState,
-                files: prevState.files.filter(file => !prevState.selectedFiles.includes(file.fileID)),
-                filteredFiles: prevState.filteredFiles.filter(file => !prevState.selectedFiles.includes(file.fileID)),
-                searchedFiles: prevState.searchedFiles.filter(file => !prevState.selectedFiles.includes(file.fileID)),
-                selectedFiles: []
+                files: prevState.files.filter(file => !prevState.selectedFiles.includes(file)),
+                filteredFiles: prevState.filteredFiles.filter(file => !prevState.selectedFiles.includes(file)),
+                searchedFiles: prevState.searchedFiles.filter(file => !prevState.selectedFiles.includes(file)),
+                selectedFiles: [],
+                selecting: false
             }))
             showAlert('Valitut tiedostot poistettu.', 'success')
         } catch (error) {
@@ -103,7 +103,7 @@ function FileContainer({ fileState, setFileState }) {
                     key={file.fileID} 
                     className={`relative flex flex-col gap-2 group p-2 overflow-hidden
                         bg-background rounded-xl border hover:shadow-black/25 hover:shadow-md 
-                        ${fileState.selectedFiles.includes(file.fileID) 
+                        ${fileState.selectedFiles.includes(file) 
                             ? 'border-primary hover:border-primary shadow-black/25 shadow-md' 
                             : 'border-transparent hover:border-contrast2'
                         }`}
@@ -113,14 +113,14 @@ function FileContainer({ fileState, setFileState }) {
                         {file.password && <span title='Salasana suojattu' className='text-xs text-success'><LockKeyhole size={18} /></span>}
                     </div>
 
-                    <div className={`absolute group-hover:flex top-0 right-0 p-2 bg-background rounded-lg ${fileState.selectedFiles.includes(file.fileID) || fileState.selecting ? 'flex' : 'hidden'}`}>
+                    <div className={`absolute group-hover:flex top-0 right-0 p-2 bg-background rounded-lg ${fileState.selectedFiles.includes(file) || fileState.selecting ? 'flex' : 'hidden'}`}>
                         <label htmlFor="file" className="sr-only">Valitse tiedosto</label>
                         <input 
                             type="checkbox" 
                             name='file' 
                             className="w-4 h-4" 
-                            onChange={() => handleFileSelect(file.fileID)} 
-                            checked={fileState.selectedFiles.includes(file.fileID)} 
+                            onChange={() => handleFileSelect(file)} 
+                            checked={fileState.selectedFiles.includes(file)} 
                         />
                     </div>
 
@@ -145,7 +145,7 @@ function FileContainer({ fileState, setFileState }) {
             {displayFiles.map((file) => (
                 <div 
                     key={file.fileID} 
-                    className={`relative grid grid-cols-1 md:grid-cols-2 gap-2 py-2 bg-background border-b border-contrast2 ${fileState.selectedFiles.includes(file.fileID) && 'border-primary'}`}
+                    className={`relative grid grid-cols-1 md:grid-cols-2 gap-2 py-2 bg-background border-b border-contrast2 ${fileState.selectedFiles.includes(file) && 'border-primary'}`}
                 >   
                     <div className='flex items-center gap-4 overflow-hidden'>
                         <label htmlFor="file" className="sr-only">Valitse tiedosto</label>
@@ -154,7 +154,7 @@ function FileContainer({ fileState, setFileState }) {
                             name='file' 
                             className="w-4 h-4 p-2" 
                             onChange={() => handleFileSelect(file.fileID)} 
-                            checked={fileState.selectedFiles.includes(file.fileID)} 
+                            checked={fileState.selectedFiles.includes(file)} 
                         />
                         <img src={getFileIcon(file.fileType)} alt={file.fileName} className="w-7 h-auto" />
                         <Link 

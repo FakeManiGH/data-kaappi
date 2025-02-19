@@ -1,4 +1,3 @@
-import CopyClipboard from '@/app/_components/_common/CopyClipboard'
 import { LockKeyhole, X } from 'lucide-react'
 import React, { useEffect } from 'react'
 import PasswordForm from './PasswordForm'

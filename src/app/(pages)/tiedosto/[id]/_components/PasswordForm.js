@@ -1,6 +1,6 @@
 import { Eye, EyeOff } from 'lucide-react'
 import React, { useState } from 'react'
-import { doc, updateDoc } from 'firebase/firestore'
+import { updateDocumentValue } from '@/api/api'
 import { db } from '@/../firebaseConfig'
 import { useAlert } from '@/app/contexts/AlertContext'
 
@@ -11,35 +11,45 @@ function PasswordForm({ file, setFile, setPasswordPopup }) {
     const fileID = file.fileID
     const password = file.password
 
+    // Save password
     const savePassword = async (e) => {
         e.preventDefault()
         let newPassword = e.target.password.value
-        const docRef = doc(db, 'files', fileID)
-        await updateDoc(docRef, { password: newPassword })
-        showAlert('Salasana tallennettu.', 'success')
-        setFile({ ...file, password: newPassword })
-        setPasswordPopup(false)
+
+        try {
+            updateDocumentValue(fileID, 'password', newPassword)
+            showAlert('Salasana tallennettu.', 'success')
+            setFile({ ...file, password: newPassword })
+            setPasswordPopup(false)
+        } catch (error) {
+            console.error('Error saving password: ', error)
+            showAlert('Salasanan tallentaminen epäonnistui.', 'error')
+        }    
     }
 
+    // Remove password
     const removePassword = async () => {
-        const docRef = doc(db, 'files', fileID)
-        await updateDoc(docRef, { password: '' })
-        showAlert('Salasana poistettu!', 'success')
-        setFile({ ...file, password: '' })
-        setPasswordPopup(false)
+        try {
+            updateDocumentValue(fileID, 'password', '')
+            showAlert('Salasana poistettu.', 'success')
+            setFile({ ...file, password: '' })
+            setPasswordPopup(false)
+        } catch (error) {
+            console.error('Error removing password: ', error)
+            showAlert('Salasanan poistaminen epäonnistui.', 'error')
+        }
     }
 
-    const changeVisibility = () => {
-        setShowPassword(!showPassword)
-    }
+    const changeVisibility = () => setShowPassword(!showPassword)
+
 
 
     return (
     <>
         <label htmlFor="password" className="sr-only">Salasana</label>
 
-        <div className="relative" onSubmit={savePassword}>
-            <form className="flex flex-col gap-2">
+        <div className="relative">
+            <form className="flex flex-col gap-2" onSubmit={savePassword}>
                 <label htmlFor="password">Anna salasana:</label>
                 <div className='relative'>
                     <input

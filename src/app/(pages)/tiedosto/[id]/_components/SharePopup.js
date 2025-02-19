@@ -1,8 +1,7 @@
 import CopyClipboard from '@/app/_components/_common/CopyClipboard'
 import { AtSign, Share2, X } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
-import { doc, updateDoc } from 'firebase/firestore'
-import { db } from '@/../firebaseConfig'
+import { updateDocumentValue } from '@/api/api'
 import { useAlert } from '@/app/contexts/AlertContext'
 
 function SharePopup({ file, setFile, setSharePopup }) {
@@ -23,10 +22,10 @@ function SharePopup({ file, setFile, setSharePopup }) {
     }, [])
 
     const handleSharing = async (e) => {
-        const docRef = doc(db, 'files', fileID)
+        e.preventDefault()
         const newSharedValue = e.target.checked
         try {
-            await updateDoc(docRef, { shared: newSharedValue })
+            await updateDocumentValue(fileID, 'shared', newSharedValue)
             setShared(newSharedValue)
             setFile({ ...file, shared: newSharedValue })
         } catch (error) {

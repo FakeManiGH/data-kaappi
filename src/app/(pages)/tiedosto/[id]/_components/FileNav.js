@@ -41,14 +41,14 @@ function FileNav({ file, setFile }) {
 
     return (
         <div className='flex items-center justify-between mb-4 border-b border-contrast2'>
-            <Link href="/omat-tiedostot" onClick={() => setCurrentIndex('/omat-tiedostot')} className='flex items-center text-navlink space-x-2 gap-1 hover:text-primary'>
+            <Link href="/omat-tiedostot" onClick={() => setCurrentIndex('/omat-tiedostot')} className='flex items-center text-primary space-x-2 gap-1 hover:text-primary/90'>
                 <ArrowLeftSquare size={20} />
                 Takaisin tiedostoihin
             </Link>
 
             <div className="relative">
                 <button 
-                    className={`flex items-center gap-2 p-2 hover:text-primary ${dropMenu ? 'text-primary' : 'text-navlink'}`}	 
+                    className='flex items-center gap-2 p-2 text-primary hover:text-primary/90' 
                     role="button"
                     onClick={() => setDropMenu(!dropMenu)}
                 >

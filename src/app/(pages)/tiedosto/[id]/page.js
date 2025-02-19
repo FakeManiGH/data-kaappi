@@ -47,7 +47,11 @@ function page({ params }) {
     
     return (
         <main>
-            <h1 className='text-2xl md:text-3xl'><strong>{file.fileName}</strong></h1>
+            <div className='flex flex-col gap-1'>
+                <h1 className='text-2xl md:text-3xl'><strong>{file.fileName}</strong></h1>
+                <p className='text-navlink'>{file.userName}</p>
+            </div>
+
             <FileNav file={file} setFile={setFile} />
             <FilePreview file={file} setFile={setFile} />
         </main>
