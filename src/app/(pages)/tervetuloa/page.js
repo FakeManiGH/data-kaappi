@@ -1,5 +1,5 @@
 "use client"
-import { createUserDocument, getUser } from '@/api/api'
+import { createUserDocument, getUser } from '@/app/(pages)/api/api'
 import React, { useEffect, useState} from 'react'
 import { useUser } from '@clerk/nextjs'
 import PageLoading from '@/app/_components/_common/PageLoading'

@@ -4,7 +4,7 @@ import { Grid, List, LockKeyhole, LucideSquareCheckBig, Share2, Trash, X } from 
 import Link from 'next/link'
 import { getCardPreview } from '@/utils/FilePreview'
 import { useAlert } from '@/app/contexts/AlertContext'
-import { deleteFile, getFiles } from '@/api/api'
+import { deleteFile } from '@/app/file-requests/api'
 import { useNavigation } from '@/app/contexts/NavigationContext'
 import { formatDateFromCollection, translateFileSize, cleanDataType } from '@/utils/DataTranslation'
 import DeleteConfirmPopup from './DeleteConfirmPopup'

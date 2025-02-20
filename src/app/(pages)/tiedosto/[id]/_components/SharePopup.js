@@ -1,7 +1,7 @@
 import CopyClipboard from '@/app/_components/_common/CopyClipboard'
 import { AtSign, Share2, X } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
-import { updateDocumentValue } from '@/api/api'
+import { updateDocumentValue } from '@/app/file-requests/api'
 import { useAlert } from '@/app/contexts/AlertContext'
 
 function SharePopup({ file, setFile, setSharePopup }) {

@@ -1,6 +1,6 @@
 import { Eye, EyeOff } from 'lucide-react'
 import React, { useState } from 'react'
-import { updateDocumentValue } from '@/api/api'
+import { updateDocumentValue } from '@/app/file-requests/api'
 import { db } from '@/../firebaseConfig'
 import { useAlert } from '@/app/contexts/AlertContext'
 

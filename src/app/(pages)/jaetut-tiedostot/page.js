@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 import FileNav from './_components/FileNav'
 import FileContainer from './_components/FileContainer'
 import { useUser } from '@clerk/nextjs'
-import { getSharedFiles } from '@/api/api'
+import { getSharedFiles } from '@/app/file-requests/api'
 import PageLoading from '@/app/_components/_common/PageLoading'
 import SearchBar from './_components/SearchBar'
 

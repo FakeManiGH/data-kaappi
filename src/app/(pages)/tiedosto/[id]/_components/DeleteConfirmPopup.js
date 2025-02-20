@@ -1,5 +1,5 @@
 import { Trash2, X } from 'lucide-react'
-import { deleteFile } from '@/api/api'
+import { deleteFile } from '@/app/file-requests/api'
 import { useNavigation } from '@/app/contexts/NavigationContext'
 import { useAlert } from '@/app/contexts/AlertContext'
 import React, { useEffect } from 'react'

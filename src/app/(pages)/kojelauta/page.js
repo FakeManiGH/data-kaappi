@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react'
 import { useUser } from '@clerk/nextjs'
 import PageLoading from '@/app/_components/_common/PageLoading'
 import { LogIn } from 'lucide-react'
-import { getUser } from '@/api/api'
+import { getUser } from '@/app/file-requests/api'
 
 
 function page() {
