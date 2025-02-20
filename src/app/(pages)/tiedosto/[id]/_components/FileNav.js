@@ -5,6 +5,7 @@ import { useNavigation } from '@/app/contexts/NavigationContext'
 import SharePopup from './SharePopup'
 import PasswordPopup from './PasswordPopup'
 import DeleteConfirmPopup from './DeleteConfirmPopup'
+import { useUser } from '@clerk/nextjs'
 
 function FileNav({ file, setFile }) {
     const [dropMenu, setDropMenu] = useState(false)
@@ -12,6 +13,7 @@ function FileNav({ file, setFile }) {
     const [passwordPopup, setPasswordPopup] = useState(false)
     const [deletePopup, setDeletePopup] = useState(false)
     const { setCurrentIndex } = useNavigation()
+    const { isLoaded, user } = useUser()
 
     useEffect(() => {
         const handleClick = (e) => {
@@ -40,15 +42,17 @@ function FileNav({ file, setFile }) {
     }
 
     return (
-        <div className='flex items-center justify-between mb-4 border-b border-contrast2'>
-            <Link href="/omat-tiedostot" onClick={() => setCurrentIndex('/omat-tiedostot')} className='flex items-center text-primary space-x-2 gap-1 hover:text-primary/90'>
+        <div className='relative flex flex-wrap items-baseline justify-between mb-2'>
+            <Link href="/omat-tiedostot" onClick={() => setCurrentIndex('/omat-tiedostot')} className='flex items-center py-2 text-navlink text-sm space-x-2 gap-1 hover:text-primary'>
                 <ArrowLeftSquare size={20} />
                 Takaisin tiedostoihin
             </Link>
 
-            <div className="relative">
+        {isLoaded && user && user.id === file.owner && (
+        <>
+            <div>
                 <button 
-                    className='flex items-center gap-2 p-2 text-primary hover:text-primary/90' 
+                    className='flex items-center gap-2 py-2 text-navlink text-sm hover:text-primary' 
                     role="button"
                     onClick={() => setDropMenu(!dropMenu)}
                 >
@@ -58,11 +62,11 @@ function FileNav({ file, setFile }) {
 
                 {dropMenu && (
                     <div
-                        className="absolute z-10 end-0 w-56 divide-y divide-contrast2 rounded-t-none rounded-b-xl overflow-hidden border border-contrast2 bg-background shadow-lg"
+                        className="absolute z-10 right-0 w-full sm:w-56 divide-y divide-contrast2 rounded-lg overflow-hidden border border-contrast2 bg-background shadow-lg"
                         role="menu"
                     >
                         <div className='bg-background shadow-lg shadow-black/50'>
-                            <strong className="block p-2 text-xs font-medium uppercase text-gray-400 dark:text-gray-500">
+                            <strong className="block p-2 text-xs font-medium uppercase text-gray-500">
                                 Yleiset
                             </strong>
 
@@ -106,6 +110,8 @@ function FileNav({ file, setFile }) {
             {sharePopup && <SharePopup file={file} setFile={setFile} setSharePopup={setSharePopup} />}
             {passwordPopup && <PasswordPopup file={file} setFile={setFile} setPasswordPopup={setPasswordPopup} />}
             {deletePopup && <DeleteConfirmPopup file={file} setDeletePopup={setDeletePopup} />}
+        </>
+        )}
         </div>
     )
 }

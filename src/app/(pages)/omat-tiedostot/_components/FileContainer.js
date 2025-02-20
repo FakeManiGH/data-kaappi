@@ -16,7 +16,7 @@ function FileContainer({ fileState, setFileState }) {
     const { showAlert } = useAlert()
 
     // Determine which files to display
-    const displayFiles = fileState.searched ? fileState.searchedFiles : (fileState.filteredFiles.length > 0 ? fileState.filteredFiles : fileState.files)
+    const displayFiles = fileState.searched ? fileState.searchedFiles : (fileState.filtered ? fileState.filteredFiles : fileState.files)
 
     // Handle file selection
     const handleFileSelect = (file) => {

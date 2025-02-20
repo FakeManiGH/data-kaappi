@@ -94,7 +94,7 @@ export const getSharedFiles = async () => {
 export const updateDocumentValue = async (fileID, key, value) => {
     const docRef = doc(db, 'files', fileID)
     try {
-        await updateDoc(docRef, { key: value })
+        await updateDoc(docRef, { [key]: value })
     } catch (error) {
         console.error("Error updating document: ", error)
     }

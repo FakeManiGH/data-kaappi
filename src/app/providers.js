@@ -29,7 +29,6 @@ export function Providers({ children }) {
     <ClerkProvider 
       signInFallbackRedirectUrl='/kojelauta'
       signUpFallbackRedirectUrl='/tervetuloa'
-      afterSignOutUrl='/'
       appearance={
       {
         baseTheme: theme,

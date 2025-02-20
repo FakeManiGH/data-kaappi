@@ -5,9 +5,9 @@
 :root {
   --foreground: #171717;
   --background: #ffffff;
-  --contrast: #e5e5e5;
-  --contrast2: #d1d1d1;
-  --navlink: #555555;
+  --contrast: #dadada;
+  --contrast2: #b1b1b1;
+  --navlink: #333333;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -18,6 +18,10 @@
     --contrast2: #343434;
     --navlink: #999999;
   }
+}
+
+* {
+  box-sizing: border-box;
 }
 
 body {
