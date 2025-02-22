@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { getFileIcon } from '@/utils/GetFileIcon'
-import { Grid, List, LockKeyhole, LucideSquareCheckBig, Share2, Trash, X } from 'lucide-react'
+import { CopyCheckIcon, Grid, List, LockKeyhole, LucideSquareCheckBig, Share2, Trash, X } from 'lucide-react'
 import Link from 'next/link'
 import { getCardPreview } from '@/utils/FilePreview'
 import { useAlert } from '@/app/contexts/AlertContext'
@@ -18,21 +18,21 @@ function FileContainer({ fileState, setFileState }) {
     // Determine which files to display
     const displayFiles = fileState.searched ? fileState.searchedFiles : (fileState.filtered ? fileState.filteredFiles : fileState.files)
 
-    // Handle file selection
-    const handleFileSelect = (file) => {
+   // Handle file selection
+   const handleFileSelect = (file) => {
         setFileState(prevState => {
-            const isSelected = prevState.selectedFiles.includes(file)
+            const isSelected = prevState.selectedFiles.some(selectedFile => selectedFile.fileID === file.fileID);
             const selectedFiles = isSelected
-                ? prevState.selectedFiles.filter(file => file !== file)
-                : [...prevState.selectedFiles, file]
-
+                ? prevState.selectedFiles.filter(selectedFile => selectedFile.fileID !== file.fileID)
+                : [...prevState.selectedFiles, file];
+                
             return {
                 ...prevState,
                 selectedFiles,
                 selecting: true
-            }
-        })
-    }
+            };
+        });
+    };
 
     // Handle delete files
     const handleDeleteFiles = async () => {
@@ -58,14 +58,14 @@ function FileContainer({ fileState, setFileState }) {
 
     return (
         <>
-        <nav className={`flex items-center justify-between gap-4 py-2 z-10 bg-background bg-opacity-75 ${fileState.selectedFiles.length > 0 && 'sticky top-0'}`}>
+        <nav className={`flex items-center justify-between gap-4 py-2 z-10 ${fileState.selectedFiles.length > 0 && 'sticky top-0 bg-background'}`}>
             <div className='flex items-center gap-1'>
-                <button className={`p-2 border border-contrast rounded-lg ${view === 'grid' && 'bg-primary text-white border-primary'}`} onClick={() => setView('grid')}><Grid size={20} /></button>
-                <button className={`p-2 border border-contrast rounded-lg ${view === 'list' && 'bg-primary text-white border-primary'}` } onClick={() => setView('list')}><List size={20} /></button>
+                <button className={`p-2 border border-contrast bg-background rounded-lg ${view === 'grid' && 'bg-primary text-white border-primary'}`} onClick={() => setView('grid')}><Grid size={20} /></button>
+                <button className={`p-2 border border-contrast bg-background rounded-lg ${view === 'list' && 'bg-primary text-white border-primary'}` } onClick={() => setView('list')}><List size={20} /></button>
                 <button 
-                    className={`p-2 border border-contrast rounded-lg ${fileState.selecting && 'bg-primary text-white border-primary'}` } 
+                    className={`p-2 border border-contrast bg-background rounded-lg ${fileState.selecting && 'bg-primary text-white border-primary'}` } 
                     onClick={() => setFileState(prevState => ({...prevState, selecting: !prevState.selecting, selectedFiles: prevState.selecting ? [] : prevState.selectedFiles}))}>
-                        <LucideSquareCheckBig size={20} />
+                        <CopyCheckIcon size={20} />
                 </button>
             </div>
 
@@ -101,10 +101,9 @@ function FileContainer({ fileState, setFileState }) {
             {displayFiles.map((file) => (
                 <div 
                     key={file.fileID} 
-                    className={`relative flex flex-col gap-2 group p-2 overflow-hidden
-                        bg-background rounded-xl border hover:shadow-black/25 hover:shadow-md 
+                    className={`relative flex flex-col gap-2 group p-2 bg-background overflow-hidden rounded-lg border hover:shadow-md 
                         ${fileState.selectedFiles.includes(file) 
-                            ? 'border-primary hover:border-primary shadow-black/25 shadow-md' 
+                            ? 'border-primary hover:border-primary shadow-md' 
                             : 'border-transparent hover:border-contrast'
                         }`}
                 >   
@@ -141,11 +140,11 @@ function FileContainer({ fileState, setFileState }) {
 
         {/* List view */}
         {view === 'list' && displayFiles.length > 0 &&
-        <div className='flex flex-col gap-4'>
+        <div className='flex flex-col gap-4 px-1'>
             {displayFiles.map((file) => (
                 <div 
                     key={file.fileID} 
-                    className={`relative grid grid-cols-1 md:grid-cols-2 gap-2 py-2 bg-background border-b border-contrast ${fileState.selectedFiles.includes(file) && 'border-primary'}`}
+                    className={`relative grid grid-cols-1 md:grid-cols-2 gap-2 py-2 border-b border-contrast ${fileState.selectedFiles.includes(file) && 'border-primary'}`}
                 >   
                     <div className='flex items-center gap-4 overflow-hidden'>
                         <label htmlFor="file" className="sr-only">Valitse tiedosto</label>
@@ -153,8 +152,8 @@ function FileContainer({ fileState, setFileState }) {
                             type="checkbox" 
                             name='file' 
                             className="w-4 h-4 p-2" 
-                            onChange={() => handleFileSelect(file.fileID)} 
-                            checked={fileState.selectedFiles.includes(file)} 
+                            onChange={() => handleFileSelect(file)} 
+                            checked={fileState.selectedFiles.includes(file)}
                         />
                         <img src={getFileIcon(file.fileType)} alt={file.fileName} className="w-7 h-auto" />
                         <Link 
@@ -168,7 +167,7 @@ function FileContainer({ fileState, setFileState }) {
                     <div className='flex items-center gap-3 justify-start md:justify-end'>
                         {file.shared && <p title='Jaettu' className='text-xs text-success'><Share2 size={18} /></p>}
                         {file.password && <p title='Salasana suojattu' className='text-xs text-success'><LockKeyhole size={18} /></p>}
-                        <p className='text-sm whitespace-nowrap text-navlink'>{formatDateFromCollection(file.createdAt)}</p>
+                        <p className='text-sm whitespace-nowrap text-navlink'>{formatDateFromCollection(file.uploadedAt)}</p>
                         <p className="text-sm whitespace-nowrap text-navlink">{cleanDataType(file.fileType)}</p>
                         <p className="text-sm whitespace-nowrap text-navlink">{translateFileSize(file.fileSize)}</p>
                     </div>

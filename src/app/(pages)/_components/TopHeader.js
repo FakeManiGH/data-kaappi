@@ -15,7 +15,7 @@ function TopHeader() {
   }
 
   return (
-    <div className='relative z-50 bg-background'>
+    <div className='relative z-50 bg-background md:bg-transparent'>
       <div className='flex justify-between md:justify-end p-4 py-2 pt-4 w-full items-center'>
           <AlignJustify
             id='dropdownBtn'

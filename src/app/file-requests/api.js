@@ -10,7 +10,7 @@ const storage = getStorage();
 
 
 // USER MANAGEMENT FUNCTIONS
-// Create user
+// Create user document
 export const createUserDocument = async (user) => {
     try {
         await setDoc(doc(db, 'users', user.id), {
@@ -20,14 +20,14 @@ export const createUserDocument = async (user) => {
             role: 'user',
             created: formatDateToCollection(new Date()),
             usedSpace: 0,
-            totalSpace: 1000000000
+            totalSpace: 1073741824 // 1 Gt
         })
     } catch (error) {
         console.error("Error creating user: ", error)
     }
 }
 
-// Get user
+// Get user document
 export const getUser = async (userID) => {
     try {
         const userDocRef = doc(db, 'users', userID)
@@ -38,11 +38,20 @@ export const getUser = async (userID) => {
     }
 }
 
+// Update user document
+export const updateUserDocumentValue = async (userID, key, value) => {
+    const userDocRef = doc(db, 'users', userID)
+    try {
+        await updateDoc(userDocRef, { [key]: value })
+    } catch (error) {
+        console.error("Error updating user: ", error)
+    }
+}
 
 // DELETE FILE FUNCTIONS
 // Delete file
 export const deleteFile = async (file) => {
-    const desertRef = ref(storage, `file-base/${file.fileName}`);
+    const desertRef = ref(storage, `file-base/${file.fileID}`);
 
     try {
         await deleteDoc(doc(db, "files", file.fileID));
@@ -67,7 +76,7 @@ export const getFileInfo = async (docID) => {
 // Get files
 export const getFiles = async (userID) => {
     try {
-        const q = query(collection(db, "files"), where("owner", "==", userID));
+        const q = query(collection(db, "files"), where("userID", "==", userID));
         const querySnapshot = await getDocs(q);
         const files = querySnapshot.docs.map(doc => doc.data())
         return files

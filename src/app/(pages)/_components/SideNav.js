@@ -6,7 +6,7 @@ function SideNav() {
     const { navList, currentIndex, setCurrentIndex } = useNavigation()
 
     return (
-        <div className='flex flex-col w-64 h-full border-r border-contrast'>
+        <div className='flex flex-col w-64 h-full'>
             <Link 
                 href='/' 
                 className='p-4 flex items-center gap-2 hover:text-primary transition-colors'
@@ -15,7 +15,7 @@ function SideNav() {
                 <Image src='/logo.svg' alt="Logo" width={40} height={40} />
                 <strong>Datakaappi</strong>
             </Link>
-            <div className='flex flex-col w-full mt-2'>
+            <div className='flex flex-col w-full mt-2 px-2'>
             {navList && navList.map((item) => (
                 <Link 
                     href={item.path} 

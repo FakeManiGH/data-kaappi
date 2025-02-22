@@ -48,7 +48,7 @@ function FileNav({ file, setFile }) {
                 Takaisin tiedostoihin
             </Link>
 
-        {isLoaded && user && user.id === file.owner && (
+        {isLoaded && user && user.id === file.userID && (
         <>
             <div>
                 <button 

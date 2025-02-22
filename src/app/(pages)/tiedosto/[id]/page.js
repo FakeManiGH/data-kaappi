@@ -40,6 +40,13 @@ function Page({ params }) {
         setLoading(true)
         e.preventDefault()
         const password = e.target.password.value
+
+        if (!password) {
+            showAlert('Anna tiedoston salasana.', 'error')
+            setLoading(false)
+            return
+        }
+
         try {
             const response = await fetch('/api/verify-file-password', {
                 method: 'POST',
@@ -50,9 +57,8 @@ function Page({ params }) {
 
             if (data.valid) {
                 setIsPasswordValid(true);
-                showAlert('Salasana hyväksytty', 'success');
             } else {
-                showAlert('Virheellinen salasana, yritä uudelleen', 'error');
+                showAlert('Virheellinen salasana, yritä uudelleen.', 'error');
             }
 
             setLoading(false);
@@ -63,7 +69,7 @@ function Page({ params }) {
 
     if (loading) return <PageLoading />
 
-    if (!file || (file && !file.shared && user?.id !== file.owner)) return (
+    if (!file || (file && !file.shared && user?.id !== file.userID)) return (
         <main>
             <Link href="/omat-tiedostot" onClick={() => setCurrentIndex('/omat-tiedostot')} className='flex items-center text-sm text-navlink space-x-2 gap-1 hover:text-primary'>
                 <ArrowLeftSquare size={24} />
@@ -77,14 +83,14 @@ function Page({ params }) {
         </main>
     )
 
-    if (file.password && !isPasswordValid && user?.id !== file.owner) return (
+    if (file.password && !isPasswordValid && user?.id !== file.userID) return (
         <main>
             <Link href="/jaetut-tiedostot" onClick={() => setCurrentIndex('/jaetut-tiedostot')} className='flex items-center text-sm text-navlink space-x-2 gap-1 hover:text-primary'>
                 <ArrowLeftSquare size={24} />
                 Jaetut tiedostot
             </Link>
             <div className='flex flex-col items-center justify-center w-full mt-8'>
-                <div className='flex flex-col gap-4 shadow-md w-full max-w-2xl p-4 rounded-xl'>
+                <div className='flex flex-col gap-4 w-full max-w-2xl'>
                     <h1 className='text-lg md:text-xl'>Tiedosto <span className='font-bold text-primary'>{file.fileName}</span> on suojattu salasanalla</h1>
                     <PasswordPrompt validatePassword={validatePassword} />
                 </div>

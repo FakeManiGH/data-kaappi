@@ -10,6 +10,7 @@ export default {
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
+        linear: "var(--linear)",
         contrast: "var(--contrast)",
         navlink: "var(--navlink)",
         primary: "#0084ff",

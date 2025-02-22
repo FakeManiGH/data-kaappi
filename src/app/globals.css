@@ -8,6 +8,7 @@
   --contrast: #c1c1c1;
   --navlink: #333333;
   --secondary: #c1c1c1;
+  --linear: linear-gradient(90deg, #d1d1d1, #e5e5e5, #d1d1d1);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -17,6 +18,7 @@
     --contrast: #343434;
     --navlink: #999999;
     --secondary: #343434;
+    --linear: linear-gradient(0deg, #1a1a1a, #333333, #1a1a1a);
   }
 }
 

@@ -21,18 +21,18 @@ function FileContainer({ fileState, setFileState }) {
     // Handle file selection
     const handleFileSelect = (file) => {
         setFileState(prevState => {
-            const isSelected = prevState.selectedFiles.includes(file)
+            const isSelected = prevState.selectedFiles.some(selectedFile => selectedFile.fileID === file.fileID);
             const selectedFiles = isSelected
-                ? prevState.selectedFiles.filter(file => file !== file)
-                : [...prevState.selectedFiles, file]
-
+                ? prevState.selectedFiles.filter(selectedFile => selectedFile.fileID !== file.fileID)
+                : [...prevState.selectedFiles, file];
+                
             return {
                 ...prevState,
                 selectedFiles,
                 selecting: true
-            }
-        })
-    }
+            };
+        });
+    };
 
     // Handle delete files
     const handleDeleteFiles = async () => {
@@ -58,12 +58,12 @@ function FileContainer({ fileState, setFileState }) {
 
     return (
         <>
-        <nav className={`flex items-center justify-between gap-4 py-2 z-10 bg-background bg-opacity-75 ${fileState.selectedFiles.length > 0 && 'sticky top-0'}`}>
+        <nav className={`flex items-center justify-between gap-4 py-2 z-10 ${fileState.selectedFiles.length > 0 && 'sticky top-0'}`}>
             <div className='flex items-center gap-1'>
-                <button className={`p-2 border border-contrast rounded-lg ${view === 'grid' && 'bg-primary text-white border-primary'}`} onClick={() => setView('grid')}><Grid size={20} /></button>
-                <button className={`p-2 border border-contrast rounded-lg ${view === 'list' && 'bg-primary text-white border-primary'}` } onClick={() => setView('list')}><List size={20} /></button>
+                <button className={`p-2 border border-contrast bg-background rounded-lg ${view === 'grid' && 'bg-primary text-white border-primary'}`} onClick={() => setView('grid')}><Grid size={20} /></button>
+                <button className={`p-2 border border-contrast bg-background rounded-lg ${view === 'list' && 'bg-primary text-white border-primary'}` } onClick={() => setView('list')}><List size={20} /></button>
                 <button 
-                    className={`p-2 border border-contrast rounded-lg ${fileState.selecting && 'bg-primary text-white border-primary'}` } 
+                    className={`p-2 border border-contrast bg-background rounded-lg ${fileState.selecting && 'bg-primary text-white border-primary'}` } 
                     onClick={() => setFileState(prevState => ({...prevState, selecting: !prevState.selecting, selectedFiles: prevState.selecting ? [] : prevState.selectedFiles}))}>
                         <LucideSquareCheckBig size={20} />
                 </button>
@@ -102,13 +102,13 @@ function FileContainer({ fileState, setFileState }) {
                 <div 
                     key={file.fileID} 
                     className={`relative flex flex-col gap-2 group p-2 overflow-hidden
-                        bg-background rounded-xl border hover:shadow-black/25 hover:shadow-md 
+                        bg-background rounded-xl border hover:shadow-md 
                         ${fileState.selectedFiles.includes(file) 
-                            ? 'border-primary hover:border-primary shadow-black/25 shadow-md' 
+                            ? 'border-primary hover:border-primary shadow-md' 
                             : 'border-transparent hover:border-contrast'
                         }`}
                 >   
-                    <div className={`absolute flex flex-col items-center bg-background rounded-lg top-0 left-0 gap-1 ${file.shared || file.password ? 'p-2' : 'p-0'}`}>
+                    <div className={`absolute flex flex-col items-center bg-background rounded-lg top-0 left-0 gap-1 ${file.password ? 'p-2' : 'p-0'}`}>
                         {file.password && <span title='Salasana suojattu' className='text-xs text-success'><LockKeyhole size={18} /></span>}
                     </div>
 
@@ -152,7 +152,7 @@ function FileContainer({ fileState, setFileState }) {
                             type="checkbox" 
                             name='file' 
                             className="w-4 h-4 p-2" 
-                            onChange={() => handleFileSelect(file.fileID)} 
+                            onChange={() => handleFileSelect(file)} 
                             checked={fileState.selectedFiles.includes(file)} 
                         />
                         <img src={getFileIcon(file.fileType)} alt={file.fileName} className="w-7 h-auto" />
@@ -166,7 +166,7 @@ function FileContainer({ fileState, setFileState }) {
                     </div>
                     <div className='flex items-center gap-3 justify-start md:justify-end'>
                         {file.password && <p title='Salasana suojattu' className='text-xs text-success'><LockKeyhole size={18} /></p>}
-                        <p className='text-sm whitespace-nowrap text-navlink'>{formatDateFromCollection(file.createdAt)}</p>
+                        <p className='text-sm whitespace-nowrap text-navlink'>{formatDateFromCollection(file.uploadedAt)}</p>
                         <p className="text-sm whitespace-nowrap text-navlink">{cleanDataType(file.fileType)}</p>
                         <p className="text-sm whitespace-nowrap text-navlink">{translateFileSize(file.fileSize)}</p>
                     </div>

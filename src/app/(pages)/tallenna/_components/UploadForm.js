@@ -1,26 +1,17 @@
 import React, { useState } from 'react';
-import { generateRandomString } from '@/utils/GenerateRandomString';
-import { getStorage, ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
-import { doc, setDoc } from "firebase/firestore";
-import FilePreview from './FilePreview';
 import AlertMsg from './AlertMsg';
 import { validateFile } from '@/utils/FileValidation';
-import { app, db } from '@/../firebaseConfig';
-import { useUser } from '@clerk/nextjs';
 import { useAlert } from '@/app/contexts/AlertContext';
 import { useNavigation } from '@/app/contexts/NavigationContext'
-import { formatDateToCollection } from '@/utils/DataTranslation';
+import { getUser, updateUserDocumentValue } from '@/app/file-requests/api';
 import { FilePlus2, Music2 } from 'lucide-react';
+import { useUser } from '@clerk/nextjs';
 
-function UploadForm() {
-  const [files, setFiles] = useState([]);
-  const [fileErrors, setFileErrors] = useState([]);
-  const [uploadProgress, setUploadProgress] = useState([]);
+function UploadForm({ uploadFile, files, setFiles, fileErrors, setFileErrors, setUploadProgress }) {
   const [isDragging, setIsDragging] = useState(false);
   const { showAlert } = useAlert();
-  const storage = getStorage(app);
-  const { user } = useUser();
   const { navigatePage } = useNavigation();
+  const { user } = useUser();
 
   // Handle drag enter
   const handleDragEnter = (event) => {
@@ -46,7 +37,7 @@ function UploadForm() {
     processFiles(event.target.files);
   };
 
-  // Process files
+  // Process files and validate
   const processFiles = (fileList) => {
     setFileErrors([]);
     let filesArray = [...files];
@@ -70,79 +61,30 @@ function UploadForm() {
 
   // Upload files to Firebase Storage
   const uploadFiles = async (files) => {
-    const uploadPromises = files.map((file, index) => {
-      return new Promise((resolve, reject) => {
-        const metadata = {
-          contentType: file?.type
-        };
-        const uniqueFileName = `${file?.name}_${generateRandomString(6)}`;
-        const fileRef = ref(storage, 'file-base/' + uniqueFileName);
-        const uploadTask = uploadBytesResumable(fileRef, file, metadata);
-
-        uploadTask.on('state_changed',
-          (snapshot) => {
-            const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-            setUploadProgress((prevProgress) => {
-              const newProgress = [...prevProgress];
-              newProgress[index] = progress;
-              return newProgress;
-            });
-          },
-          (error) => {
-            console.error('Upload failed:', error);
-            setFileErrors((prevErrors) => [...prevErrors, error.message]);
-            reject(error);
-          },
-          async () => {
-            try {
-              const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-              await saveFileData(file, downloadURL, uniqueFileName);
-              resolve();
-            } catch (error) {
-              console.error('Error getting download URL or saving file data:', error);
-              setFileErrors((prevErrors) => [...prevErrors, error.message]);
-              reject(error);
-            }
-          }
-        );
-      });
-    });
-
-    try {
-      await Promise.all(uploadPromises);
-      showAlert('Tiedosto(t) tallennettu onnistuneesti!', 'success');
-      setTimeout(() => {
-        setFileErrors([]);
-        setFiles([]);
-        setUploadProgress([]);
-        navigatePage('/omat-tiedostot');
-      }, 2000);
-    } catch (error) {
-      showAlert('Tiedoston tallennus epäonnistui!', 'error');
+    const userDoc = await getUser(user.id);
+    
+    if (!userDoc) {
+      showAlert('Käyttäjää ei löytynyt.', 'error');
+      return;
     }
+
+    if (userDoc.usedSpace >= userDoc.totalSpace) {
+      showAlert('Tilasi on täynnä. Poista tiedostoja tai ota yhteyttä ylläpitoon.', 'error');
+      return;
+    }
+
+    // Upload files
+    const uploadPromises = files.map(file => uploadFile(file));
+    await Promise.all(uploadPromises);
+
+    // Update used space
+    const totalSize = files.reduce((acc, file) => acc + file.size, 0);
+    await updateUserDocumentValue(user.id, 'usedSpace', userDoc.usedSpace + totalSize);
+
+    showAlert('Tiedosto(t) ladattu onnistuneesti.', 'success');
+    setFiles([]);
   };
-
-  // Save file data to Firestore
-  const saveFileData = async (file, fileUrl, uniqueFileName) => {
-    const docID = generateRandomString(6).toString();
-    const fileDocRef = doc(db, 'files', docID);
-    const shortUrl = process.env.NEXT_PUBLIC_BASE_URL + 'tiedosto/' + docID;
-
-    await setDoc(fileDocRef, {
-      fileID: docID,
-      fileName: uniqueFileName,
-      fileSize: file.size,
-      createdAt: formatDateToCollection(new Date()),
-      fileType: file.type,
-      fileUrl: fileUrl,
-      owner: user.id,
-      userEmail: user.primaryEmailAddress.emailAddress,
-      shared: false,
-      password: '',
-      shortUrl: shortUrl,
-    });
-  };
-
+    
   // Handle form submit
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -187,7 +129,6 @@ function UploadForm() {
       {fileErrors?.length > 0 && fileErrors.map((error, index) => (
         <AlertMsg msg={error} success={false} key={index} />
       ))}
-      <FilePreview files={files} removeFile={(file) => setFiles(files.filter(f => f !== file))} uploadProgress={uploadProgress} />
     </div>
   );
 }
