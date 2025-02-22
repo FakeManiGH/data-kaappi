@@ -159,19 +159,20 @@ function UploadForm() {
           onDragEnter={handleDragEnter}
           onDragLeave={handleDragLeave}
         >
-          <label htmlFor="dropzone-file" className={`flex flex-col items-center justify-center w-full h-64 border-2 border-dashed rounded-xl cursor-pointer hover:border-primary hover:bg-contrast
-            ${isDragging ? 'bg-contrast border-primary' : 'border-contrast2'}`}>
-            <div className="flex flex-col items-center justify-center p-4 text-center pt-5 pb-6">
+          <label htmlFor="dropzone-file" className={`flex flex-col items-center w-full max-w-full justify-center h-64 
+          rounded-xl cursor-pointer bg-background border-2 border-dashed hover:border-primary  
+            ${isDragging ? 'border-primary' : 'border-contrast'}`}>
+            <div className="flex flex-col max-w-full items-center justify-center p-4 text-center pt-5 pb-6">
               {isDragging ?   
-                <p className="flex items-center gap-2 mb-2 text-xl text-foreground">
+                <p className="flex items-center flex-wrap gap-2 mb-2 text-xl text-foreground">
                   <Music2 size={24} className="text-primary" />
                   "<strong className='text-primary'>Let it go</strong>, let it go..."
                 </p> :
-                <p className="flex items-center gap-2 mb-2 text-xl text-foreground">
+                <p className="flex items-center flex-wrap gap-2 mb-2 text-xl text-foreground">
                   <FilePlus2 size={24} className="text-primary" />
-                  <strong className="text-primary">Klikkaa</strong> tai <strong className="text-primary">tiputa</strong> tiedostoja
+                  <strong className="text-primary">Klikkaa</strong> tai <strong className="text-primary">Tiputa</strong>
                 </p>
-            }
+              }
               <p className="text-sm text-navlink">Kuva, Video ja Dokumetti -tiedostot (max. 5Mt / tiedosto)</p>
             </div>
             <input id="dropzone-file" type="file" accept='media_type' className="hidden" multiple onChange={handleFileChange} />
@@ -180,7 +181,7 @@ function UploadForm() {
         <button 
           type="submit"
           {...(files.length === 0 && { disabled: true })}
-          className="mt-4 px-4 py-3 w-[30%] min-w-fit disabled:bg-secondary bg-primary text-white rounded-full"
+          className="mt-4 px-4 py-3 w-[30%] min-w-fit disabled:bg-secondary disabled:text-gray-500 bg-primary hover:bg-primary/90 text-white rounded-full"
         >Tallenna</button>
       </form>
       {fileErrors?.length > 0 && fileErrors.map((error, index) => (

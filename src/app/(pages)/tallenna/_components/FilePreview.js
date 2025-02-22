@@ -7,10 +7,10 @@ import { cleanDataType, translateFileSize } from '@/utils/DataTranslation'
 
 function FilePreview({ files, removeFile, uploadProgress }) {
   return (
-    <>
+    <div className='flex w-full flex-wrap mt-2 gap-2'>
       {files?.map((file, index) => (
-        <div key={index} className='flex items-center justify-between w-full mt-3 bg-background border border-contrast rounded-lg'>
-          <div className='flex flex-1 items-center gap-2 p-2'>
+        <div key={index} className='flex items-center flex-1 justify-between mt-3 bg-gradient-to-b from-contrast to-background rounded-lg rounded-b-none'>
+          <div className='flex flex-1 items-center gap-4 p-2 pr-12'>
             <Image 
               src={getFileIcon(file?.type)} 
               alt='file' 
@@ -18,20 +18,22 @@ function FilePreview({ files, removeFile, uploadProgress }) {
               height={50} 
             />
             <div className='flex-col justify-center items-center w-full'>
-              <div className='flex flex-wrap items-center gap-2'>
-                <p className='text-md text-foreground'>{file.name}</p>
-                <p className='text-xs text-navlink'>{cleanDataType(file.type)}</p>
-                <p className='text-xs text-navlink'>{translateFileSize(file.size)}</p>
+              <div className='flex items-center flex-wrap gap-2'>
+                <p className='text-sm text-foreground whitespace-nowrap'>{file.name}</p>
+                <div className='flex items-center gap-2'>
+                  <p className='text-xs text-navlink'>{cleanDataType(file.type)}</p>
+                  <p className='text-xs text-navlink'>{translateFileSize(file.size)}</p>
+                </div>
               </div>
               {uploadProgress[index] > 0 ? <ProgressBar progress={uploadProgress[index]} /> : null}
             </div>
           </div>
           <div className='p-3'>
-            <X className='cursor-pointer dark:text-red-500 hover:text-red-600' onClick={() => removeFile(file)} />
+            <X className='cursor-pointer text-red-500 hover:text-red-600' onClick={() => removeFile(file)} />
           </div>
         </div>
       ))}
-    </>
+    </div>
   )
 }
 

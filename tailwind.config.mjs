@@ -11,16 +11,15 @@ export default {
         background: "var(--background)",
         foreground: "var(--foreground)",
         contrast: "var(--contrast)",
-        contrast2: "var(--contrast2)",
         navlink: "var(--navlink)",
         primary: "#0084ff",
-        secondary: "#777777",
+        secondary: "var(--secondary)",
         success: "#399c39",
+
       },
       backgroundColor: {
         primary: "#0084ff",
-        secondary: "#777777",
-        success: "#399c39",
+        linear: "linear-gradient(90deg, var(--background) 0%, var(--foreground) 100%)",
       },
       fontFamily: {
         sans: ["Inter", "sans-serif"],

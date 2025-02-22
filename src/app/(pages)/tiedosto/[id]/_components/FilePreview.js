@@ -15,16 +15,16 @@ function FilePreview({ file }) {
         <div className='w-full rounded-lg p-2 flex flex-col gap-4'>
           <a href={file.fileUrl} target="_blank" rel="noreferrer" className='flex items-center gap-1 w-fit text-primary hover:text-primary/90'><Eye /> Esikatsele</a>
           <ul className="flex flex-col text-sm">
-            <li className='flex gap-4 items-baseline justify-between border-b border-dashed border-contrast2 p-1'>
+            <li className='flex gap-4 items-baseline justify-between border-b border-dashed border-contrast p-1'>
               <strong className='whitespace-nowrap'>Koko:</strong> {translateFileSize(file.fileSize)}
             </li>
-            <li className='flex gap-4 items-baseline justify-between border-b border-dashed border-contrast2 p-1'>
+            <li className='flex gap-4 items-baseline justify-between border-b border-dashed border-contrast p-1'>
               <strong className='whitespace-nowrap'>Luotu:</strong> {formatDateFromCollection(file.createdAt)}
             </li>
-            <li className='flex gap-4 items-baseline justify-between border-b border-dashed border-contrast2 p-1'>
+            <li className='flex gap-4 items-baseline justify-between border-b border-dashed border-contrast p-1'>
               <strong className='whitespace-nowrap'>Tyyppi:</strong> {cleanDataType(file.fileType)}
             </li>
-            <li className="flex gap-1 items-baseline justify-between border-b border-dashed border-contrast2 p-1">
+            <li className="flex gap-1 items-baseline justify-between border-b border-dashed border-contrast p-1">
               <strong className='whitespace-nowrap'>Näkyvyys:</strong>
                 <span className='flex gap-1 items-center'>
                   {file.shared && <span title='Jaettu' className='text-xs text-success'><Share2 size={18} /></span>}

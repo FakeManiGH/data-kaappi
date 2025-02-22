@@ -23,16 +23,18 @@ function Page() {
 
   useEffect(() => {
     const fetchFiles = async () => {
-      const userFiles = await getSharedFiles()
-      setFileState(prevState => ({
-        ...prevState,
-        files: userFiles,
-        filteredFiles: userFiles,
-        loading: false,
-      }))
+      if (isLoaded && user) {
+        const sharedFiles = await getSharedFiles()
+        setFileState(prevState => ({
+          ...prevState,
+          files: sharedFiles,
+          filteredFiles: sharedFiles,
+          loading: false,
+        }))
+      }
     }
     fetchFiles()
-  }, [])
+  }, [isLoaded, user])
 
   if (fileState.loading) return <PageLoading />
     

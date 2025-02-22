@@ -10,7 +10,7 @@ function PasswordPrompt({ validatePassword }) {
     return (
         <form className="flex flex-col gap-2 text-sm" onSubmit={validatePassword}>
             <label htmlFor="password" className='sr-only peer'>Anna salasana</label>
-            <div className='relative border-b border-contrast2 group focus-within:border-primary'>
+            <div className='relative border-b border-contrast group focus-within:border-primary'>
                 <input
                     id="password"
                     name="password"

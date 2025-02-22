@@ -7,7 +7,7 @@ function Page() {
   return (
     <main className='mt-4'>
       <h1 className='text-2xl md:text-3xl'><strong>Tallenna tiedostoja</strong></h1>
-      <p className='text-sm'>Tallenna tiedostoja data-kaappiisi.</p>
+      <p className='text-sm'>Tallenna tiedostoja Datakaappiisi.</p>
       <UploadForm />
     </main>
   )

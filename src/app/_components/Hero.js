@@ -12,7 +12,7 @@ function Hero() {
                     turvallisesti.
                 </h1>
 
-                <p className="sm:text-xl/relaxed">
+                <p className="text-lg">
                     Lisäksi voit <strong>jakaa</strong> tiedostoja helposti läheistesi kanssa ja <strong>lisä-suojata</strong> tärkeimmät tiedostosi salasanalla.
                 </p>
 

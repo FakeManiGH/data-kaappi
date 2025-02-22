@@ -16,7 +16,7 @@ function Header() {
         <div className="relative flex items-center justify-between p-4 max-w-7xl mx-auto">
             <div className="flex items-center gap-2">
                 <Image src='/logo.svg' alt="Logo" width={40} height={40} />
-                <p className='font-bold'>Data-Kaappi</p>
+                <p className='font-bold'>Datakaappi</p>
             </div>
 
             <div className="flex items-center gap-6">
@@ -64,14 +64,14 @@ function Header() {
                         </button>
                         {dropdown && (
                         <nav 
-                            className="absolute top-full start-0 w-full z-50 shadow-md shadow-black/50 bg-background overflow-hidden border-b border-contrast2" 
+                            className="absolute top-full start-0 w-full z-50 shadow-md shadow-black/50 bg-background overflow-hidden border-b border-contrast" 
                             role="menu"
                         >
                             {navList && navList.map((item) => (
                                 <Link
                                     href={item.path}
                                     key={item.id}
-                                    className="flex items-center justify-end text-sm w-full gap-2 py-4 px-8 hover:text-primary"
+                                    className="flex items-center text-sm w-full gap-2 py-4 px-8 hover:text-primary"
                                     onClick={() => {setDropdown(false), setCurrentIndex(item.path)}}
                                 >
                                     <item.icon size='20' />

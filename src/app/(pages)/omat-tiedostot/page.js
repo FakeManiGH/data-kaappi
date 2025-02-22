@@ -36,7 +36,6 @@ function Page() {
     fetchFiles()
   }, [isLoaded, user])
 
-  if (!isLoaded) return <PageLoading />
   if (fileState.loading) return <PageLoading />
     
   return (

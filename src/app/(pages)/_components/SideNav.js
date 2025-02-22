@@ -6,14 +6,14 @@ function SideNav() {
     const { navList, currentIndex, setCurrentIndex } = useNavigation()
 
     return (
-        <div className='flex flex-col w-64 h-full border-r border-contrast2'>
+        <div className='flex flex-col w-64 h-full border-r border-contrast'>
             <Link 
                 href='/' 
-                className='p-4 border-b border-contrast2 flex items-center gap-2 hover:text-primary transition-colors'
+                className='p-4 flex items-center gap-2 hover:text-primary transition-colors'
                 onClick={() => setCurrentIndex('/')}
             >
                 <Image src='/logo.svg' alt="Logo" width={40} height={40} />
-                Data-Kaappi
+                <strong>Datakaappi</strong>
             </Link>
             <div className='flex flex-col w-full mt-2'>
             {navList && navList.map((item) => (

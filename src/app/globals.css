@@ -4,19 +4,19 @@
 
 :root {
   --foreground: #171717;
-  --background: #ffffff;
-  --contrast: #dadada;
-  --contrast2: #b1b1b1;
+  --background: #e5e5e5;
+  --contrast: #c1c1c1;
   --navlink: #333333;
+  --secondary: #c1c1c1;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --foreground: #ffffff;
+    --foreground: #e5e5e5;
     --background: #171717;
-    --contrast: #242424;
-    --contrast2: #343434;
+    --contrast: #343434;
     --navlink: #999999;
+    --secondary: #343434;
   }
 }
 

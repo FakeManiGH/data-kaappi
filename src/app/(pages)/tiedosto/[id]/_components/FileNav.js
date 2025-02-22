@@ -62,7 +62,7 @@ function FileNav({ file, setFile }) {
 
                 {dropMenu && (
                     <div
-                        className="absolute z-10 right-0 w-full sm:w-56 divide-y divide-contrast2 rounded-lg overflow-hidden border border-contrast2 bg-background shadow-lg"
+                        className="absolute z-10 right-0 w-full sm:w-56 divide-y divide-contrast rounded-lg overflow-hidden border border-contrast bg-background shadow-lg"
                         role="menu"
                     >
                         <div className='bg-background shadow-lg shadow-black/50'>

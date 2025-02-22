@@ -26,11 +26,11 @@ function TopHeader() {
 
           <Link 
             href='/' 
-            className='flex items-center gap-2 md:hidden'
+            className='flex items-center gap-2 md:hidden font-bold'
             onClick={() => setCurrentIndex('/')}
           >
               <Image src='/logo.svg' alt="Logo" width={40} height={40} />
-              Data-Kaappi
+              Datakaappi
           </Link>
 
           <UserButton />
@@ -39,7 +39,7 @@ function TopHeader() {
           {dropdown && (
             <div
               id='dropdownMenu'
-              className="absolute start-0 w-full z-50 top-full shadow-md shadow-black/20 bg-background md:hidden overflow-hidden border border-t-0 border-contrast2"
+              className="absolute start-0 w-full z-50 top-full shadow-md shadow-black/20 bg-background md:hidden overflow-hidden border border-t-0 border-contrast"
               role="menu"
             >
               {navList && navList.map((item) => (

@@ -1,4 +1,4 @@
-# Data-Kaappi (file sharing app)
+# Datakaappi (file sharing app)
 
 This is a simple personal cloud and file sharing app.
 

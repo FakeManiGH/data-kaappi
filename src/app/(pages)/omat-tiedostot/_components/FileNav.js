@@ -88,18 +88,17 @@ function FileNav({ fileState, setFileState }) {
 
             <div>
                 <button 
-                    className='flex items-center gap-1 text-sm text-navlink hover:text-primary' 
+                    className='flex items-center gap-1 text-sm text-navlink hover:text-primary leading-[1.7]' 
                     role="button"
                     onClick={() => setDropMenu(!dropMenu)}
                 >   
-                    {fileState.filter && fileState.filter !== 'all' && <p className='text-green-600 dark:text-green-500 absolute top-[] left-0 text-sm'>{translateFilter(fileState.filter)}</p>}
                     <ListFilter size={20} className={fileState.filter !== 'all' ? 'text-green-600 dark:text-green-500' : 'text-navlink'} />
                     {translateFilter(fileState.filter)}
                 </button>
 
                 {dropMenu && (
                     <div
-                        className="absolute z-20 bottom-[-250px] end-0 sm:w-56 w-full pb-2 rounded-lg divide-y divide-contrast2 overflow-hidden border border-contrast2 bg-background shadow-lg shadow-black/25"
+                        className="absolute z-20 bottom-[-250px] end-0 sm:w-56 w-full pb-2 rounded-lg divide-y divide-contrast overflow-hidden border border-contrast bg-background shadow-lg shadow-black/25"
                         role="menu"
                     >
                         <div className='bg-background'>

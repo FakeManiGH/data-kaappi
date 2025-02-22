@@ -5,7 +5,7 @@ import "./globals.css";
 const outfit = Outfit({ subsets: ["latin"] });
 
 export const metadata = {
-  title: "Data-Kaappi",
+  title: "Datakaappi",
   description: "Tallenna, säilytä ja jaa tiedostoja helposti kaikilla laitteillasi.",
   image: "/logo.svg",
   keywords: ["tiedostot", "tallennus", "jako", "data", "kaappi"],

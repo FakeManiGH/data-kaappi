@@ -1,7 +1,7 @@
 "use client"
 import React, { useEffect, useState, use } from 'react'
 import Link from 'next/link'
-import { ArrowLeftSquare } from 'lucide-react'
+import { ArrowLeftSquare, Bold, LockKeyhole } from 'lucide-react'
 import FilePreview from './_components/FilePreview'
 import FileNav from './_components/FileNav'
 import PageLoading from '@/app/_components/_common/PageLoading'
@@ -37,6 +37,7 @@ function Page({ params }) {
     }, [id])
 
     const validatePassword = async (e) => {
+        setLoading(true)
         e.preventDefault()
         const password = e.target.password.value
         try {
@@ -49,9 +50,12 @@ function Page({ params }) {
 
             if (data.valid) {
                 setIsPasswordValid(true);
+                showAlert('Salasana hyväksytty', 'success');
             } else {
                 showAlert('Virheellinen salasana, yritä uudelleen', 'error');
             }
+
+            setLoading(false);
         } catch (error) {
             console.error('Error verifying password:', error);
         }
@@ -73,15 +77,15 @@ function Page({ params }) {
         </main>
     )
 
-    if (file && !isPasswordValid && (user?.id !== file.owner)) return (
+    if (file.password && !isPasswordValid && user?.id !== file.owner) return (
         <main>
             <Link href="/jaetut-tiedostot" onClick={() => setCurrentIndex('/jaetut-tiedostot')} className='flex items-center text-sm text-navlink space-x-2 gap-1 hover:text-primary'>
                 <ArrowLeftSquare size={24} />
                 Jaetut tiedostot
             </Link>
             <div className='flex flex-col items-center justify-center w-full mt-8'>
-                <div className='flex flex-col gap-4 max-w-2xl'>
-                    <h1 className='font-semibold text-xl md:text-2xl'><span className='font-bold text-2xl md:text-3xl text-primary'>{file.fileName}</span> | Salasana vaaditaan:</h1>
+                <div className='flex flex-col gap-4 shadow-md w-full max-w-2xl p-4 rounded-xl'>
+                    <h1 className='text-lg md:text-xl'>Tiedosto <span className='font-bold text-primary'>{file.fileName}</span> on suojattu salasanalla</h1>
                     <PasswordPrompt validatePassword={validatePassword} />
                 </div>
             </div>

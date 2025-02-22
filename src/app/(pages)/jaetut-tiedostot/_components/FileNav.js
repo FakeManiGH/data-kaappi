@@ -39,14 +39,7 @@ function FileNav({ fileState, setFileState }) {
 
     // Preference filter
     const addPreferenceFilter = (filter) => {
-        if (filter === 'all') {
-            setFileState(prevState => ({
-                ...prevState,
-                filteredFiles: [],
-                filter: 'all',
-                filtered: false,
-            }))
-        } else if (filter === 'password') {
+        if (filter === 'password') {
             const filesAfterFilter = fileState.files.filter((file) => file.password)
             setFileState(prevState => ({
                 ...prevState,
@@ -90,27 +83,26 @@ function FileNav({ fileState, setFileState }) {
     }
 
     return (
-        <div className='relative flex flex-wrap items-baseline justify-between mb-2 border-b border-contrast2'>
+        <div className='relative flex flex-wrap items-end justify-between pb-2'>
             <h1 className='text-2xl md:text-3xl'><strong>Jaetut tiedostot</strong></h1>
 
-            <div className="relative">
+            <div>
                 <button 
-                    className='flex items-center p-2 gap-1 text-navlink hover:text-primary' 
+                    className='flex items-center gap-1 text-sm text-navlink hover:text-primary leading-[1.7]' 
                     role="button"
                     onClick={() => setDropMenu(!dropMenu)}
                 >   
-                    {fileState.filter && fileState.filter !== 'all' && <p className='text-green-600 dark:text-green-500 absolute top-[-5px] left-2 text-sm'>{translateFilter(fileState.filter)}</p>}
                     <ListFilter size={20} className={fileState.filter !== 'all' ? 'text-green-600 dark:text-green-500' : 'text-navlink'} />
-                    Näkymät
+                    {translateFilter(fileState.filter)}
                 </button>
 
                 {dropMenu && (
                     <div
-                        className="absolute z-20 end-0 w-56 pb-2 rounded-t-none rounded-b-xl divide-y divide-contrast2 overflow-hidden border border-contrast2 bg-background shadow-lg shadow-black/25"
+                        className="absolute z-20 bottom-[-250px] end-0 sm:w-56 w-full pb-2 rounded-lg divide-y divide-contrast overflow-hidden border border-contrast bg-background shadow-lg shadow-black/25"
                         role="menu"
                     >
                         <div className='bg-background'>
-                            <strong className="block p-2 text-xs font-medium uppercase text-gray-400 dark:text-gray-600">
+                            <strong className="block p-2 text-xs font-medium uppercase text-gray-500 dark:text-gray-600">
                                 Tyyppi
                             </strong>
 
@@ -141,7 +133,7 @@ function FileNav({ fileState, setFileState }) {
                         </div>
 
                         <div className='bg-background'>
-                            <strong className="block p-2 text-xs font-medium uppercase text-gray-400 dark:text-gray-600">
+                            <strong className="block p-2 text-xs font-medium uppercase text-gray-500 dark:text-gray-600">
                                 Ominaisuus
                             </strong>
                             

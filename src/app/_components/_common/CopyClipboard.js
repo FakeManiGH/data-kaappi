@@ -14,7 +14,7 @@ function CopyClipboard({ message }) {
     <div>
         <div className="flex gap-2">
             <div className='flex text-navlink rounded-lg overflow-hidden w-full'>
-                <label htmlFor="copy-text" className='bg-contrast text-foreground font-bold p-2 px-3 border-r border-contrast2'>URL</label>
+                <label htmlFor="copy-text" className='bg-contrast text-foreground font-bold p-2 px-3 border-r border-contrast'>URL</label>
                 <input id="copy-text" type="text" className="p-2 px-3 w-full outline-none dark:bg-contrast dark:text-navlink focus:text-foreground" value={message} readOnly />
             </div>
             <button 
