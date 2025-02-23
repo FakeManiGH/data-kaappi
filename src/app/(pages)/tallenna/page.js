@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { getStorage, ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import { doc, setDoc } from "firebase/firestore";
 import { app, db } from '@/../firebaseConfig';
@@ -7,20 +7,21 @@ import UploadForm from './_components/UploadForm'
 import FilePreview from './_components/FilePreview';
 import { generateRandomString } from '@/utils/GenerateRandomString';
 import { useUser } from '@clerk/nextjs';
-import { useAlert } from '@/app/contexts/AlertContext';
 import { useNavigation } from '@/app/contexts/NavigationContext'
 import { formatDateToCollection } from '@/utils/DataTranslation';
-import { getUser, updateUserDocumentValue } from '@/app/file-requests/api';
 
 
 function Page() {
   const { user } = useUser();
-  const { navigatePage } = useNavigation();
-  const { showAlert } = useAlert();
+  const { setCurrentIndex } = useNavigation();
   const [files, setFiles] = useState([]);
   const [fileErrors, setFileErrors] = useState([]);
   const [uploadProgress, setUploadProgress] = useState([]);
   const storage = getStorage(app);
+  
+  useEffect(() => {
+    setCurrentIndex('/tallenna');
+  }, [setCurrentIndex]);
 
   // Upload file to storage
   const uploadFile = async (file) => {
@@ -64,7 +65,6 @@ function Page() {
   return (
     <main className='mt-4'>
       <h1 className='text-2xl md:text-3xl'><strong>Tallenna tiedostoja</strong></h1>
-      <p className='text-sm'>Tallenna tiedostoja Datakaappiisi.</p>
       <UploadForm 
         uploadFile={uploadFile} 
         files={files} 

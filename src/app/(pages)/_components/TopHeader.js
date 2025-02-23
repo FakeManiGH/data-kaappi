@@ -8,14 +8,14 @@ import { useNavigation } from '@/app/contexts/NavigationContext'
 
 function TopHeader() {
   const [dropdown, setDropdown] = useState(false)
-  const { navList, currentIndex, setCurrentIndex } = useNavigation()
+  const { navList, currentIndex } = useNavigation()
 
   const handleDropdown = () => {
     setDropdown(!dropdown)
   }
 
   return (
-    <div className='relative z-50 bg-background md:bg-transparent'>
+    <div className='relative z-50 bg-gradient-to-b from-contrast to-background md:from-background'>
       <div className='flex justify-between md:justify-end p-4 py-2 pt-4 w-full items-center'>
           <AlignJustify
             id='dropdownBtn'
@@ -27,7 +27,6 @@ function TopHeader() {
           <Link 
             href='/' 
             className='flex items-center gap-2 md:hidden font-bold'
-            onClick={() => setCurrentIndex('/')}
           >
               <Image src='/logo.svg' alt="Logo" width={40} height={40} />
               Datakaappi
@@ -47,7 +46,7 @@ function TopHeader() {
                   href={item.path}
                   key={item.id}
                   className={`flex items-center text-sm w-full gap-2 p-4 hover:text-primary ${currentIndex === item.path ? 'text-primary' : 'text-navlink'}`}
-                  onClick={() => { setDropdown(false); setCurrentIndex(item.path); }}
+                  onClick={() => setDropdown(false)}
                 >
                   <item.icon size='24' />
                   <p>{item.name}</p>

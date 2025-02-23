@@ -57,7 +57,7 @@ function PasswordForm({ file, setFile, setPasswordPopup }) {
                         name="password"
                         defaultValue={password}
                         type={showPassword ? 'text' : 'password'}
-                        className="p-2 px-3 w-full outline-none dark:bg-contrast dark:text-navlink focus:text-foreground rounded-lg pe-12"
+                        className="text-sm p-2.5 px-3 w-full outline-none bg-contrast dark:bg-background dark:text-navlink focus:text-foreground rounded-lg pe-12"
                         placeholder="Kirjoita salasana"
                     />
                     <span className="flex items-center absolute inset-y-0 end-0 px-4">
@@ -77,7 +77,7 @@ function PasswordForm({ file, setFile, setPasswordPopup }) {
                     {password && (
                         <button 
                             type='button'
-                            className='text-red-500 hover:text-red-700'
+                            className='text-sm text-red-500 hover:text-red-700'
                             onClick={removePassword}
                         >Poista salasana</button>
                     )}

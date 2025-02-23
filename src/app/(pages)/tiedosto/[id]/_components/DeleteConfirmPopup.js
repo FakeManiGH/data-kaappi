@@ -34,7 +34,7 @@ function DeleteConfirmPopup({ file, setDeletePopup }) {
 
     return (
         <div id="overlay" tabIndex="-1" aria-hidden="true" className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center">
-            <div className="relative flex flex-col justify-between max-w-2xl w-full h-[calc(100%-2rem)] max-h-[calc(100%-2rem)] sm:h-fit bg-background rounded-xl overflow-y-auto m-4">
+            <div className="relative flex flex-col justify-between max-w-2xl w-full h-[calc(100%-2rem)] max-h-[calc(100%-2rem)] sm:h-fit bg-background dark:bg-contrast rounded-xl overflow-y-auto m-4">
 
                 <div className="flex items-center justify-between p-3 px-4">
                     <Trash2 size={24} />
@@ -43,20 +43,20 @@ function DeleteConfirmPopup({ file, setDeletePopup }) {
                         className="p-1 text-white bg-red-500 hover:bg-red-600 rounded-full"
                         onClick={() => setDeletePopup(false)}
                     >
-                        <X size={24} />
+                        <X size={20} />
                     </button>
                 </div>
 
                 <div className="flex flex-col items-center gap-2 p-4">
                     <p>Haluatko varmasti poistaa tiedoston?</p>
-                    <p className='text-red-600 dark:text-red-500'>
+                    <p className='text-sm text-red-600 dark:text-red-500'>
                         {file.fileName}
                     </p>
                 </div>
 
                 <div className="flex items-center justify-center gap-2 p-4">
                     <button 
-                        className='block p-2 px-3 bg-secondary text-white rounded-full hover:bg-secondary/90'
+                        className='block p-2 px-3 bg-secondary rounded-full hover:bg-secondary/90'
                         onClick={() => setDeletePopup(false)}
                     >
                         Peruuta

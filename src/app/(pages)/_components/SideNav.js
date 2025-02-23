@@ -3,14 +3,13 @@ import Link from 'next/link'
 import { useNavigation } from '@/app/contexts/NavigationContext'
 
 function SideNav() {
-    const { navList, currentIndex, setCurrentIndex } = useNavigation()
+    const { navList, currentIndex } = useNavigation()
 
     return (
-        <div className='flex flex-col w-64 h-full'>
+        <div className='flex flex-col w-64 h-full bg-gradient-to-r from-contrast to-background'>
             <Link 
                 href='/' 
                 className='p-4 flex items-center gap-2 hover:text-primary transition-colors'
-                onClick={() => setCurrentIndex('/')}
             >
                 <Image src='/logo.svg' alt="Logo" width={40} height={40} />
                 <strong>Datakaappi</strong>
@@ -21,7 +20,6 @@ function SideNav() {
                     href={item.path} 
                     key={item.id} 
                     className={`flex items-center text-sm gap-2 p-4 px-5 w-full hover:text-primary ${currentIndex === item.path ? 'text-primary' : 'text-navlink'}`}
-                    onClick={() => setCurrentIndex(item.path)}
                 >     
                     <item.icon />
                     <p>{item.name}</p>

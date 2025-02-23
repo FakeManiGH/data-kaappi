@@ -1,16 +1,19 @@
 "use client"
-import { createUserDocument, getUser } from '@/app/(pages)/api/api'
+import { createUserDocument, getUser } from '@/app/file-requests/api'
 import React, { useEffect, useState} from 'react'
 import { useUser } from '@clerk/nextjs'
 import PageLoading from '@/app/_components/_common/PageLoading'
 import { useNavigation } from '@/app/contexts/NavigationContext'
+import { CloudUpload, Plus } from 'lucide-react'
+import Link from 'next/link'
+import NavigationGrid from '@/app/_components/_common/NavigationGrid'
 
 function page() {
     const { user, isSignedIn, isLoaded } = useUser()
     const [loading, setLoading] = useState(true)
-    const { navigatePage } = useNavigation()
+    const { navigatePage, setCurrentIndex } = useNavigation()
 
-    useEffect(() => {
+    /* useEffect(() => {
         const handleNewUser = async () => {
             if (isSignedIn && isLoaded) {
                 setLoading(true)
@@ -22,17 +25,21 @@ function page() {
                         navigatePage('/kojelauta')
                     }
                 })
+            } else {
+                navigatePage('/sign-in')
             }
         }
+        setCurrentIndex('/tervetuloa')
         handleNewUser()
-    }, [isLoaded, isSignedIn, user, navigatePage, setLoading])
+    }, [isLoaded, isSignedIn, user, navigatePage, setLoading, setCurrentIndex]) */
 
     if (loading) return <PageLoading />
 
     return (
         <main>
-            <h1 className='text-2xl md:text-3xl'><strong>Hei, {user.fullName}</strong></h1>
-            <p>Tervetuloa käyttämään <strong className='text-primary'>Kuva-Kaappi</strong> pilvipalvelua!</p>
+            <p className='md:text-lg'>Hei, {user?.fullName}</p>
+            <h1 className="text-2xl font-extrabold sm:text-4xl">Tervetuloa käyttämään <strong className='text-primary'>Datakaappi</strong> pilvipalvelua!</h1>
+            <NavigationGrid />
         </main>
     )
 }

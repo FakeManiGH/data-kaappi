@@ -1,7 +1,7 @@
 "use client"
 import React, { useEffect, useState, use } from 'react'
 import Link from 'next/link'
-import { ArrowLeftSquare, Bold, LockKeyhole } from 'lucide-react'
+import { ArrowLeftSquare, Bold, ChevronRight, LockKeyhole } from 'lucide-react'
 import FilePreview from './_components/FilePreview'
 import FileNav from './_components/FileNav'
 import PageLoading from '@/app/_components/_common/PageLoading'
@@ -10,6 +10,7 @@ import { getFileInfo } from '@/app/file-requests/api'
 import { useAlert } from '@/app/contexts/AlertContext'
 import { useUser } from '@clerk/nextjs'
 import PasswordPrompt from './_components/PasswordPrompt'
+import { set } from 'date-fns'
 
 function Page({ params }) {
     const { id } = use(params)
@@ -31,10 +32,10 @@ function Page({ params }) {
                 setLoading(false)
             } 
         }
-
+        setCurrentIndex(`/tiedosto/${id}`)
         if (isLoaded && !user) navigatePage('/sign-in')
         id && getFile(id)
-    }, [id])
+    }, [id, isLoaded, user, setCurrentIndex, navigatePage])
 
     const validatePassword = async (e) => {
         setLoading(true)
@@ -42,7 +43,7 @@ function Page({ params }) {
         const password = e.target.password.value
 
         if (!password) {
-            showAlert('Anna tiedoston salasana.', 'error')
+            showAlert('Kirjoita ensin salasana.', 'error')
             setLoading(false)
             return
         }
@@ -71,7 +72,7 @@ function Page({ params }) {
 
     if (!file || (file && !file.shared && user?.id !== file.userID)) return (
         <main>
-            <Link href="/omat-tiedostot" onClick={() => setCurrentIndex('/omat-tiedostot')} className='flex items-center text-sm text-navlink space-x-2 gap-1 hover:text-primary'>
+            <Link href="/omat-tiedostot" className='flex items-center text-sm text-navlink space-x-2 gap-1 hover:text-primary'>
                 <ArrowLeftSquare size={24} />
                 Palaa tiedostoihin
             </Link>
@@ -85,13 +86,13 @@ function Page({ params }) {
 
     if (file.password && !isPasswordValid && user?.id !== file.userID) return (
         <main>
-            <Link href="/jaetut-tiedostot" onClick={() => setCurrentIndex('/jaetut-tiedostot')} className='flex items-center text-sm text-navlink space-x-2 gap-1 hover:text-primary'>
+            <Link href="/jaetut-tiedostot" className='flex items-center text-sm text-navlink space-x-2 gap-1 hover:text-primary'>
                 <ArrowLeftSquare size={24} />
                 Jaetut tiedostot
             </Link>
             <div className='flex flex-col items-center justify-center w-full mt-8'>
-                <div className='flex flex-col gap-4 w-full max-w-2xl'>
-                    <h1 className='text-lg md:text-xl'>Tiedosto <span className='font-bold text-primary'>{file.fileName}</span> on suojattu salasanalla</h1>
+                <div className='flex flex-col gap-4 w-full max-w-xl'>
+                    <h1 className='text-2xl md:text-3xl'>Tiedosto <span className='font-bold text-primary'>{file.fileName}</span> on suojattu salasanalla</h1>
                     <PasswordPrompt validatePassword={validatePassword} />
                 </div>
             </div>
@@ -104,7 +105,7 @@ function Page({ params }) {
 
             <div className='flex flex-col gap-1'>
                 <h1 className='text-xl md:text-3xl'><strong>{file.fileName}</strong></h1>
-                <p className='text-navlink'>{file.userName}</p>
+                <p className='flex gap-1 items-center text-sm'><ChevronRight size={20} /> {file.uploadedBy}</p>
             </div>
 
             <FilePreview file={file} setFile={setFile} />

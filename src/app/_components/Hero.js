@@ -18,14 +18,14 @@ function Hero() {
 
                 <div className="flex flex-col items-center gap-3 w-full">
                     <a
-                        className="flex items-center justify-center w-full sm:w-72 rounded-full bg-primary text-white px-12 py-3 text-md md:text-xl font-semibold hover:bg-primary/90 active:bg-primary/90"
-                        href="/tallenna"
+                        className="flex items-center justify-center w-72 max-w-full rounded-full bg-primary text-white px-12 py-3 text-md md:text-xl font-semibold hover:bg-primary/90 active:bg-primary/90"
+                        href="/sign-in"
                     >
                         Aloita tästä
                     </a>
 
                     <a
-                        className="flex items-center justify-center w-full sm:w-64 rounded-full bg-secondary text-white px-12 py-3 text-sm font-normal hover:bg-secondary/90 active:bg-secondary/90"
+                        className="flex items-center justify-center w-64 max-w-full rounded-full bg-secondary text-foreground px-12 py-3 text-sm font-normal hover:bg-secondary/50 active:bg-secondary/90"
                         href="/tietoa"
                     >
                         Lue lisää

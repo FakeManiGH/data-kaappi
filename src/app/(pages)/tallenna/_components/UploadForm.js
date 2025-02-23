@@ -62,6 +62,7 @@ function UploadForm({ uploadFile, files, setFiles, fileErrors, setFileErrors, se
   // Upload files to Firebase Storage
   const uploadFiles = async (files) => {
     const userDoc = await getUser(user.id);
+    console.log(userDoc);
     
     if (!userDoc) {
       showAlert('Käyttäjää ei löytynyt.', 'error');

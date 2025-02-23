@@ -126,7 +126,7 @@ function FileContainer({ fileState, setFileState }) {
                     <Link 
                         className='flex flex-col gap-2 object-contain hover:text-primary'
                         href={`/tiedosto/${file.fileID}`}
-                        onClick={(e) => {e.stopPropagation(), setCurrentIndex(`/tiedosto/${file.fileID}`)}}
+                        onClick={(e) => e.stopPropagation()}
                     >
                         {getCardPreview({ file })}
                         <p className="text-sm font-semibold hover:text-primary whitespace-wrap">
@@ -159,7 +159,7 @@ function FileContainer({ fileState, setFileState }) {
                         <Link 
                             href={`/tiedosto/${file.fileID}`} 
                             className="text-sm font-bold hover:text-primary truncate-2-row text-ellipsis"
-                            onClick={(e) => {e.stopPropagation(), setCurrentIndex(`/tiedosto/${file.fileID}`)}}
+                            onClick={(e) => e.stopPropagation()}
                         >
                             {file.fileName}
                         </Link>

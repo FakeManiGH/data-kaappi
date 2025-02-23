@@ -43,7 +43,7 @@ function FileNav({ file, setFile }) {
 
     return (
         <div className='relative flex flex-wrap items-baseline justify-between mb-2'>
-            <Link href="/omat-tiedostot" onClick={() => setCurrentIndex('/omat-tiedostot')} className='flex items-center py-2 text-navlink text-sm space-x-2 gap-1 hover:text-primary'>
+            <Link href="/omat-tiedostot" className='flex items-center py-2 text-navlink text-sm space-x-2 gap-1 hover:text-primary'>
                 <ArrowLeftSquare size={20} />
                 Takaisin tiedostoihin
             </Link>

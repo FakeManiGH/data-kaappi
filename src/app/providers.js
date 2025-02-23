@@ -26,6 +26,7 @@ export function Providers({ children }) {
   const bgColor = theme === dark ? "#171717" : "#ffffff";
 
   return (
+    <AlertProvider>
     <ClerkProvider 
       signInFallbackRedirectUrl='/kojelauta'
       signUpFallbackRedirectUrl='/tervetuloa'
@@ -51,10 +52,10 @@ export function Providers({ children }) {
       }
     }>
     <NavigationProvider>
-    <AlertProvider>
       {children}
-    </AlertProvider>
+    
     </NavigationProvider>
     </ClerkProvider>
+    </AlertProvider>
   )
 }

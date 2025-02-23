@@ -10,9 +10,9 @@ const Alert = () => {
   return (
     <div className={`fixed z-50 box-border bg-background inset-x-4 md:inset-x-auto md:right-4 bottom-4 
       md:w-fit flex items-center gap-4 p-6 shadow-black/25 shadow-lg text-foreground border-t-8
-       ${alert.type === 'error' ? 'border-red-500' : 'border-green-500'}` 
+       ${alert.type === 'error' ? 'border-red-500' : 'border-success'}` 
     }>
-      {alert.type === 'success' && <CircleCheck className='text-green-500' size={24} />}
+      {alert.type === 'success' && <CircleCheck className='text-success' size={24} />}
       {alert.type === 'error' && <CircleAlert className='text-red-500' size={24} />}
       {alert.message}
     </div>

@@ -3,25 +3,26 @@ import SideNav from './_components/SideNav';
 import TopHeader from './_components/TopHeader';
 import Footer from './_components/Footer';
 import Alert from '../_components/_common/Alert';
-import React, { Suspense } from 'react';
+import React, { useEffect, Suspense } from 'react';
 import PageLoading from '../_components/_common/PageLoading';
 import { useUser } from '@clerk/nextjs';
 import { useAlert } from '../contexts/AlertContext';
 import { useNavigation } from '../contexts/NavigationContext';
 
-function layout({ children }) {
+function Layout({ children }) {
   const { user, isLoaded } = useUser();
   const { showAlert } = useAlert();
   const { navigatePage } = useNavigation();
 
+  useEffect(() => {
+    if (isLoaded && !user) {
+      showAlert('error', 'Palveluun pääsy vaatii kirjautumisen');
+      navigatePage('/sign-in');
+    }
+  }, [isLoaded, user, showAlert, navigatePage]);
+
   // Show loading screen while user is being loaded
   if (!isLoaded) return <PageLoading />
-
-  // Redirect if user is not logged in
-  if (isLoaded && !user) {
-    showAlert('error', 'Palveluun pääsy vaatii kirjautumisen');
-    navigatePage('/sign-in');
-  }
 
   return (
     <>
@@ -40,4 +41,4 @@ function layout({ children }) {
   )
 }
 
-export default layout
+export default Layout;

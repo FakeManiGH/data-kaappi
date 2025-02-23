@@ -8,12 +8,12 @@ import { AlignJustify } from 'lucide-react'
 
 function Header() {
     const [dropdown, setDropdown] = useState(false)
-    const { isSignedIn, user, isLoaded } = useUser()
-    const { navList, setCurrentIndex } = useNavigation()
+    const { isSignedIn, isLoaded } = useUser()
+    const { navList } = useNavigation()
 
     return (
     <header>
-        <div className="relative flex items-center justify-between p-4 max-w-7xl mx-auto">
+        <div className="relative flex items-center justify-between p-4 w-full mx-auto bg-gradient-to-b from-contrast to-background">
             <div className="flex items-center gap-2">
                 <Image src='/logo.svg' alt="Logo" width={40} height={40} />
                 <p className='font-bold'>Datakaappi</p>
@@ -26,8 +26,7 @@ function Header() {
                             <li key={item.id}>
                                 <Link 
                                     href={item.path} 
-                                    className="flex items-center gap-2 text-sm hover:text-primary"
-                                    onClick={() => setCurrentIndex(item.path)}
+                                    className="flex items-center gap-2 text-sm text-navlink hover:text-primary"
                                 >
                                     <item.icon size={20} /> 
                                     {item.name}
@@ -40,15 +39,14 @@ function Header() {
                 <div className="flex items-center gap-4">
                     {isLoaded && isSignedIn ? (
                         <Link
-                            className="rounded-full bg-primary px-5 py-3 text-sm text-white shadow hover:bg-primary/75"
+                            className="rounded-full bg-primary px-5 py-3 text-sm text-white shadow hover:bg-primary/90"
                             href="/kojelauta"
-                            onClick={() => setCurrentIndex('/kojelauta')}
                         >
                             Kojelauta
                         </Link>
                     ) : (
                         <Link
-                            className="rounded-full bg-primary px-5 py-3 text-sm text-white shadow hover:bg-primary/75"
+                            className="rounded-full bg-primary px-5 py-3 text-sm text-white shadow hover:bg-primary/90"
                             href="/sign-in"
                         >
                             Kirjaudu
@@ -72,7 +70,7 @@ function Header() {
                                     href={item.path}
                                     key={item.id}
                                     className="flex items-center text-sm w-full gap-2 py-4 px-8 hover:text-primary"
-                                    onClick={() => {setDropdown(false), setCurrentIndex(item.path)}}
+                                    onClick={() => setDropdown(false)}
                                 >
                                     <item.icon size='20' />
                                     <p>{item.name}</p>
