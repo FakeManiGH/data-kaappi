@@ -1,7 +1,7 @@
 import { DownloadCloud } from 'lucide-react'
 import React, { useState} from 'react'
 
-function DownloadBtn({ url, fileName }) {
+function DownloadBtn({ url, fileName, downloadName }) {
     const [fetching, setFetching] = useState(false)
     const [error, setError] = useState(false)
 

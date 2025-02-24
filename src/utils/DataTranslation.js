@@ -21,6 +21,10 @@ export const formatDateFromCollection = (dateString) => {
 }
 
 export const cleanDataType = (type) => {
+    if (type.includes('word')) return 'WordDoc';
+    if (type.includes('presentationml')) return 'PowerPoint';
+    if (type.includes('spreadsheetml')) return 'Excel';
+    if (type.includes('pdf')) return 'PDF';
     return type.split('/')[1].toUpperCase();
 }
 

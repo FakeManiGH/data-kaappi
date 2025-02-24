@@ -45,7 +45,7 @@ function Page() {
     <main>
       <FileNav fileState={fileState} setFileState={setFileState} />
       <SearchBar fileState={fileState} setFileState={setFileState} />
-      <FileContainer fileState={fileState} setFileState={setFileState} />
+      <FileContainer fileState={fileState} />
     </main>
   )
 }

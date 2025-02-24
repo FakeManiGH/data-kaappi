@@ -1,6 +1,6 @@
+"use server"
 import { getStorage, ref, deleteObject } from "firebase/storage";
-import { doc, setDoc, deleteDoc, getDoc, updateDoc } from "firebase/firestore";
-import { collection, query, where, getDocs } from "firebase/firestore";
+import { doc, setDoc, deleteDoc, getDoc, updateDoc, orderBy, collection, query, where, getDocs, limit } from "firebase/firestore";
 import { db } from '@/../firebaseConfig';
 import { formatDateToCollection } from "@/utils/DataTranslation";
 import { set } from "date-fns";
@@ -76,9 +76,10 @@ export const getFileInfo = async (docID) => {
 // Get files
 export const getFiles = async (userID) => {
     try {
-        const q = query(collection(db, "files"), where("userID", "==", userID));
+        const q = query(collection(db, "files"), where("userID", "==", userID), orderBy("uploadedAt", "desc"));
         const querySnapshot = await getDocs(q);
         const files = querySnapshot.docs.map(doc => doc.data())
+        console.log(files)
         return files
     } catch (error) {
         console.error("Error fetching files: ", error)

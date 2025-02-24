@@ -75,8 +75,6 @@ function FileNav({ fileState, setFileState }) {
                 return 'Dokumentti'
             case 'password':
                 return 'Salasana'
-            case 'shared':
-                return 'Jaettu'
             default:
                 return 'Kaikki'
         }
@@ -98,7 +96,7 @@ function FileNav({ fileState, setFileState }) {
 
                 {dropMenu && (
                     <div
-                        className="absolute z-20 bottom-[-250px] end-0 sm:w-56 w-full pb-2 rounded-lg divide-y divide-contrast overflow-hidden border border-contrast bg-background shadow-lg shadow-black/25"
+                        className="absolute z-20 bottom-[-215px] end-0 w-full sm:max-w-64 pb-2 rounded-lg divide-y divide-contrast overflow-hidden border border-contrast bg-background shadow-lg shadow-black/25"
                         role="menu"
                     >
                         <div className='bg-background'>
@@ -144,14 +142,6 @@ function FileNav({ fileState, setFileState }) {
                             >
                                 <LockKeyhole size={16} />
                                 Salasana
-                            </button>
-                            <button
-                                className={`flex w-full items-center gap-2 px-4 py-2 text-sm hover:text-green-600 ${fileState.filter === 'shared' ? 'text-green-600' : 'text-navlink'}`} 
-                                role="menuitem"
-                                onClick={() => addPreferenceFilter('shared')}
-                            >   
-                                <Share2 size={16} />
-                                Jaettu
                             </button>
                         </div>
                     </div>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { getFileIcon } from '@/utils/GetFileIcon'
-import { CopyCheckIcon, Grid, List, LockKeyhole, LucideSquareCheckBig, Share2, Trash, X } from 'lucide-react'
+import { Copy, CopyCheckIcon, Grid, List, LockKeyhole, LucideSquareCheckBig, Share2, Trash, X } from 'lucide-react'
 import Link from 'next/link'
 import { getCardPreview } from '@/utils/FilePreview'
 import { useAlert } from '@/app/contexts/AlertContext'
@@ -12,7 +12,6 @@ import DeleteConfirmPopup from './DeleteConfirmPopup'
 function FileContainer({ fileState, setFileState }) {
     const [view, setView] = useState('grid')
     const [deletePopup, setDeletePopup] = useState(false)
-    const { setCurrentIndex } = useNavigation()
     const { showAlert } = useAlert()
 
     // Determine which files to display
@@ -58,15 +57,25 @@ function FileContainer({ fileState, setFileState }) {
 
     return (
         <>
-        <nav className={`flex items-center justify-between gap-4 py-2 z-10 ${fileState.selectedFiles.length > 0 && 'sticky top-0 bg-background'}`}>
+        <nav className={`flex items-center flex-wrap justify-between gap-4 py-2 z-10 ${fileState.selectedFiles.length > 0 && 'sticky top-0 bg-background'}`}>
             <div className='flex items-center gap-1'>
-                <button className={`p-2 border border-contrast bg-background rounded-lg ${view === 'grid' && 'bg-primary text-white border-primary'}`} onClick={() => setView('grid')}><Grid size={20} /></button>
-                <button className={`p-2 border border-contrast bg-background rounded-lg ${view === 'list' && 'bg-primary text-white border-primary'}` } onClick={() => setView('list')}><List size={20} /></button>
+                <button title='Ruudukko' className={`p-2 border border-contrast bg-background rounded-lg ${view === 'grid' && 'bg-primary text-white border-primary'}`} onClick={() => setView('grid')}><Grid size={20} /></button>
+                <button title='Lista' className={`p-2 border border-contrast bg-background rounded-lg ${view === 'list' && 'bg-primary text-white border-primary'}` } onClick={() => setView('list')}><List size={20} /></button>
                 <button 
+                    title='Valitse tiedostoja'
                     className={`p-2 border border-contrast bg-background rounded-lg ${fileState.selecting && 'bg-primary text-white border-primary'}` } 
                     onClick={() => setFileState(prevState => ({...prevState, selecting: !prevState.selecting, selectedFiles: prevState.selecting ? [] : prevState.selectedFiles}))}>
-                        <CopyCheckIcon size={20} />
+                        <Copy size={20} />
                 </button>
+                {fileState.selecting && (
+                    <button
+                        title='Valitse kaikki'
+                        className={`p-2 border border-contrast bg-background rounded-lg ${fileState.selectedFiles.length === displayFiles.length && fileState.selectedFiles.length > 0 && 'bg-primary text-white border-primary'}`}
+                        onClick={() => setFileState(prevState => ({...prevState, selectedFiles: prevState.selectedFiles.length === displayFiles.length ? [] : displayFiles}))
+                    }>
+                        <CopyCheckIcon size={20} />
+                    </button>
+                )}
             </div>
 
             {fileState.selectedFiles.length > 0 && 
@@ -96,23 +105,23 @@ function FileContainer({ fileState, setFileState }) {
 
         {/* Grid view */}
         {view === 'grid' && displayFiles.length > 0 &&
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5 xl:grid-cols-7">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 xl:grid-cols-8 gap-2 px-1">
 
             {displayFiles.map((file) => (
                 <div 
                     key={file.fileID} 
-                    className={`relative flex flex-col gap-2 group p-2 bg-background overflow-hidden rounded-lg border hover:shadow-md 
+                    className={`relative flex flex-col gap-2 group p-2 aspect-[2/3] bg-background overflow-hidden rounded-lg border hover:shadow-md 
                         ${fileState.selectedFiles.includes(file) 
                             ? 'border-primary hover:border-primary shadow-md' 
                             : 'border-transparent hover:border-contrast'
                         }`}
                 >   
-                    <div className={`absolute flex flex-col items-center bg-background rounded-lg top-0 left-0 gap-1 ${file.shared || file.password ? 'p-2' : 'p-0'}`}>
+                    <div className={`absolute flex flex-col items-center bg-background rounded-lg top-0 left-0 gap-1 ${file.shared || file.password ? 'p-1' : 'p-0'}`}>
                         {file.shared && <span title='Jaettu' className='text-xs text-success'><Share2 size={18} /></span>}
                         {file.password && <span title='Salasana suojattu' className='text-xs text-success'><LockKeyhole size={18} /></span>}
                     </div>
 
-                    <div className={`absolute group-hover:flex top-0 right-0 p-2 bg-background rounded-lg ${fileState.selectedFiles.includes(file) || fileState.selecting ? 'flex' : 'hidden'}`}>
+                    <div className={`absolute group-hover:flex top-0 right-0 p-1 bg-background rounded-md ${fileState.selectedFiles.includes(file) || fileState.selecting ? 'flex' : 'hidden'}`}>
                         <label htmlFor="file" className="sr-only">Valitse tiedosto</label>
                         <input 
                             type="checkbox" 
@@ -124,12 +133,14 @@ function FileContainer({ fileState, setFileState }) {
                     </div>
 
                     <Link 
-                        className='flex flex-col gap-2 object-contain hover:text-primary'
+                        className='flex flex-col gap-1 h-full justify-between hover:text-primary'
                         href={`/tiedosto/${file.fileID}`}
                         onClick={(e) => e.stopPropagation()}
-                    >
-                        {getCardPreview({ file })}
-                        <p className="text-sm font-semibold hover:text-primary whitespace-wrap">
+                    >   
+                        <div className='flex object-cover h-full'>
+                            {getCardPreview({ file })}
+                        </div>    
+                        <p className="text-sm text-center font-semibold hover:text-primary">
                             {file.fileName}
                         </p>
                     </Link>
