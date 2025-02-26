@@ -5,12 +5,14 @@ import FileContainer from './_components/FileContainer'
 import { useUser } from '@clerk/nextjs'
 import { getFiles } from '@/app/file-requests/api'
 import { useNavigation } from '@/app/contexts/NavigationContext'
+import { useAlert } from '@/app/contexts/AlertContext'
 import PageLoading from '@/app/_components/_common/PageLoading'
 import SearchBar from './_components/SearchBar'
 
 function Page() {
   const { setCurrentIndex } = useNavigation()
   const { user, isLoaded } = useUser()
+  const { showAlert } = useAlert()
   const [fileState, setFileState] = useState({
     files: [],
     filteredFiles: [],
@@ -26,13 +28,18 @@ function Page() {
   useEffect(() => {
     const fetchFiles = async () => {
       if (isLoaded && user) {
-        const userFiles = await getFiles(user.id)
-        setFileState(prevState => ({
-          ...prevState,
-          files: userFiles,
-          filteredFiles: userFiles,
-          loading: false,
-        }))
+        try {
+          const userFiles = await getFiles(user.id)
+          setFileState(prevState => ({
+            ...prevState,
+            files: userFiles,
+            filteredFiles: userFiles,
+            loading: false,
+          }))
+        } catch (error) {
+          showAlert('Tiedostojen hakeminen epäonnistui. Yritä uudelleen.', 'error')
+          setFileState(prevState => ({ ...prevState, loading: false }))
+        }
       }
     }
     setCurrentIndex('/omat-tiedostot')

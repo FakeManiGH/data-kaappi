@@ -90,7 +90,7 @@ function FileNav({ fileState, setFileState }) {
                     role="button"
                     onClick={() => setDropMenu(!dropMenu)}
                 >   
-                    <ListFilter size={20} className={fileState.filter !== 'all' ? 'text-green-600 dark:text-green-500' : 'text-navlink'} />
+                    <ListFilter size={24} className={fileState.filter !== 'all' ? 'text-green-600 dark:text-green-500' : 'text-primary'} />
                     {translateFilter(fileState.filter)}
                 </button>
 
@@ -105,7 +105,7 @@ function FileNav({ fileState, setFileState }) {
                             </strong>
 
                             <button 
-                                className={`flex w-full items-center gap-2 px-4 py-2 text-sm hover:text-green-600 ${fileState.filter === 'all' ? 'text-green-600' : 'text-navlink'}`} 
+                                className={`flex w-full items-center gap-2 px-4 py-2 text-sm hover:text-primary ${fileState.filter === 'all' ? 'text-primary' : 'text-navlink'}`} 
                                 role="menuitem"
                                 onClick={() => addTypeFilter('all')}
                             >

@@ -25,7 +25,7 @@ function TopHeader() {
   }, [dropdownRef])
 
   return (
-    <header className='relative flex md:justify-end items-center justify-between gap-2 p-4 z-50 bg-gradient-to-b from-contrast to-background md:from-background'>
+    <header className='relative flex md:justify-end items-center justify-between gap-2 p-4 z-50 bg-background'>
       <div className='md:hidden' ref={dropdownRef}>
         <button
           id='dropdownBtn'

@@ -67,7 +67,11 @@ export const getFileInfo = async (docID) => {
     try {
         const docRef = doc(db, 'files', docID)
         const docSnap = await getDoc(docRef)
-        return docSnap.data()
+        const data = docSnap.data()
+        return {
+            ...data,
+            uploadedAt: data.uploadedAt.toDate()
+        }
     } catch (error) {
         console.error("Error fetching file: ", error)
     }
@@ -78,11 +82,16 @@ export const getFiles = async (userID) => {
     try {
         const q = query(collection(db, "files"), where("userID", "==", userID), orderBy("uploadedAt", "desc"));
         const querySnapshot = await getDocs(q);
-        const files = querySnapshot.docs.map(doc => doc.data())
-        console.log(files)
-        return files
+        const files = querySnapshot.docs.map(doc => {
+            const data = doc.data();
+            return {
+                ...data,
+                uploadedAt: data.uploadedAt.toDate() // Convert Firestore timestamp to JavaScript Date
+            };
+        });
+        return files;
     } catch (error) {
-        console.error("Error fetching files: ", error)
+        console.error("Error fetching files: ", error);
     }
 }
 
@@ -91,7 +100,13 @@ export const getSharedFiles = async () => {
     try {
         const q = query(collection(db, "files"), where("shared", "==", true));
         const querySnapshot = await getDocs(q);
-        const files = querySnapshot.docs.map(doc => doc.data())
+        const files = querySnapshot.docs.map(doc => {
+            const data = doc.data()
+            return {
+                ...data,
+                uploadedAt: data.uploadedAt.toDate() // Convert Firestore timestamp to JavaScript Date
+            }
+        })
         return files
     } catch (error) {
         console.error("Error fetching files: ", error)

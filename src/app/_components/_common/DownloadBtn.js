@@ -27,7 +27,7 @@ function DownloadBtn({ url, fileName, downloadName }) {
     return (
         <button 
             disabled={fetching}
-            className='flex items-center gap-2 justify-center whitespace-nowrap text-white w-[30%] min-w-fit bg-primary rounded-full p-2 px-4 hover:bg-primary/90'
+            className='flex items-center gap-2 justify-center whitespace-nowrap text-sm text-white w-[30%] min-w-fit bg-primary rounded-full p-2.5 px-4 hover:bg-primary/90'
             onClick={downloadFile}
         >
             <DownloadCloud size={18} />

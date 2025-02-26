@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect } from 'react';
 import { getStorage, ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
-import { doc, setDoc } from "firebase/firestore";
+import { doc, setDoc, Timestamp } from "firebase/firestore";
 import { app, db } from '@/../firebaseConfig';
 import UploadForm from './_components/UploadForm'
 import FilePreview from './_components/FilePreview';
@@ -39,18 +39,18 @@ function Page() {
       const downloadURL = await getDownloadURL(storageRef);
       const shortURL = process.env.NEXT_PUBLIC_BASE_URL + 'tiedosto/' + fileID;
       const fileData = {
-        fileID: fileID,
-        fileName: file.name,
-        fileSize: file.size,
-        fileType: file.type,
-        fileUrl: downloadURL,
-        shortUrl: shortURL,
-        shared: false,
-        password: '',
-        uploadedBy: user.fullName,
-        userID: user.id,
-        userEmail: user.primaryEmailAddress.emailAddress,
-        uploadedAt: formatDateToCollection(new Date())
+        fileID: fileID, // String
+        fileName: file.name,  // String
+        fileSize: parseInt(file.size), // Number
+        fileType: file.type, // String
+        fileUrl: downloadURL, // String
+        shortUrl: shortURL, // String
+        shared: false,  // Boolean
+        password: '', // String
+        uploadedBy: user.fullName, // String
+        userID: user.id,  // String
+        userEmail: user.primaryEmailAddress.emailAddress, // String
+        uploadedAt: Timestamp.fromDate(new Date())  // Firestore timestamp
       };
 
       await setDoc(doc(db, 'files', fileID), fileData);

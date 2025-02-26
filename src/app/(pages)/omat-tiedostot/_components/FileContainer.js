@@ -59,18 +59,32 @@ function FileContainer({ fileState, setFileState }) {
         <>
         <nav className={`flex items-center flex-wrap justify-between gap-4 py-2 z-10 ${fileState.selectedFiles.length > 0 && 'sticky top-0 bg-background'}`}>
             <div className='flex items-center gap-1'>
-                <button title='Ruudukko' className={`p-2 border border-contrast bg-background rounded-lg ${view === 'grid' && 'bg-primary text-white border-primary'}`} onClick={() => setView('grid')}><Grid size={20} /></button>
-                <button title='Lista' className={`p-2 border border-contrast bg-background rounded-lg ${view === 'list' && 'bg-primary text-white border-primary'}` } onClick={() => setView('list')}><List size={20} /></button>
+                <button 
+                    title='Ruudukko' 
+                    className={`p-2 border border-contrast bg-background rounded-lg
+                        ${view === 'grid' ? 'text-white bg-primary border-primary hover:text-white' : 'text-navlink border-contrast hover:border-primary hover:text-foreground'}`} 
+                    onClick={() => setView('grid')}>
+                        <Grid size={20} />
+                </button>
+                <button 
+                    title='Lista' 
+                    className={`p-2 border border-contrast bg-background rounded-lg 
+                        ${view === 'list' ? 'text-white bg-primary border-primary hover:text-white' : 'text-navlink border-contrast hover:border-primary hover:text-foreground'}` } 
+                    onClick={() => setView('list')}>
+                        <List size={20} />
+                </button>
                 <button 
                     title='Valitse tiedostoja'
-                    className={`p-2 border border-contrast bg-background rounded-lg ${fileState.selecting && 'bg-primary text-white border-primary'}` } 
+                    className={`p-2 border border-contrast bg-background rounded-lg 
+                        ${fileState.selecting ? 'text-white bg-primary border-primary hover:text-white' : 'text-navlink border-contrast hover:border-primary hover:text-foreground'}` } 
                     onClick={() => setFileState(prevState => ({...prevState, selecting: !prevState.selecting, selectedFiles: prevState.selecting ? [] : prevState.selectedFiles}))}>
                         <Copy size={20} />
                 </button>
                 {fileState.selecting && (
                     <button
                         title='Valitse kaikki'
-                        className={`p-2 border border-contrast bg-background rounded-lg ${fileState.selectedFiles.length === displayFiles.length && fileState.selectedFiles.length > 0 && 'bg-primary text-white border-primary'}`}
+                        className={`p-2 border border-contrast text-navlink bg-background rounded-lg hover:text-foreground hover:border-primary
+                            ${fileState.selectedFiles.length === displayFiles.length && fileState.selectedFiles.length > 0 && 'bg-primary text-white border-primary hover:text-white'}`}
                         onClick={() => setFileState(prevState => ({...prevState, selectedFiles: prevState.selectedFiles.length === displayFiles.length ? [] : displayFiles}))
                     }>
                         <CopyCheckIcon size={20} />
@@ -80,8 +94,8 @@ function FileContainer({ fileState, setFileState }) {
 
             {fileState.selectedFiles.length > 0 && 
                 <div className='flex items-center gap-1 text-sm'>
-                    <button className='flex items-center gap-1 p-2 px-3 border border-contrast rounded-full group' onClick={() => setFileState(prevState => ({...prevState, selectedFiles: [], selecting: false}))}>
-                        <X size={20} className='group-hover:text-primary' />
+                    <button className='flex items-center gap-1 p-2 px-3 text-navlink hover:border-primary hover:text-foreground border border-contrast rounded-full group' onClick={() => setFileState(prevState => ({...prevState, selectedFiles: [], selecting: false}))}>
+                        <X size={20} className='text-primary' />
                         {fileState.selectedFiles.length} valittu
                     </button>
                 
@@ -105,12 +119,12 @@ function FileContainer({ fileState, setFileState }) {
 
         {/* Grid view */}
         {view === 'grid' && displayFiles.length > 0 &&
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 xl:grid-cols-8 gap-2 px-1">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 xl:grid-cols-7 gap-2 px-1">
 
             {displayFiles.map((file) => (
                 <div 
                     key={file.fileID} 
-                    className={`relative flex flex-col gap-2 group p-2 aspect-[2/3] bg-background overflow-hidden rounded-lg border hover:shadow-md 
+                    className={`relative flex flex-col gap-2 group p-2 aspect-[1/1] bg-background overflow-hidden rounded-lg border hover:shadow-md 
                         ${fileState.selectedFiles.includes(file) 
                             ? 'border-primary hover:border-primary shadow-md' 
                             : 'border-transparent hover:border-contrast'
@@ -133,14 +147,16 @@ function FileContainer({ fileState, setFileState }) {
                     </div>
 
                     <Link 
-                        className='flex flex-col gap-1 h-full justify-between hover:text-primary'
+                        className='flex flex-col h-full gap-1 justify-between hover:text-primary'
                         href={`/tiedosto/${file.fileID}`}
                         onClick={(e) => e.stopPropagation()}
+                        title={file.fileName}
                     >   
-                        <div className='flex object-cover h-full'>
+                        <div className='flex justify-center h-5/6'>
                             {getCardPreview({ file })}
-                        </div>    
-                        <p className="text-sm text-center font-semibold hover:text-primary">
+                        </div>
+                       
+                        <p className="flex h-1/6 text-sm font-semibold hover:text-primary text-ellipsis whitespace-nowrap">
                             {file.fileName}
                         </p>
                     </Link>
@@ -158,18 +174,21 @@ function FileContainer({ fileState, setFileState }) {
                     className={`relative grid grid-cols-1 md:grid-cols-2 gap-2 py-2 border-b border-contrast ${fileState.selectedFiles.includes(file) && 'border-primary'}`}
                 >   
                     <div className='flex items-center gap-4 overflow-hidden'>
-                        <label htmlFor="file" className="sr-only">Valitse tiedosto</label>
-                        <input 
-                            type="checkbox" 
-                            name='file' 
-                            className="w-4 h-4 p-2" 
-                            onChange={() => handleFileSelect(file)} 
-                            checked={fileState.selectedFiles.includes(file)}
-                        />
+                        {fileState.selecting && (
+                        <>
+                            <label htmlFor="file" className="sr-only">Valitse tiedosto</label>
+                            <input 
+                                type="checkbox" 
+                                name='file' 
+                                className="w-4 h-4 p-2" 
+                                onChange={() => handleFileSelect(file)} 
+                                checked={fileState.selectedFiles.includes(file)}
+                            />
+                        </>)}
                         <img src={getFileIcon(file.fileType)} alt={file.fileName} className="w-7 h-auto" />
                         <Link 
                             href={`/tiedosto/${file.fileID}`} 
-                            className="text-sm font-bold hover:text-primary truncate-2-row text-ellipsis"
+                            className="text-sm font-semibold hover:text-primary truncate-2-row text-ellipsis"
                             onClick={(e) => e.stopPropagation()}
                         >
                             {file.fileName}

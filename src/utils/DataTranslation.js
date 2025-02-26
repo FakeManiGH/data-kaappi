@@ -10,14 +10,8 @@ export const translateFileSize = (bytes) => {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 };
 
-
-export const formatDateToCollection = (date) => {
-    return format(date, 'HHmmddMMyyyy')
-}
-
-export const formatDateFromCollection = (dateString) => {
-    const parsedDate = parse(dateString, 'HHmmddMMyyyy', new Date())
-    return format(parsedDate, 'd.M.yyyy HH:mm')
+export const formatDateFromCollection = (timestamp) => {
+    return format(timestamp, 'd.M.yyyy HH:mm');
 }
 
 export const cleanDataType = (type) => {

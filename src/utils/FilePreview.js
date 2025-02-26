@@ -4,7 +4,7 @@ import { cleanDataType } from "./DataTranslation";
 export const getCardPreview = ({ file }) => {
     if (file.fileType.includes('image')) {
         return (
-            <img src={file.fileUrl} alt={file.fileName} style={{height: '100%', width: '100%', objectFit: 'cover'}} />
+            <img src={file.fileUrl} alt={file.fileName} style={{height: '100%', width: '100%', objectFit: 'contain'}} />
         );
     } else if (file.fileType.includes('video')) {
         return (
@@ -32,7 +32,7 @@ export const getSharedCardPreview = ({ file }) => {
             );
         } else {
             return (
-                <img src={file.fileUrl} alt={file.fileName} style={{height: '100%', width: '100%', objectFit: 'cover'}} />
+                <img src={file.fileUrl} alt={file.fileName} style={{height: '100%', width: '100%', objectFit: 'contain'}} />
             );
         }
     } else if (file.fileType.includes('video')) {
@@ -80,52 +80,23 @@ export const getSharedCardPreview = ({ file }) => {
 export const getFilepagePreview = (file) => {
     if (file.fileType.includes('image')) {
         return (
-            <img src={file.fileUrl} alt={file.fileName} className="h-64 w-auto max-w-80 object-contain rounded-lg" />
+            <img src={file.fileUrl} alt={file.fileName} style={{height: '100%', width: '100%', objectFit: 'contain'}} />
         );
     } else if (file.fileType.includes('video')) {
         return (
-            <video src={file.fileUrl} controls className="h-64 w-auto object-contain rounded-lg" />
+            <video src={file.fileUrl} controls style={{height: '100%', width: '100%', objectFit: 'contain'}} />
         );
     } else if (file.fileType.includes('audio')) {
         return (
             <div className='flex flex-col gap-2 items-center'>
-                <img src='/icons/audio.png' alt='Audio PNG illustration' className="h-64 w-auto object-contain rounded-lg" />
-                <audio src={file.fileUrl} controls className="max-w-52 h-auto rounded-lg" />
+                <img src='/icons/audio.png' alt='Audio PNG illustration' style={{height: '100%', maxHeight: '200px', width: '100%', objectFit: 'contain'}} />
+                <audio src={file.fileUrl} controls className="h-auto rounded-lg" />
             </div>
         );
     } else {
         return (
-            <img src='/icons/file.png' alt='File PNG illustration' className="h-64 w-auto object-contain rounded-lg" />
+            <img src='/icons/file.png' alt='File PNG illustration' style={{height: '100%', maxHeight: '200px', width: '100%', maxWidth: '250px' , objectFit: 'contain'}} />
         );
     }
 }
 
-export const getFullSizePreview = (file) => {
-    if (file.fileType.includes('image')) {
-        return (
-            <img src={file.fileUrl} alt={file.fileName} />
-        );
-    } else if (file.fileType.includes('video')) {
-        return (
-            <video src={file.fileUrl} controls className="h-full w-full" />
-        );
-    } else if (file.fileType.includes('audio')) {
-        return (
-            <div className='flex flex-col gap-2 items-center'>
-                <img src='/icons/audio.png' alt='Audio PNG illustration' className="h-full w-full" />
-                <audio src={file.fileUrl} controls className="h-full w-full rounded-lg" />
-            </div>
-        );
-    } else if (file.fileType.includes('pdf')) {
-        return (
-            <iframe src={file.fileUrl} className="h-full w-full" />
-        );
-    } else {
-        return (
-            <div className="flex flex-col gap-4 h-full w-full items-center justify-center">
-                <h1 className="text-3xl text-center">Tiedostoa <strong>ei pysty</strong> esikatselemaan.</h1>
-                <DownloadBtn url={file.fileUrl} fileName={file.fileName} />
-            </div>
-        );
-    }
-}

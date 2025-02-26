@@ -67,7 +67,7 @@ function Header() {
                         </Link>
                     )}
 
-                    <div ref={dropdownRef} className="lg:hidden">
+                    <div ref={dropdownRef} className="flex lg:hidden">
                         <button 
                             className={`p-2 cursor-pointer transition hover:text-primary ${dropdown ? 'text-primary' : 'text-foreground'}`}
                             onClick={() => setDropdown(!dropdown)}
@@ -76,7 +76,7 @@ function Header() {
                         </button>
                         {dropdown && (
                         <nav 
-                            className="absolute z-50 top-[85%] ml-auto inset-x-4 max-w-64 bg-background border border-contrast rounded-lg shadow-xl shadow-black/25 lg:hidden overflow-hidden" 
+                            className="absolute z-50 top-[85%] ml-auto inset-x-4 max-w-64 bg-background border border-contrast rounded-lg shadow-xl shadow-black/25 overflow-hidden" 
                             role="menu"
                         >
                             {navList && navList.map((item) => (

@@ -1,7 +1,7 @@
 "use client"
 import React, { useEffect, useState, use } from 'react'
 import Link from 'next/link'
-import { ArrowLeftSquare, Bold, ChevronRight, LockKeyhole } from 'lucide-react'
+import { ArrowLeftSquare, User2 } from 'lucide-react'
 import FilePreview from './_components/FilePreview'
 import FileNav from './_components/FileNav'
 import PageLoading from '@/app/_components/_common/PageLoading'
@@ -105,7 +105,7 @@ function Page({ params }) {
 
             <div className='flex flex-col gap-1'>
                 <h1 className='text-xl md:text-3xl'><strong>{file.fileName}</strong></h1>
-                <p className='flex gap-1 items-center text-sm'><ChevronRight size={20} /> {file.uploadedBy}</p>
+                <p className='flex gap-1 items-center text-sm'><User2 size={20} /> {file.uploadedBy}</p>
             </div>
 
             <FilePreview file={file} setFile={setFile} />

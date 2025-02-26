@@ -14,8 +14,8 @@ function FileContainer({ fileState }) {
     return (
         <>
         <nav className='flex items-center gap-1 py-2'>
-            <button className={`p-2 border border-contrast bg-background rounded-lg ${view === 'grid' && 'bg-primary text-white border-primary'}`} onClick={() => setView('grid')}><Grid size={20} /></button>
-            <button className={`p-2 border border-contrast bg-background rounded-lg ${view === 'list' && 'bg-primary text-white border-primary'}` } onClick={() => setView('list')}><List size={20} /></button>
+            <button className={`p-2 border border-contrast bg-background rounded-lg ${view === 'grid' ? 'text-white bg-primary border-primary hover:text-white' : 'text-navlink border-contrast hover:border-primary hover:text-foreground'}`} onClick={() => setView('grid')}><Grid size={20} /></button>
+            <button className={`p-2 border border-contrast bg-background rounded-lg ${view === 'list' ? 'text-white bg-primary border-primary hover:text-white' : 'text-navlink border-contrast hover:border-primary hover:text-foreground'}` } onClick={() => setView('list')}><List size={20} /></button>
         </nav>
         
         {/* No files */}
@@ -32,7 +32,7 @@ function FileContainer({ fileState }) {
             {displayFiles.map((file) => (
                 <div 
                     key={file.fileID} 
-                    className='relative flex flex-col gap-2 group p-2 aspect-[2/3] bg-background overflow-hidden rounded-lg 
+                    className='relative flex flex-col gap-2 group p-2 aspect-[1/1] bg-background overflow-hidden rounded-lg 
                     border border-transparent hover:border-contrast hover:shadow-md'
                 >   
                     <div className={`absolute flex flex-col items-center bg-background rounded-lg top-0 left-0 gap-1 ${file.password ? 'p-1' : 'p-0'}`}>
@@ -40,15 +40,15 @@ function FileContainer({ fileState }) {
                     </div>
 
                     <Link 
-                        className='flex flex-col gap-1 h-full justify-between hover:text-primary'
+                        className='flex flex-col h-full gap-1 justify-between hover:text-primary'
                         href={`/tiedosto/${file.fileID}`}
                         onClick={(e) => e.stopPropagation()}
                     >
-                        <div className='flex flex-col text-center object-cover h-full'>
+                        <div className='flex flex-col h-5/6'>
                             {getSharedCardPreview({ file })}
                         </div>
-                        <div className='flex flex-col text-center mt-auto'>
-                            <p className="text-sm font-semibold whitespace-wrap">{file.fileName}</p>
+                        <div className='flex flex-col justify-center h-1/6 text-sm font-semibold hover:text-primary group-hover:text-primary'>
+                            <p className="text-sm font-semibold whitespace-nowrap text-ellipsis">{file.fileName}</p>
                             <p className='text-xs text-navlink group-hover:text-primary'>{file.uploadedBy}</p>
                         </div>
                     </Link>
@@ -69,7 +69,7 @@ function FileContainer({ fileState }) {
                         <img src={getFileIcon(file.fileType)} alt={file.fileName} className="w-7 h-auto" />
                         <Link 
                             href={`/tiedosto/${file.fileID}`} 
-                            className="text-sm font-bold hover:text-primary truncate-2-row text-ellipsis"
+                            className="text-sm font-semibold hover:text-primary truncate-2-row text-ellipsis"
                             onClick={(e) => e.stopPropagation()}
                         >
                             {file.fileName}
