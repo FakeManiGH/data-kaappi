@@ -2,8 +2,8 @@
 import { getStorage, ref, deleteObject } from "firebase/storage";
 import { doc, setDoc, deleteDoc, getDoc, updateDoc, orderBy, collection, query, where, getDocs, limit } from "firebase/firestore";
 import { db } from '@/../firebaseConfig';
-import { formatDateToCollection } from "@/utils/DataTranslation";
-import { set } from "date-fns";
+import bcrypt from 'bcrypt';
+
 
 // Config
 const storage = getStorage();
@@ -18,7 +18,7 @@ export const createUserDocument = async (user) => {
             userEmail: user.primaryEmailAddress.emailAddress,
             name: user.fullName,
             role: 'user',
-            created: formatDateToCollection(new Date()),
+            created: new Date(),
             usedSpace: 0,
             totalSpace: 1073741824 // 1 Gt
         })
@@ -122,5 +122,38 @@ export const updateDocumentValue = async (fileID, key, value) => {
         await updateDoc(docRef, { [key]: value })
     } catch (error) {
         console.error("Error updating document: ", error)
+    }
+}
+
+// Update file password
+export const updateFilePassword = async (userID, fileID, password) => {
+    try {
+        if (!userID) {
+            console.error("User not authenticated")
+            return
+        }
+
+        const file = await getFileInfo(fileID)
+        if (!file) {
+            console.error("File not found")
+            return
+        }
+
+        if (file.userID !== userID) {
+            console.error("User does not have permission to update file")
+            return
+        }
+
+        if (!password) {
+            await updateDocumentValue(fileID, 'password', '')
+            return
+        }
+
+        const saltRounds = 13;
+        const hash = await bcrypt.hash(password, saltRounds);
+        await updateDocumentValue(fileID, 'password', hash);
+
+    } catch (error) {
+        console.error("Error updating file password: ", error)
     }
 }

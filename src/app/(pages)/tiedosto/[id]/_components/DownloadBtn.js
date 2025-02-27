@@ -1,7 +1,7 @@
 import { DownloadCloud } from 'lucide-react'
 import React, { useState} from 'react'
 
-function DownloadBtn({ url, fileName, downloadName }) {
+function DownloadBtn({ url, fileName, buttonStyle }) {
     const [fetching, setFetching] = useState(false)
     const [error, setError] = useState(false)
 
@@ -27,10 +27,11 @@ function DownloadBtn({ url, fileName, downloadName }) {
     return (
         <button 
             disabled={fetching}
-            className='flex items-center gap-2 justify-center whitespace-nowrap text-sm text-white w-[30%] min-w-fit bg-primary rounded-full p-2.5 px-4 hover:bg-primary/90'
+            className={`flex items-center justify-center px-3 py-2 group border border-contrast rounded-full text-navlink text-sm gap-2 hover:text-foreground hover:border-primary transition-colors
+                ${buttonStyle} ${fetching ? 'cursor-not-allowed' : 'cursor-pointer'}`}
             onClick={downloadFile}
         >
-            <DownloadCloud size={18} />
+            <DownloadCloud className='text-primary' />
             Lataa teidosto
         </button>
     )

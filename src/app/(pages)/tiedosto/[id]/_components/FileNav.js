@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { ArrowLeftSquare, LockKeyhole, Settings, Share2, Trash } from 'lucide-react'
+import { ArrowLeftCircle, ArrowLeftSquare, LockKeyhole, Settings, Share2, Trash } from 'lucide-react'
 import Link from 'next/link'
 import { useNavigation } from '@/app/contexts/NavigationContext'
 import SharePopup from './SharePopup'
@@ -7,12 +7,11 @@ import PasswordPopup from './PasswordPopup'
 import DeleteConfirmPopup from './DeleteConfirmPopup'
 import { useUser } from '@clerk/nextjs'
 
-function FileNav({ file, setFile }) {
+function FileNav({ file, setFile, setDeleted }) {
     const [dropMenu, setDropMenu] = useState(false)
     const [sharePopup, setSharePopup] = useState(false)
     const [passwordPopup, setPasswordPopup] = useState(false)
     const [deletePopup, setDeletePopup] = useState(false)
-    const { setCurrentIndex } = useNavigation()
     const { isLoaded, user } = useUser()
 
     useEffect(() => {
@@ -42,17 +41,20 @@ function FileNav({ file, setFile }) {
     }
 
     return (
-        <div className='relative flex flex-wrap items-baseline justify-between mb-2'>
-            <Link href="/omat-tiedostot" className='flex items-center py-2 text-navlink text-sm space-x-2 gap-1 hover:text-primary'>
-                <ArrowLeftSquare size={24} className='text-primary' />
-                Takaisin tiedostoihin
+        <div className='relative flex flex-wrap items-baseline justify-between mb-2 w-full'>
+            <Link  
+                href={isLoaded && user.id === file.userID ? '/omat-tiedostot' : '/jaetut-tiedostot'} 
+                className='flex items-center group text-navlink text-sm gap-2 hover:text-foreground hover:border-primary transition-colors'
+            >
+                <ArrowLeftCircle className='text-primary' />
+                Palaa takaisin
             </Link>
 
-        {isLoaded && user && user.id === file.userID && (
+        {isLoaded && user.id === file.userID && (
         <>
             <div>
                 <button 
-                    className='flex items-center gap-1 py-2 text-navlink text-sm hover:text-primary' 
+                    className={`flex items-center group text-sm gap-2 hover:text-foreground hover:border-primary transition-colors ${dropMenu ? 'text-foreground' : 'text-navlink'}`} 
                     role="button"
                     onClick={() => setDropMenu(!dropMenu)}
                 >
@@ -62,7 +64,7 @@ function FileNav({ file, setFile }) {
 
                 {dropMenu && (
                     <div
-                        className="absolute z-10 right-0 w-full sm:max-w-64 divide-y divide-contrast rounded-lg overflow-hidden border border-contrast bg-background shadow-lg"
+                        className="absolute z-10 right-0 mt-1 w-full sm:max-w-64 divide-y divide-contrast rounded-lg overflow-hidden border border-contrast bg-background shadow-lg"
                         role="menu"
                     >
                         <div className='bg-background shadow-lg shadow-black/50'>
@@ -76,7 +78,7 @@ function FileNav({ file, setFile }) {
                                 onClick={handleSharePopup}
                             >
                                 <Share2 size={16} />
-                                Jako asetukset
+                                Jaa tiedosto
                             </button>
                             <button 
                                 className='flex w-full items-center gap-2 px-4 py-2 text-sm text-navlink hover:text-primary' 
@@ -109,7 +111,7 @@ function FileNav({ file, setFile }) {
             {/* Popups */}
             {sharePopup && <SharePopup file={file} setFile={setFile} setSharePopup={setSharePopup} />}
             {passwordPopup && <PasswordPopup file={file} setFile={setFile} setPasswordPopup={setPasswordPopup} />}
-            {deletePopup && <DeleteConfirmPopup file={file} setDeletePopup={setDeletePopup} />}
+            {deletePopup && <DeleteConfirmPopup file={file} setDeletePopup={setDeletePopup} setDeleted={setDeleted} />}
         </>
         )}
         </div>

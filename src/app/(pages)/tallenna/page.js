@@ -3,25 +3,48 @@ import React, { useState, useEffect } from 'react';
 import { getStorage, ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import { doc, setDoc, Timestamp } from "firebase/firestore";
 import { app, db } from '@/../firebaseConfig';
-import UploadForm from './_components/UploadForm'
+import UploadForm from './_components/UploadForm';
 import FilePreview from './_components/FilePreview';
 import { generateRandomString } from '@/utils/GenerateRandomString';
 import { useUser } from '@clerk/nextjs';
-import { useNavigation } from '@/app/contexts/NavigationContext'
-import { formatDateToCollection } from '@/utils/DataTranslation';
-
+import { useNavigation } from '@/app/contexts/NavigationContext';
+import SpaceMeterBar from '@/app/_components/_common/SpaceMeterBar';
+import { getUser } from '@/app/file-requests/api';
+import PageLoading from '@/app/_components/_common/PageLoading';
+import ErrorView from '../_components/ErrorView';
 
 function Page() {
   const { user } = useUser();
-  const { setCurrentIndex } = useNavigation();
+  const [userDoc, setUserDoc] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const isLoaded = user !== undefined;
+  const { setCurrentIndex, navigatePage } = useNavigation();
   const [files, setFiles] = useState([]);
   const [fileErrors, setFileErrors] = useState([]);
   const [uploadProgress, setUploadProgress] = useState([]);
   const storage = getStorage(app);
-  
+
   useEffect(() => {
     setCurrentIndex('/tallenna');
-  }, [setCurrentIndex]);
+    if (isLoaded) {
+      if (user) {
+        getUser(user.id)
+          .then((doc) => {
+            setUserDoc(doc);
+            setLoading(false);
+          })
+          .catch((err) => {
+            console.error("Error fetching user document:", err);
+            setError("Käyttäjätietojen hakeminen epäonnistui. Yritä uudelleen.");
+            setLoading(false);
+          });
+      } else {
+        setLoading(true);
+        navigatePage('/sign-in');
+      }
+    }
+  }, [isLoaded, user, setCurrentIndex, navigatePage]);
 
   // Upload file to storage
   const uploadFile = async (file) => {
@@ -60,11 +83,17 @@ function Page() {
       console.error('Error uploading file:', error);
       setFileErrors((prevErrors) => [...prevErrors, error.message]);
     }
-  }
+  };
+
+  if (loading) return <PageLoading />;
+  if (!loading && error) return <ErrorView message={error} />;
+  if (!loading && isLoaded && !user) return <ErrorView message="Kirjaudu sisään nähdäksesi tämän sivun." />;
 
   return (
     <main className='mt-4'>
       <h1 className='text-2xl md:text-3xl'><strong>Tallenna tiedostoja</strong></h1>
+      <SpaceMeterBar usedSpace={userDoc?.usedSpace} totalSpace={userDoc?.totalSpace} />
+      <br />
       <UploadForm 
         uploadFile={uploadFile} 
         files={files} 
@@ -72,6 +101,7 @@ function Page() {
         fileErrors={fileErrors}
         setFileErrors={setFileErrors}
         setUploadProgress={setUploadProgress}
+        setUserDoc={setUserDoc}
       />
       <FilePreview 
         files={files} 
@@ -79,7 +109,7 @@ function Page() {
         uploadProgress={uploadProgress} 
       />
     </main>
-  )
+  );
 }
 
 export default Page;

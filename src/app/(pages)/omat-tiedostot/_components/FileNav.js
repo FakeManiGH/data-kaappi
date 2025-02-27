@@ -88,7 +88,7 @@ function FileNav({ fileState, setFileState }) {
 
             <div>
                 <button 
-                    className='flex items-center gap-1 text-sm text-navlink hover:text-primary leading-[1.7]' 
+                    className={`flex items-center gap-1 text-sm hover:text-foreground leading-[1.7] ${dropMenu ? 'text-foreground' : 'text-navlink'}`} 
                     role="button"
                     onClick={() => setDropMenu(!dropMenu)}
                 >   
@@ -98,11 +98,11 @@ function FileNav({ fileState, setFileState }) {
 
                 {dropMenu && (
                     <div
-                        className="absolute z-20 bottom-[-250px] end-0 sm:max-w-64 w-full pb-2 rounded-lg divide-y divide-contrast overflow-hidden border border-contrast bg-background shadow-lg shadow-black/25"
+                        className="absolute z-20 mt-1 end-0 sm:max-w-64 w-full pb-2 rounded-lg divide-y divide-contrast overflow-hidden border border-contrast bg-background shadow-lg shadow-black/25"
                         role="menu"
                     >
                         <div className='bg-background'>
-                            <strong className="block p-2 text-xs font-medium uppercase text-gray-500 dark:text-gray-600">
+                            <strong className="block p-2 text-xs font-medium uppercase text-foreground">
                                 Tyyppi
                             </strong>
 
@@ -133,7 +133,7 @@ function FileNav({ fileState, setFileState }) {
                         </div>
 
                         <div className='bg-background'>
-                            <strong className="block p-2 text-xs font-medium uppercase text-gray-500 dark:text-gray-600">
+                            <strong className="block p-2 text-xs font-medium uppercase text-foreground">
                                 Ominaisuus
                             </strong>
                             

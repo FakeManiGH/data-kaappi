@@ -6,20 +6,18 @@ import Alert from '../_components/_common/Alert';
 import React, { useEffect, Suspense } from 'react';
 import PageLoading from '../_components/_common/PageLoading';
 import { useUser } from '@clerk/nextjs';
-import { useAlert } from '../contexts/AlertContext';
 import { useNavigation } from '../contexts/NavigationContext';
 
+
 function Layout({ children }) {
-  const { user, isLoaded } = useUser();
-  const { showAlert } = useAlert();
+  const { isLoaded, user } = useUser();
   const { navigatePage } = useNavigation();
 
   useEffect(() => {
     if (isLoaded && !user) {
-      showAlert('error', 'Palveluun pääsy vaatii kirjautumisen');
       navigatePage('/sign-in');
     }
-  }, [isLoaded, user, showAlert, navigatePage]);
+  }, [isLoaded, user, navigatePage]);
 
   // Show loading screen while user is being loaded
   if (!isLoaded) return <PageLoading />

@@ -1,5 +1,5 @@
 "use client"
-import SpaceMeter from '@/app/_components/_common/SpaceMeter'
+import SpaceMeterCircle from '@/app/_components/_common/SpaceMeterCircle'
 import React, { useState, useEffect } from 'react'
 import { useUser } from '@clerk/nextjs'
 import PageLoading from '@/app/_components/_common/PageLoading'
@@ -32,7 +32,7 @@ function Page() {
             setLoading(false)
           })
       } else {
-        navigatePage('/kirjaudu')
+        navigatePage('/sign-in')
       }
     }
   }, [isLoaded, user, setUserDoc, setLoading, setCurrentIndex, navigatePage])
@@ -44,11 +44,12 @@ function Page() {
   return (
     <main>
       <h1 className='text-2xl md:text-3xl'><strong>Hei, {user?.fullName}</strong></h1>
-      <div className='flex items-center gap-4 p-2'>
-        <SpaceMeter usedSpace={userDoc?.usedSpace} totalSpace={userDoc?.totalSpace} />
+      <div className='flex items-center flex-wrap px-4 gap-4'>
+        <SpaceMeterCircle usedSpace={userDoc?.usedSpace} totalSpace={userDoc?.totalSpace} />
         <div className='flex flex-col gap-2'>
           <h3 className='text-xl font-bold'>Tallennustilan käyttö</h3>
-          <Link className='flex items-center gap-1 text-sm text-navlink hover:text-primary' href="/tilaukset">
+          <p className='text-sm'>Voit tarvittaessa tilata lisää tallennustilaa (<strong>tulossa</strong>).</p>
+          <Link className='flex items-center gap-1 text-sm text-navlink line-through' href="#">
             <ChevronRight size={24} className='text-primary' />
             Hallitse tilausta
           </Link>

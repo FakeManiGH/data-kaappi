@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { getFileIcon } from '@/utils/GetFileIcon'
-import { Copy, CopyCheckIcon, Grid, List, LockKeyhole, LucideSquareCheckBig, Share2, Trash, X } from 'lucide-react'
+import { Copy, CopyCheckIcon, Grid, List, LockKeyhole, LucideSquareCheckBig, Share2, Trash, Trash2, User, X } from 'lucide-react'
 import Link from 'next/link'
 import { getCardPreview } from '@/utils/FilePreview'
 import { useAlert } from '@/app/contexts/AlertContext'
@@ -8,11 +8,13 @@ import { deleteFile } from '@/app/file-requests/api'
 import { useNavigation } from '@/app/contexts/NavigationContext'
 import { formatDateFromCollection, translateFileSize, cleanDataType } from '@/utils/DataTranslation'
 import DeleteConfirmPopup from './DeleteConfirmPopup'
+import { useUser } from '@clerk/nextjs'
 
 function FileContainer({ fileState, setFileState }) {
     const [view, setView] = useState('grid')
     const [deletePopup, setDeletePopup] = useState(false)
     const { showAlert } = useAlert()
+    const { user } = useUser()
 
     // Determine which files to display
     const displayFiles = fileState.searched ? fileState.searchedFiles : (fileState.filtered ? fileState.filteredFiles : fileState.files)
@@ -36,7 +38,17 @@ function FileContainer({ fileState, setFileState }) {
     // Handle delete files
     const handleDeleteFiles = async () => {
         try {
-            await Promise.all(fileState.selectedFiles.map((file) => deleteFile(file)))
+            const response = await fetch('/api/delete-files', {
+                method: 'DELETE',
+                body: JSON.stringify({ userID: user.id, files: fileState.selectedFiles }), 
+            });
+
+            const data = await response.json();
+            if (response.ok) {
+                showAlert(data.message, 'success')
+            } else {
+                showAlert(data.message, 'error')
+            }
             // remove deleted files from state (files/filteredFiles/searchedFiles)
             setFileState(prevState => ({
                 ...prevState,
@@ -46,10 +58,9 @@ function FileContainer({ fileState, setFileState }) {
                 selectedFiles: [],
                 selecting: false
             }))
-            showAlert('Valitut tiedostot poistettu.', 'success')
         } catch (error) {
-            console.log("Error deleting files: ", error)
-            showAlert('Tiedostojen poistaminen epäonnistui.', 'error')
+            console.error('Error deleting files:', error)
+            showAlert('Palvelinvirhe! Yritä uudelleen.', 'error')
         } finally {
             setDeletePopup(false)
         }
@@ -57,25 +68,25 @@ function FileContainer({ fileState, setFileState }) {
 
     return (
         <>
-        <nav className={`flex items-center flex-wrap justify-between gap-4 py-2 z-10 ${fileState.selectedFiles.length > 0 && 'sticky top-0 bg-background'}`}>
+        <nav className={`flex items-center flex-wrap justify-between gap-2 py-2 z-10 ${fileState.selectedFiles.length > 0 && 'sticky top-0 bg-background'}`}>
             <div className='flex items-center gap-1'>
                 <button 
                     title='Ruudukko' 
-                    className={`p-2 border border-contrast bg-background rounded-lg
+                    className={`p-3 border border-contrast bg-background rounded-full
                         ${view === 'grid' ? 'text-white bg-primary border-primary hover:text-white' : 'text-navlink border-contrast hover:border-primary hover:text-foreground'}`} 
                     onClick={() => setView('grid')}>
                         <Grid size={20} />
                 </button>
                 <button 
                     title='Lista' 
-                    className={`p-2 border border-contrast bg-background rounded-lg 
+                    className={`p-3 border border-contrast bg-background rounded-full 
                         ${view === 'list' ? 'text-white bg-primary border-primary hover:text-white' : 'text-navlink border-contrast hover:border-primary hover:text-foreground'}` } 
                     onClick={() => setView('list')}>
                         <List size={20} />
                 </button>
                 <button 
                     title='Valitse tiedostoja'
-                    className={`p-2 border border-contrast bg-background rounded-lg 
+                    className={`p-3 border border-contrast bg-background rounded-full 
                         ${fileState.selecting ? 'text-white bg-primary border-primary hover:text-white' : 'text-navlink border-contrast hover:border-primary hover:text-foreground'}` } 
                     onClick={() => setFileState(prevState => ({...prevState, selecting: !prevState.selecting, selectedFiles: prevState.selecting ? [] : prevState.selectedFiles}))}>
                         <Copy size={20} />
@@ -83,7 +94,7 @@ function FileContainer({ fileState, setFileState }) {
                 {fileState.selecting && (
                     <button
                         title='Valitse kaikki'
-                        className={`p-2 border border-contrast text-navlink bg-background rounded-lg hover:text-foreground hover:border-primary
+                        className={`p-3 border border-contrast text-navlink bg-background rounded-full hover:text-foreground hover:border-primary
                             ${fileState.selectedFiles.length === displayFiles.length && fileState.selectedFiles.length > 0 && 'bg-primary text-white border-primary hover:text-white'}`}
                         onClick={() => setFileState(prevState => ({...prevState, selectedFiles: prevState.selectedFiles.length === displayFiles.length ? [] : displayFiles}))
                     }>
@@ -94,17 +105,21 @@ function FileContainer({ fileState, setFileState }) {
 
             {fileState.selectedFiles.length > 0 && 
                 <div className='flex items-center gap-1 text-sm'>
-                    <button className='flex items-center gap-1 p-2 px-3 text-navlink hover:border-primary hover:text-foreground border border-contrast rounded-full group' onClick={() => setFileState(prevState => ({...prevState, selectedFiles: [], selecting: false}))}>
+                    <button 
+                        className='flex items-center gap-1 px-4 py-3 text-navlink hover:border-primary hover:text-foreground border border-contrast rounded-full group' 
+                        onClick={() => setFileState(prevState => ({...prevState, selectedFiles: [], selecting: false}))}
+                        title='Peruuta valinta'
+                    >
                         <X size={20} className='text-primary' />
                         {fileState.selectedFiles.length} valittu
                     </button>
                 
                     <button 
-                        className='flex items-center gap-1 p-2 px-3 rounded-full bg-red-500 text-white hover:bg-red-600'
+                        className='flex items-center gap-1 p-3 text-white text-sm border border-red-500 rounded-full bg-red-500  hover:bg-red-600'
                         onClick={() => setDeletePopup(true)}
+                        title='Poista valitut tiedostot'
                     >
-                        <Trash size={20} className='' /> 
-                        Poista
+                        <Trash2 size={20} className='' /> 
                     </button> 
                 </div>
             }

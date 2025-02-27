@@ -1,17 +1,14 @@
 import React, { useState } from 'react';
 import { translateFileSize, cleanDataType, formatDateFromCollection } from '@/utils/DataTranslation';
-import DownloadBtn from '@/app/_components/_common/DownloadBtn';
 import { getFilepagePreview } from '@/utils/FilePreview';
-import { Eye, LockKeyhole, Share2 } from 'lucide-react';
-import FileLivePreview from './FileLivePreview';
+import { LockKeyhole, Share2 } from 'lucide-react';
+
 
 function FilePreview({ file }) {
-  const [livePreview, setLivePreview] = useState(false);
-
   return (
     <div className="flex flex-col gap-4 w-full">
       <div className="flex flex-col lg:flex-row lg:items-center w-full max-w-full">
-        <div className="flex flex-col justify-center p-2 gap-2 lg:w-1/3 w-full">
+        <div className="flex flex-col justify-center items-center p-2 gap-2 lg:w-1/3 w-full min-h-40 max-h-96">
           {getFilepagePreview(file)}
         </div>
 
@@ -43,16 +40,6 @@ function FilePreview({ file }) {
           </ul>
         </div>
       </div>
-      <button 
-        href={file.fileUrl}
-        className='flex items-center gap-2 justify-center whitespace-nowrap border border-contrast text-sm text-navlink w-[30%] min-w-fit bg-background rounded-full p-2.5 px-4 hover:border-primary hover:text-foreground transition-colors'
-        onClick={() => setLivePreview(true)}
-      >
-          <Eye size={20} className='text-primary' />
-          Katso
-      </button>
-      <DownloadBtn url={file.fileUrl} fileName={file.fileName} />
-      {livePreview && <FileLivePreview file={file} setLivePreview={setLivePreview} />}
     </div>
   );
 }

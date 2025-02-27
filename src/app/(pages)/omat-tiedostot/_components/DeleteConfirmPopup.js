@@ -26,7 +26,7 @@ function DeleteConfirmPopup({ selectedFiles, handleDeleteFiles, setDeletePopup }
                         className="p-1 text-white bg-red-500 hover:bg-red-600 rounded-full"
                         onClick={() => setDeletePopup(false)}
                     >
-                        <X size={24} />
+                        <X size={20} />
                     </button>
                 </div>
 
@@ -42,16 +42,16 @@ function DeleteConfirmPopup({ selectedFiles, handleDeleteFiles, setDeletePopup }
 
                 <div className="flex items-center justify-center gap-2 p-4">
                     <button 
-                        className='block p-2 px-3 bg-secondary text-white rounded-full hover:bg-secondary/90'
-                        onClick={() => setDeletePopup(false)}
-                    >
-                        Peruuta
-                    </button>
-                    <button 
                         className='block p-2 px-3 bg-red-500 text-white rounded-full hover:bg-red-600 active:bg-red-600'
                         onClick={() => handleDeleteFiles(selectedFiles)}
                     >
                         Kyllä, poista
+                    </button>
+                    <button 
+                        className='block text-navlink hover:text-primary'
+                        onClick={() => setDeletePopup(false)}
+                    >
+                        Peruuta
                     </button>
                 </div>
             </div>

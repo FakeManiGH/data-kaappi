@@ -4,7 +4,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useNavigation } from '../contexts/NavigationContext'
 import { useUser } from '@clerk/nextjs'
-import { AlignJustify } from 'lucide-react'
+import { AlignJustify, CircleGauge, LogIn } from 'lucide-react'
 
 function Header() {
     const [dropdown, setDropdown] = useState(false)
@@ -27,7 +27,7 @@ function Header() {
 
     return (
     <header>
-        <div className="relative flex items-center justify-between p-4 w-full mx-auto bg-background dark:bg-gradient-to-b from-contrast to-background">
+        <div className="relative flex items-center justify-between p-4 w-full mx-auto bg-background">
             <div className="flex items-center gap-2">
                 <Image src='/logo.svg' alt="Logo" width={40} height={40} />
                 <p className='font-bold'>Datakaappi</p>
@@ -40,9 +40,8 @@ function Header() {
                             <li key={item.id}>
                                 <Link 
                                     href={item.path} 
-                                    className="flex items-center gap-2 text-sm text-foreground hover:text-primary"
+                                    className="flex items-center gap-2 text-sm text-navlink hover:text-primary"
                                 >
-                                    <item.icon size={20} /> 
                                     {item.name}
                                 </Link>
                             </li>
@@ -53,16 +52,18 @@ function Header() {
                 <div className="flex items-center gap-4">
                     {isLoaded && isSignedIn ? (
                         <Link
-                            className="rounded-full bg-primary px-5 py-3 text-sm text-white shadow hover:bg-primary/90"
+                            className="flex gap-2 items-center rounded-full border border-contrast px-5 py-3 text-sm text-navlink shadow-md hover:border-primary hover:text-foreground"
                             href="/kojelauta"
-                        >
+                        >   
+                            <CircleGauge size={20} className='text-primary' />
                             Kojelauta
                         </Link>
                     ) : (
                         <Link
-                            className="rounded-full bg-primary px-5 py-3 text-sm text-white shadow hover:bg-primary/90"
+                            className="flex gap-2 items-center rounded-full border border-contrast px-5 py-3 text-sm text-navlink shadow-md hover:border-primary hover:text-foreground"
                             href="/sign-in"
-                        >
+                        >   
+                            <LogIn size={20} className='text-primary' />
                             Kirjaudu
                         </Link>
                     )}
@@ -86,7 +87,6 @@ function Header() {
                                     className="flex items-center text-sm text-navlink w-full gap-2 py-3 px-4 hover:text-primary"
                                     onClick={() => setDropdown(false)}
                                 >
-                                    <item.icon size='20' />
                                     <p>{item.name}</p>
                                 </Link>
                             ))}

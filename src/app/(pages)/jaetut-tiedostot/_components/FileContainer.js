@@ -14,8 +14,8 @@ function FileContainer({ fileState }) {
     return (
         <>
         <nav className='flex items-center gap-1 py-2'>
-            <button className={`p-2 border border-contrast bg-background rounded-lg ${view === 'grid' ? 'text-white bg-primary border-primary hover:text-white' : 'text-navlink border-contrast hover:border-primary hover:text-foreground'}`} onClick={() => setView('grid')}><Grid size={20} /></button>
-            <button className={`p-2 border border-contrast bg-background rounded-lg ${view === 'list' ? 'text-white bg-primary border-primary hover:text-white' : 'text-navlink border-contrast hover:border-primary hover:text-foreground'}` } onClick={() => setView('list')}><List size={20} /></button>
+            <button className={`p-3 border border-contrast bg-background rounded-full ${view === 'grid' ? 'text-white bg-primary border-primary hover:text-white' : 'text-navlink border-contrast hover:border-primary hover:text-foreground'}`} onClick={() => setView('grid')}><Grid size={20} /></button>
+            <button className={`p-3 border border-contrast bg-background rounded-full ${view === 'list' ? 'text-white bg-primary border-primary hover:text-white' : 'text-navlink border-contrast hover:border-primary hover:text-foreground'}` } onClick={() => setView('list')}><List size={20} /></button>
         </nav>
         
         {/* No files */}

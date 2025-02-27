@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react';
-import { BadgeInfo, FolderSymlink, LayoutDashboard, PackageOpen, UploadCloud } from 'lucide-react';
+import { BookMarked, CircleGauge, FolderHeart, PackageOpen, UploadCloud } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 const NavigationContext = createContext();
@@ -17,7 +17,7 @@ export const NavigationProvider = ({ children }) => {
         {
             id: 1,
             name: 'Kojelauta',
-            icon: LayoutDashboard,
+            icon: CircleGauge,
             path: '/kojelauta'
         },
         {
@@ -29,7 +29,7 @@ export const NavigationProvider = ({ children }) => {
         {
             id: 3,
             name: 'Omat tiedostot',
-            icon: FolderSymlink,
+            icon: FolderHeart,
             path: '/omat-tiedostot'
         },
         {
@@ -41,7 +41,7 @@ export const NavigationProvider = ({ children }) => {
         {
             id: 5,
             name: 'Tietoa',
-            icon: BadgeInfo,
+            icon: BookMarked,
             path: '/tietoa'
         }
     ]

@@ -86,7 +86,7 @@ function FileNav({ fileState, setFileState }) {
 
             <div>
                 <button 
-                    className='flex items-center gap-1 text-sm text-navlink hover:text-primary leading-[1.7]' 
+                    className='flex items-center gap-1 text-sm text-navlink hover:text-foreground leading-[1.7]' 
                     role="button"
                     onClick={() => setDropMenu(!dropMenu)}
                 >   

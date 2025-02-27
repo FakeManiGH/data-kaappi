@@ -46,11 +46,11 @@ function TopHeader() {
               <Link
                 href={item.path}
                 key={item.id}
-                className={`flex items-center text-sm text-navlink w-full gap-2 px-4 p-3 hover:text-primary ${currentIndex === item.path ? 'text-primary' : 'text-foreground'}`}
+                className={`flex items-center text-sm w-full gap-2 px-4 p-3 group ${currentIndex === item.path ? 'text-foreground' : 'text-navlink'}`}
                 onClick={() => setDropdown(false)}
               >
-                <item.icon size='20' />
-                <p>{item.name}</p>
+                <item.icon size='20' className={`group-hover:text-primary ${currentIndex === item.path && 'text-primary'}`} />
+                <p className='group-hover:text-foreground'>{item.name}</p>
               </Link>
             ))}
           </div>

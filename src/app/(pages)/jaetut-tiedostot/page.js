@@ -6,11 +6,13 @@ import { useUser } from '@clerk/nextjs'
 import { getSharedFiles } from '@/app/file-requests/api'
 import { useNavigation } from '@/app/contexts/NavigationContext'
 import PageLoading from '@/app/_components/_common/PageLoading'
+import ErrorView from '../_components/ErrorView'
 import SearchBar from './_components/SearchBar'
 
 function Page() {
-  const { setCurrentIndex } = useNavigation()
+  const { setCurrentIndex, navigatePage } = useNavigation()
   const { user, isLoaded } = useUser()
+  const [error, setError] = useState(null)
   const [fileState, setFileState] = useState({
     files: [],
     filteredFiles: [],
@@ -25,21 +27,32 @@ function Page() {
 
   useEffect(() => {
     const fetchFiles = async () => {
-      if (isLoaded && user) {
-        const sharedFiles = await getSharedFiles()
-        setFileState(prevState => ({
-          ...prevState,
-          files: sharedFiles,
-          filteredFiles: sharedFiles,
-          loading: false,
-        }))
+      if (isLoaded) {
+        if (user) {
+          try {
+            const sharedFiles = await getSharedFiles()
+            setFileState(prevState => ({
+              ...prevState,
+              files: sharedFiles,
+              filteredFiles: sharedFiles,
+              loading: false,
+            }))
+          } catch (err) {
+            console.error("Error fetching shared files:", err)
+            setError("Jaettujen tiedostojen hakeminen epäonnistui. Yritä uudelleen.")
+          }
+        } else {
+          navigatePage('/sign-in')
+        }
       }
     }
     setCurrentIndex('/jaetut-tiedostot')
     fetchFiles()
-  }, [isLoaded, user, setCurrentIndex])
+  }, [isLoaded, user, setCurrentIndex, navigatePage, setFileState, setError])
 
   if (fileState.loading) return <PageLoading />
+  if (error) return <ErrorView message={error} />
+  if (!user) return <ErrorView message="Kirjaudu sisään nähdäksesi tämän sivun." />
     
   return (
     <main>

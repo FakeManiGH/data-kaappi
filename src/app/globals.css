@@ -5,7 +5,7 @@
 :root {
   --foreground: #171717;
   --background: #e5e5e5;
-  --contrast: #c1c1c1;
+  --contrast: #aaaaaa;
   --navlink: #555555;
   --secondary: #c1c1c1;
   --linear: linear-gradient(90deg, #d1d1d1, #e5e5e5, #d1d1d1);
@@ -15,7 +15,7 @@
   :root {
     --foreground: #e5e5e5;
     --background: #171717;
-    --contrast: #343434;
+    --contrast: #444444;
     --navlink: #999999;
     --secondary: #343434;
     --linear: linear-gradient(0deg, #1a1a1a, #333333, #1a1a1a);
@@ -46,10 +46,10 @@ main {
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  padding: 1rem;
+  padding: 2rem 1rem;
 
   @media screen and (min-width: 768px) {
-    padding: 1rem 3rem;
+    padding: 2rem;
   }
 }
 

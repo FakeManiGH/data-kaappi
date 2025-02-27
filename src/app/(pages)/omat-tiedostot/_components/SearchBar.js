@@ -26,11 +26,11 @@ function SearchBar({ fileState, setFileState }) {
     }
 
     return (
-        <div className="flex items-center gap-1 w-full">
-            <div className="flex items-center w-full rounded-lg bg-background group">
+        <div className="flex items-center gap-1 w-full mb-[-12px]">
+            <div className="flex items-center group w-full bg-background border border-contrast rounded-full hover:border-primary focus-within:border-primary overflow-hidden">
                 <label htmlFor="search" 
-                    className='p-2.5 rounded-lg rounded-r-none text-navlink border border-contrast cursor-pointer group-focus-within:bg-primary 
-                    group-focus-within:text-white group-hover:text-foreground group-hover:border-primary group-focus-within:hover:text-white
+                    className='px-4 py-3 pr-3 text-navlink border-r border-contrast cursor-pointer group-focus-within:bg-primary 
+                    group-focus-within:text-white group-hover:text-foreground group-hover:border-primary group-focus-within:group-hover:text-white
                     group-focus-within:border-primary'
                 >
                     <Search size={20} />
@@ -38,7 +38,7 @@ function SearchBar({ fileState, setFileState }) {
                 <input 
                     type="text"
                     id="search"
-                    className='p-2.5 w-full outline-none text-sm rounded-lg rounded-l-none text-foreground bg-background border border-contrast border-l-0 group-hover:border-primary' 
+                    className='px-4 py-3 w-full outline-none text-sm text-foreground bg-background' 
                     placeholder="Hae tiedostoa..." 
                     onChange={handleSearch}
                 />

@@ -19,9 +19,9 @@ function SideNav() {
                     <Link 
                         href={item.path} 
                         key={item.id} 
-                        className={`flex items-center text-sm gap-2 p-4 px-5 w-full text-navlink ${currentIndex === item.path ? 'text-primary hover:text-primary' : 'text-foreground hover:text-foreground'}`}
+                        className={`flex items-center group text-sm gap-2 p-4 px-5 w-full hover:text-foreground ${currentIndex === item.path ? 'text-foreground' : 'text-navlink'}`}
                     >     
-                        <item.icon size={24} />
+                        <item.icon size={24} className={`group-hover:text-primary ${currentIndex === item.path ? 'text-primary' : 'text-navlink'}`} />
                         <p>{item.name}</p>
                     </Link>
                 ))}

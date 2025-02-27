@@ -1,8 +1,8 @@
-import { Eye, EyeOff } from 'lucide-react'
+import { Eye, EyeOff, Save } from 'lucide-react'
 import React, { useState } from 'react'
-import { updateDocumentValue } from '@/app/file-requests/api'
-import { db } from '@/../firebaseConfig'
 import { useAlert } from '@/app/contexts/AlertContext'
+import { useUser } from '@clerk/nextjs'
+import { updateFilePassword } from '@/app/file-requests/api'
 
 
 function PasswordForm({ file, setFile, setPasswordPopup }) {
@@ -10,6 +10,7 @@ function PasswordForm({ file, setFile, setPasswordPopup }) {
     const { showAlert } = useAlert()
     const fileID = file.fileID
     const password = file.password
+    const { user } = useUser()
 
     // Save password
     const savePassword = async (e) => {
@@ -17,9 +18,9 @@ function PasswordForm({ file, setFile, setPasswordPopup }) {
         let newPassword = e.target.password.value
 
         try {
-            updateDocumentValue(fileID, 'password', newPassword)
-            showAlert('Salasana tallennettu.', 'success')
-            setFile({ ...file, password: newPassword })
+            await updateFilePassword(user.id, fileID, newPassword)
+            showAlert('Tiedoston salasana tallennettu.', 'success')
+            setFile({ ...file, password: 'salasana' })
             setPasswordPopup(false)
         } catch (error) {
             console.error('Error saving password: ', error)
@@ -30,7 +31,7 @@ function PasswordForm({ file, setFile, setPasswordPopup }) {
     // Remove password
     const removePassword = async () => {
         try {
-            updateDocumentValue(fileID, 'password', '')
+            await updateFilePassword(user.id, fileID, '')
             showAlert('Salasana poistettu.', 'success')
             setFile({ ...file, password: '' })
             setPasswordPopup(false)
@@ -49,15 +50,14 @@ function PasswordForm({ file, setFile, setPasswordPopup }) {
         <label htmlFor="password" className="sr-only">Salasana</label>
 
         <div className="relative">
-            <form className="flex flex-col gap-2" onSubmit={savePassword}>
+            <form className="flex flex-col gap-2 text-sm" onSubmit={savePassword}>
                 <label htmlFor="password">Anna salasana:</label>
                 <div className='relative'>
                     <input
                         id="password"
                         name="password"
-                        defaultValue={password}
                         type={showPassword ? 'text' : 'password'}
-                        className="text-sm p-2.5 px-3 w-full outline-none bg-contrast dark:bg-background dark:text-navlink focus:text-foreground rounded-lg pe-12"
+                        className="relative w-full font-light border border-contrast rounded-full group overflow-hidden focus-within:border-primary px-3 py-2.5 outline-none bg-background focus:text-foreground pe-12"
                         placeholder="Kirjoita salasana"
                     />
                     <span className="flex items-center absolute inset-y-0 end-0 px-4">
@@ -70,14 +70,15 @@ function PasswordForm({ file, setFile, setPasswordPopup }) {
                         </button>
                     </span>
                 </div>
-                <div className='flex items-center gap-4'>
-                    <button type='submit' className="flex justify-center whitespace-nowrap text-white w-[30%] min-w-fit bg-primary rounded-full p-2 px-4 hover:bg-primary/90 mt-1">
-                        Tallenna
+                <div className='flex items-center gap-2'>
+                    <button type='submit' className="flex items-center justify-center w-fit px-3 py-2 group border border-contrast rounded-full text-navlink text-sm gap-2 hover:text-foreground hover:border-primary transition-colors">
+                        <Save className='text-primary' />
+                        Tallenna salasana
                     </button>
                     {password && (
                         <button 
                             type='button'
-                            className='text-sm text-red-500 hover:text-red-700'
+                            className='bg-red-500 hover:bg-red-600 text-sm text-white rounded-full p-2 px-3'
                             onClick={removePassword}
                         >Poista salasana</button>
                     )}

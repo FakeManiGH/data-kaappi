@@ -27,14 +27,14 @@ function FileLivePreview({ file, setLivePreview }) {
             <div className="relative flex h-full w-full gap-4 items-center justify-center overflow-auto">
                 {file?.fileType.includes('image') && (
                     <div className="fixed top-20 z-50 flex items-center gap-1">
-                        <button onClick={increaseZoom} className='p-2 bg-gray-600/50 rounded-md hover:text-primary focus:text-primary'><ZoomIn size={24} /></button>
-                        <button onClick={decreaseZoom} className='p-2 bg-gray-600/50 rounded-md hover:text-primary focus:text-primary'><ZoomOut size={24} /></button>
-                        <p className='text-md font-semibold p-2 bg-gray-600/50 rounded-md'>{Math.round(zoom * 100)}%</p>   
+                        <button onClick={increaseZoom} className='p-2 bg-gray-600/50 text-white rounded-md hover:text-primary focus:text-primary'><ZoomIn size={24} /></button>
+                        <button onClick={decreaseZoom} className='p-2 bg-gray-600/50 text-white rounded-md hover:text-primary focus:text-primary'><ZoomOut size={24} /></button>
+                        <p className='text-md p-2 bg-gray-600/50 text-white rounded-md'>{Math.round(zoom * 100)}%</p>   
                     </div>
                 )}
 
                 {file?.fileType.includes('image') && (
-                    <div className="overflow-auto" style={{ height: '100%', width: '100%' }}>
+                    <div className="flex items-center justify-center overflow-auto h-full w-full ">
                         <img src={file.fileUrl} alt={file.fileName} style={{ transform: `scale(${zoom})`, transformOrigin: 'top left' }} />
                     </div>
                 )}

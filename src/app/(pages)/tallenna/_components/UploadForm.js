@@ -2,15 +2,13 @@ import React, { useState } from 'react';
 import AlertMsg from './AlertMsg';
 import { validateFile } from '@/utils/FileValidation';
 import { useAlert } from '@/app/contexts/AlertContext';
-import { useNavigation } from '@/app/contexts/NavigationContext'
 import { getUser, updateUserDocumentValue } from '@/app/file-requests/api';
 import { FilePlus2, Music2 } from 'lucide-react';
 import { useUser } from '@clerk/nextjs';
 
-function UploadForm({ uploadFile, files, setFiles, fileErrors, setFileErrors, setUploadProgress }) {
+function UploadForm({ uploadFile, files, setFiles, fileErrors, setFileErrors, setUploadProgress, setUserDoc }) {
   const [isDragging, setIsDragging] = useState(false);
   const { showAlert } = useAlert();
-  const { navigatePage } = useNavigation();
   const { user } = useUser();
 
   // Handle drag enter
@@ -81,6 +79,9 @@ function UploadForm({ uploadFile, files, setFiles, fileErrors, setFileErrors, se
     // Update used space
     const totalSize = files.reduce((acc, file) => acc + file.size, 0);
     await updateUserDocumentValue(user.id, 'usedSpace', userDoc.usedSpace + totalSize);
+    
+    // Update user document used space
+    setUserDoc({ ...userDoc, usedSpace: userDoc.usedSpace + totalSize });
 
     showAlert('Tiedosto(t) ladattu onnistuneesti.', 'success');
     setFiles([]);
@@ -103,7 +104,7 @@ function UploadForm({ uploadFile, files, setFiles, fileErrors, setFileErrors, se
           onDragLeave={handleDragLeave}
         >
           <label htmlFor="dropzone-file" className={`flex flex-col items-center w-full max-w-full justify-center h-64 
-          rounded-xl cursor-pointer bg-background border-2 border-dashed hover:border-primary  
+          rounded-xl cursor-pointer bg-background border hover:border-primary  
             ${isDragging ? 'border-primary' : 'border-contrast'}`}>
             <div className="flex flex-col max-w-full items-center justify-center p-4 text-center pt-5 pb-6">
               {isDragging ?   
