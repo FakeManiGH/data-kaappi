@@ -12,11 +12,11 @@ export const getCardPreview = ({ file }) => {
         );
     } else if (file.fileType.includes('audio')) {
         return (
-            <img src='/icons/audio.png' alt='Audio PNG illustration' style={{height: '100%', width: '100%', objectFit: 'contain'}} />
+            <img src='/icons/audio.png' alt='Audio PNG illustration' style={{height: '100%', width: '100%', maxHeight: '150px', objectFit: 'contain'}} />
         );
     } else {
         return (
-            <img src='/icons/file.png' alt='File PNG illustration' style={{height: '100%', width: '100%', objectFit: 'contain'}} />
+            <img src='/icons/file.png' alt='File PNG illustration' style={{height: '100%', width: '100%', maxHeight: '150px', objectFit: 'contain'}} />
         );
     }
 }

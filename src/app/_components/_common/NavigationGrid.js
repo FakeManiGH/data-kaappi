@@ -14,7 +14,7 @@ function NavigationGrid() {
                 <Link 
                     href={item.path}
                     key={item.id}
-                    className="flex justify-center text-navlink gap-2 items-center w-full px-4 py-3 border border-contrast 
+                    className="flex justify-center text-navlink gap-2 items-center w-full px-4 py-3 border border-navlink 
                     rounded-full group hover:border-primary active:border-primary">
                         <item.icon className='text-primary' />
                         <p className="text-sm  whitespace-nowrap group-hover:text-foreground">{item.name}</p>

@@ -147,17 +147,17 @@ function Page({ params }) {
             <div className='grid grid-cols-2 lg:grid-cols-3 items-center gap-2 w-full max-w-full'>
                 <button 
                     href={file.fileUrl}
-                    className='flex items-center justify-center px-3 py-2 group border border-contrast rounded-full text-navlink text-sm gap-2 hover:text-foreground hover:border-primary transition-colors'
+                    className='flex items-center justify-center px-3 py-3 group border border-navlink rounded-full text-navlink text-sm gap-2 hover:text-foreground hover:border-primary transition-colors'
                     onClick={() => setLivePreview(true)}
                 >
                     <ScanEye className='text-primary' />
                     Esikatsele
                 </button>
 
-                <DownloadBtn url={file.fileUrl} fileName={file.fileName} buttonStyle="w-full" />
+                <DownloadBtn url={file.fileUrl} fileName={file.fileName} buttonStyle="w-full py-3" />
 
                 <button 
-                    className='flex items-center justify-center px-3 py-2 group border border-contrast rounded-full text-navlink text-sm gap-2 hover:text-foreground hover:border-primary transition-colors'
+                    className='flex items-center justify-center px-3 py-3 group border border-navlink rounded-full text-navlink text-sm gap-2 hover:text-foreground hover:border-primary transition-colors'
                     onClick={handleShare}
                 >
                     <Share2 className='text-primary' />

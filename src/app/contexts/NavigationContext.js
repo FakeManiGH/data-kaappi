@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react';
-import { BookMarked, CircleGauge, FolderHeart, PackageOpen, UploadCloud } from 'lucide-react';
+import { BookMarked, CircleGauge, FolderHeart, Home, PackageOpen, UploadCloud } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 const NavigationContext = createContext();
@@ -11,6 +11,7 @@ export const NavigationProvider = ({ children }) => {
     useEffect(() => {
         const path = `/${window.location.pathname.split('/')[1]}`;
         setCurrentIndex(path);
+        console.log(path);
     }, []);
 
     const navList = [
@@ -44,7 +45,28 @@ export const NavigationProvider = ({ children }) => {
             icon: BookMarked,
             path: '/tietoa'
         }
-    ]
+    ];
+
+    const publicNav = [
+        {
+            id: 1,
+            name: 'Etusivu',
+            icon: Home,
+            path: '/'
+        },
+        {
+            id: 2,
+            name: 'Tallenna',
+            icon: UploadCloud,
+            path: '/tallenna'
+        },
+        {
+            id: 3,
+            name: 'Tietoa palvelusta',
+            icon: BookMarked,
+            path: '/tietoa'
+        }
+    ];
 
     const navigatePage = (path) => {
         setCurrentIndex(path)
@@ -52,7 +74,7 @@ export const NavigationProvider = ({ children }) => {
     }
 
     return (
-        <NavigationContext.Provider value={{ navList, currentIndex, setCurrentIndex, navigatePage }}>
+        <NavigationContext.Provider value={{ navList, publicNav, currentIndex, setCurrentIndex, navigatePage }}>
             {children}
         </NavigationContext.Provider>
     );

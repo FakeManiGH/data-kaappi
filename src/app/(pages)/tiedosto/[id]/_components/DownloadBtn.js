@@ -27,7 +27,7 @@ function DownloadBtn({ url, fileName, buttonStyle }) {
     return (
         <button 
             disabled={fetching}
-            className={`flex items-center justify-center px-3 py-2 group border border-contrast rounded-full text-navlink text-sm gap-2 hover:text-foreground hover:border-primary transition-colors
+            className={`flex items-center justify-center px-3 py-2 group border border-navlink rounded-full text-navlink text-sm gap-2 hover:text-foreground hover:border-primary transition-colors
                 ${buttonStyle} ${fetching ? 'cursor-not-allowed' : 'cursor-pointer'}`}
             onClick={downloadFile}
         >

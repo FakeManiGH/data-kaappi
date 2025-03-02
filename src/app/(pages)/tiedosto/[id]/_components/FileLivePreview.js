@@ -57,6 +57,14 @@ function FileLivePreview({ file, setLivePreview }) {
                 {file?.fileType.includes('text') && (
                     <pre className="text-sm text-white">{file.fileContent}</pre>
                 )}
+
+                {/* if file is not image, video, audio, pdf or text*/}
+                {file?.fileType.includes('application') && (
+                    <div className="flex items-center justify-center gap-4">
+                        <img src='/icons/file.png' alt={file.fileName} className="h-20 w-20" />
+                        <p className="text-xl text-white">Tiedostotyyppiä ei voida esikatsella</p>
+                    </div>
+                )}
             </div>
         </div>
         </>

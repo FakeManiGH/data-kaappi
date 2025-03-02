@@ -9,7 +9,7 @@ import { AlignJustify, CircleGauge, LogIn } from 'lucide-react'
 function Header() {
     const [dropdown, setDropdown] = useState(false)
     const { isSignedIn, isLoaded } = useUser()
-    const { navList } = useNavigation()
+    const { publicNav, currentIndex } = useNavigation()
     const dropdownRef = useRef(null)
 
     useEffect(() => {
@@ -27,20 +27,20 @@ function Header() {
 
     return (
     <header>
-        <div className="relative flex items-center justify-between p-4 w-full mx-auto bg-background">
+        <div className="relative flex items-center justify-between p-4 w-full bg-background max-w-7xl mx-auto">
             <div className="flex items-center gap-2">
                 <Image src='/logo.svg' alt="Logo" width={40} height={40} />
                 <p className='font-bold'>Datakaappi</p>
             </div>
 
-            <div className="flex items-center gap-6">
+            <div className="flex items-center gap-4">
                 <nav aria-label="Global" className="hidden lg:block">
-                    <ul className="flex items-center gap-6">
-                        {navList && navList.map((item) => (
+                    <ul className="flex items-center gap-4">
+                        {publicNav && publicNav.map((item) => (
                             <li key={item.id}>
                                 <Link 
                                     href={item.path} 
-                                    className="flex items-center gap-2 text-sm text-navlink hover:text-primary"
+                                    className={`flex items-center gap-2 text-sm text-navlink hover:text-primary ${currentIndex === item.path ? 'text-primary' : 'text-navlink'}`}
                                 >
                                     {item.name}
                                 </Link>
@@ -49,10 +49,10 @@ function Header() {
                     </ul>
                 </nav>
 
-                <div className="flex items-center gap-4">
+                <div className="flex items-center">
                     {isLoaded && isSignedIn ? (
                         <Link
-                            className="flex gap-2 items-center rounded-full border border-contrast px-5 py-3 text-sm text-navlink shadow-md hover:border-primary hover:text-foreground"
+                            className="flex gap-2 items-center rounded-full border border-contrast px-4 py-3 text-sm text-navlink shadow-md hover:border-primary hover:text-foreground"
                             href="/kojelauta"
                         >   
                             <CircleGauge size={20} className='text-primary' />
@@ -60,7 +60,7 @@ function Header() {
                         </Link>
                     ) : (
                         <Link
-                            className="flex gap-2 items-center rounded-full border border-contrast px-5 py-3 text-sm text-navlink shadow-md hover:border-primary hover:text-foreground"
+                            className="flex gap-2 items-center rounded-full border border-contrast px-4 py-3 text-sm text-navlink shadow-md hover:border-primary hover:text-foreground"
                             href="/sign-in"
                         >   
                             <LogIn size={20} className='text-primary' />
@@ -80,7 +80,7 @@ function Header() {
                             className="absolute z-50 top-[85%] ml-auto inset-x-4 max-w-64 bg-background border border-contrast rounded-lg shadow-xl shadow-black/25 overflow-hidden" 
                             role="menu"
                         >
-                            {navList && navList.map((item) => (
+                            {publicNav && publicNav.map((item) => (
                                 <Link
                                     href={item.path}
                                     key={item.id}

@@ -1,26 +1,35 @@
-import React, { useState, useEffect } from 'react'
-import { getFileIcon } from '@/utils/GetFileIcon'
-import { Copy, CopyCheckIcon, Grid, List, LockKeyhole, LucideSquareCheckBig, Share2, Trash, Trash2, User, X } from 'lucide-react'
-import Link from 'next/link'
-import { getCardPreview } from '@/utils/FilePreview'
-import { useAlert } from '@/app/contexts/AlertContext'
-import { deleteFile } from '@/app/file-requests/api'
-import { useNavigation } from '@/app/contexts/NavigationContext'
-import { formatDateFromCollection, translateFileSize, cleanDataType } from '@/utils/DataTranslation'
-import DeleteConfirmPopup from './DeleteConfirmPopup'
-import { useUser } from '@clerk/nextjs'
+import React, { useState, useEffect, useRef, use } from 'react';
+import { getFileIcon } from '@/utils/GetFileIcon';
+import { Copy, CopyCheckIcon, Grid, List, LockKeyhole, LucideSquareCheckBig, Share2, Trash, Trash2, User, X } from 'lucide-react';
+import Link from 'next/link';
+import { getCardPreview } from '@/utils/FilePreview';
+import { useAlert } from '@/app/contexts/AlertContext';
+import { deleteFile } from '@/app/file-requests/api';
+import { useNavigation } from '@/app/contexts/NavigationContext';
+import { formatDateFromCollection, translateFileSize, cleanDataType } from '@/utils/DataTranslation';
+import DeleteConfirmPopup from './DeleteConfirmPopup';
+import { useUser } from '@clerk/nextjs';
 
 function FileContainer({ fileState, setFileState }) {
-    const [view, setView] = useState('grid')
-    const [deletePopup, setDeletePopup] = useState(false)
-    const { showAlert } = useAlert()
-    const { user } = useUser()
+    const [view, setView] = useState('grid');
+    const [deletePopup, setDeletePopup] = useState(false);
+    const { showAlert } = useAlert();
+    const { user } = useUser();
+
+    useEffect(() => {
+        if (fileState.selectedFiles.length === 0) {
+            setFileState(prevState => ({...prevState, selecting: false}));
+        }
+    }, [fileState.selectedFiles]);
 
     // Determine which files to display
-    const displayFiles = fileState.searched ? fileState.searchedFiles : (fileState.filtered ? fileState.filteredFiles : fileState.files)
-
-   // Handle file selection
-   const handleFileSelect = (file) => {
+    const displayFiles = fileState.searched ? fileState.searchedFiles 
+                      : fileState.filtered ? fileState.filteredFiles 
+                      : fileState.sorted ? fileState.sortedFiles 
+                      : fileState.files;
+                      
+    // Handle file selection
+    const handleFileSelect = (file) => {
         setFileState(prevState => {
             const isSelected = prevState.selectedFiles.some(selectedFile => selectedFile.fileID === file.fileID);
             const selectedFiles = isSelected
@@ -45,9 +54,9 @@ function FileContainer({ fileState, setFileState }) {
 
             const data = await response.json();
             if (response.ok) {
-                showAlert(data.message, 'success')
+                showAlert(data.message, 'success');
             } else {
-                showAlert(data.message, 'error')
+                showAlert(data.message, 'error');
             }
             // remove deleted files from state (files/filteredFiles/searchedFiles)
             setFileState(prevState => ({
@@ -57,14 +66,14 @@ function FileContainer({ fileState, setFileState }) {
                 searchedFiles: prevState.searchedFiles.filter(file => !prevState.selectedFiles.includes(file)),
                 selectedFiles: [],
                 selecting: false
-            }))
+            }));
         } catch (error) {
-            console.error('Error deleting files:', error)
-            showAlert('Palvelinvirhe! Yritä uudelleen.', 'error')
+            console.error('Error deleting files:', error);
+            showAlert('Palvelinvirhe! Yritä uudelleen.', 'error');
         } finally {
-            setDeletePopup(false)
+            setDeletePopup(false);
         }
-    }
+    };
 
     return (
         <>
@@ -72,32 +81,32 @@ function FileContainer({ fileState, setFileState }) {
             <div className='flex items-center gap-1'>
                 <button 
                     title='Ruudukko' 
-                    className={`p-3 border border-contrast bg-background rounded-full
-                        ${view === 'grid' ? 'text-white bg-primary border-primary hover:text-white' : 'text-navlink border-contrast hover:border-primary hover:text-foreground'}`} 
+                    className={`p-3 border bg-background rounded-full
+                        ${view === 'grid' ? 'text-white bg-primary border-primary hover:text-white' : 'text-navlink border-navlink hover:border-primary hover:text-foreground'}`} 
                     onClick={() => setView('grid')}>
                         <Grid size={20} />
                 </button>
                 <button 
                     title='Lista' 
-                    className={`p-3 border border-contrast bg-background rounded-full 
-                        ${view === 'list' ? 'text-white bg-primary border-primary hover:text-white' : 'text-navlink border-contrast hover:border-primary hover:text-foreground'}` } 
+                    className={`p-3 border bg-background rounded-full 
+                        ${view === 'list' ? 'text-white bg-primary border-primary hover:text-white' : 'text-navlink border-navlink hover:border-primary hover:text-foreground'}` } 
                     onClick={() => setView('list')}>
                         <List size={20} />
                 </button>
                 <button 
                     title='Valitse tiedostoja'
-                    className={`p-3 border border-contrast bg-background rounded-full 
-                        ${fileState.selecting ? 'text-white bg-primary border-primary hover:text-white' : 'text-navlink border-contrast hover:border-primary hover:text-foreground'}` } 
+                    className={`p-3 border bg-background rounded-full 
+                        ${fileState.selecting ? 'text-white bg-primary border-primary hover:text-white' : 'text-navlink border-navlink hover:border-primary hover:text-foreground'}` } 
                     onClick={() => setFileState(prevState => ({...prevState, selecting: !prevState.selecting, selectedFiles: prevState.selecting ? [] : prevState.selectedFiles}))}>
                         <Copy size={20} />
                 </button>
                 {fileState.selecting && (
                     <button
                         title='Valitse kaikki'
-                        className={`p-3 border border-contrast text-navlink bg-background rounded-full hover:text-foreground hover:border-primary
+                        className={`p-3 border border-navlink text-navlink bg-background rounded-full hover:text-foreground hover:border-primary
                             ${fileState.selectedFiles.length === displayFiles.length && fileState.selectedFiles.length > 0 && 'bg-primary text-white border-primary hover:text-white'}`}
-                        onClick={() => setFileState(prevState => ({...prevState, selectedFiles: prevState.selectedFiles.length === displayFiles.length ? [] : displayFiles}))
-                    }>
+                        onClick={() => setFileState(prevState => ({...prevState, selectedFiles: prevState.selectedFiles.length === displayFiles.length ? [] : displayFiles}))}
+                    >
                         <CopyCheckIcon size={20} />
                     </button>
                 )}
@@ -106,7 +115,7 @@ function FileContainer({ fileState, setFileState }) {
             {fileState.selectedFiles.length > 0 && 
                 <div className='flex items-center gap-1 text-sm'>
                     <button 
-                        className='flex items-center gap-1 px-4 py-3 text-navlink hover:border-primary hover:text-foreground border border-contrast rounded-full group' 
+                        className='flex items-center gap-1 px-4 py-3 text-navlink hover:border-primary hover:text-foreground border border-navlink rounded-full group' 
                         onClick={() => setFileState(prevState => ({...prevState, selectedFiles: [], selecting: false}))}
                         title='Peruuta valinta'
                     >
@@ -134,15 +143,15 @@ function FileContainer({ fileState, setFileState }) {
 
         {/* Grid view */}
         {view === 'grid' && displayFiles.length > 0 &&
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 xl:grid-cols-7 gap-2 px-1">
+        <div className="masonry-grid">
 
             {displayFiles.map((file) => (
                 <div 
                     key={file.fileID} 
-                    className={`relative flex flex-col gap-2 group p-2 aspect-[1/1] bg-background overflow-hidden rounded-lg border hover:shadow-md 
+                    className={`masonry-item bg-background group border rounded-lg 
                         ${fileState.selectedFiles.includes(file) 
                             ? 'border-primary hover:border-primary shadow-md' 
-                            : 'border-transparent hover:border-contrast'
+                            : 'border-transparent hover:border-navlink'
                         }`}
                 >   
                     <div className={`absolute flex flex-col items-center bg-background rounded-lg top-0 left-0 gap-1 ${file.shared || file.password ? 'p-1' : 'p-0'}`}>
@@ -162,16 +171,16 @@ function FileContainer({ fileState, setFileState }) {
                     </div>
 
                     <Link 
-                        className='flex flex-col h-full gap-1 justify-between hover:text-primary'
+                        className='flex flex-col gap-1 hover:text-primary'
                         href={`/tiedosto/${file.fileID}`}
                         onClick={(e) => e.stopPropagation()}
                         title={file.fileName}
                     >   
-                        <div className='flex justify-center h-5/6'>
+                        <div className='align-middle'>
                             {getCardPreview({ file })}
                         </div>
                        
-                        <p className="flex h-1/6 text-sm font-semibold hover:text-primary text-ellipsis whitespace-nowrap">
+                        <p className="flex text-sm font-semibold hover:text-primary text-ellipsis whitespace-nowrap">
                             {file.fileName}
                         </p>
                     </Link>
@@ -186,7 +195,7 @@ function FileContainer({ fileState, setFileState }) {
             {displayFiles.map((file) => (
                 <div 
                     key={file.fileID} 
-                    className={`relative grid grid-cols-1 md:grid-cols-2 gap-2 py-2 border-b border-contrast ${fileState.selectedFiles.includes(file) && 'border-primary'}`}
+                    className={`relative grid grid-cols-1 md:grid-cols-2 gap-2 py-2 border-b border-navlink ${fileState.selectedFiles.includes(file) && 'border-primary'}`}
                 >   
                     <div className='flex items-center gap-4 overflow-hidden'>
                         {fileState.selecting && (
@@ -229,7 +238,7 @@ function FileContainer({ fileState, setFileState }) {
         }
 
         </>
-    )
+    );
 }
 
-export default FileContainer
+export default FileContainer;
