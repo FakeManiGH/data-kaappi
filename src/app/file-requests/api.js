@@ -51,10 +51,10 @@ export const updateUserDocumentValue = async (userID, key, value) => {
 // DELETE FILE FUNCTIONS
 // Delete file
 export const deleteFile = async (file) => {
-    const desertRef = ref(storage, `file-base/${file.fileID}`);
+    const desertRef = ref(storage, `file-base/${file.id}`);
 
     try {
-        await deleteDoc(doc(db, "files", file.fileID));
+        await deleteDoc(doc(db, "files", file.id));
         await deleteObject(desertRef);
     } catch (error) {
         console.error("Error deleting file: ", error)

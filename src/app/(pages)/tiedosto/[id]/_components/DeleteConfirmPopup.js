@@ -25,7 +25,7 @@ function DeleteConfirmPopup({ file, setDeletePopup, setDeleted }) {
         try {
             const response = await fetch('/api/delete-files', {
                 method: 'DELETE',
-                body: JSON.stringify({ userID: file.userID, files: [file] }),
+                body: JSON.stringify({ userID: file.user.id, files: [file] }),
             })
 
             const data = await response.json();

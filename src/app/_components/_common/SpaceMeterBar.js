@@ -3,7 +3,7 @@ import { translateFileSize } from '@/utils/DataTranslation';
 
 function SpaceMeterBar({ usedSpace, totalSpace }) {
     const percentage = (usedSpace / totalSpace) * 100;
-    const roundedPrecentage = Math.round(percentage);
+    const roundedPercentage = Math.round(percentage);
 
     return (
         <div className="flex flex-col gap-1 w-full">
@@ -13,9 +13,9 @@ function SpaceMeterBar({ usedSpace, totalSpace }) {
                     {translateFileSize(usedSpace)} / {translateFileSize(totalSpace)}
                 </p>
             </div>
-            <div className="w-full bg-contrast rounded-full">
-                <div className="bg-primary rounded-full" style={{width: `${percentage}%`}}></div>
-                <p className='text-sm px-1'>{roundedPrecentage}%</p>
+            <div className="w-full bg-contrast rounded-full relative h-4">
+                <div className="bg-primary rounded-full h-4" style={{ width: `${percentage}%` }}></div>
+                <p className='text-sm px-1 absolute left-0'>{roundedPercentage}%</p>
             </div>
         </div> 
     )

@@ -6,7 +6,7 @@ import { useAlert } from '@/app/contexts/AlertContext'
 
 function SharePopup({ file, setFile, setSharePopup }) {
     const [shared, setShared] = useState(file.shared)
-    const fileID = file.fileID
+    const fileID = file.id
     const { showAlert } = useAlert()
 
     useEffect(() => {

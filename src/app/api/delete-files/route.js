@@ -11,7 +11,7 @@ export async function DELETE(request) {
         }
 
         for (const file of files) {
-            if (file.userID !== userID) {
+            if (file.user.id !== userID) {
                 return NextResponse.json({ message: 'Sinulla ei ole oikeutta poistaa tiedostoa tai tiedostoja.' }, { status: 403 });
             }
             await deleteFile(file);

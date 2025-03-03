@@ -35,7 +35,7 @@ function DeleteConfirmPopup({ selectedFiles, handleDeleteFiles, setDeletePopup }
 
                     <ul className="flex flex-col items-center max-h-52 w-full overflow-y-auto list-disc list-inside">
                         {selectedFiles.map((file) => (
-                            <li key={file.fileID} className='text-red-600 dark:text-red-500'>{file.fileName}</li>
+                            <li key={file.id} className='text-red-600 dark:text-red-500'>{file.name}</li>
                         ))}
                     </ul>
                 </div>

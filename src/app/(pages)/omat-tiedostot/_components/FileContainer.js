@@ -1,11 +1,9 @@
 import React, { useState, useEffect, useRef, use } from 'react';
 import { getFileIcon } from '@/utils/GetFileIcon';
-import { Copy, CopyCheckIcon, Grid, List, LockKeyhole, LucideSquareCheckBig, Share2, Trash, Trash2, User, X } from 'lucide-react';
+import { Copy, CopyCheckIcon, Grid, List, LockKeyhole, Share2, Trash2, X } from 'lucide-react';
 import Link from 'next/link';
 import { getCardPreview } from '@/utils/FilePreview';
 import { useAlert } from '@/app/contexts/AlertContext';
-import { deleteFile } from '@/app/file-requests/api';
-import { useNavigation } from '@/app/contexts/NavigationContext';
 import { formatDateFromCollection, translateFileSize, cleanDataType } from '@/utils/DataTranslation';
 import DeleteConfirmPopup from './DeleteConfirmPopup';
 import { useUser } from '@clerk/nextjs';
@@ -31,9 +29,9 @@ function FileContainer({ fileState, setFileState }) {
     // Handle file selection
     const handleFileSelect = (file) => {
         setFileState(prevState => {
-            const isSelected = prevState.selectedFiles.some(selectedFile => selectedFile.fileID === file.fileID);
+            const isSelected = prevState.selectedFiles.some(selectedFile => selectedFile.id === file.id);
             const selectedFiles = isSelected
-                ? prevState.selectedFiles.filter(selectedFile => selectedFile.fileID !== file.fileID)
+                ? prevState.selectedFiles.filter(selectedFile => selectedFile.id !== file.id)
                 : [...prevState.selectedFiles, file];
                 
             return {
@@ -147,7 +145,7 @@ function FileContainer({ fileState, setFileState }) {
 
             {displayFiles.map((file) => (
                 <div 
-                    key={file.fileID} 
+                    key={file.id} 
                     className={`masonry-item bg-background group border rounded-lg 
                         ${fileState.selectedFiles.includes(file) 
                             ? 'border-primary hover:border-primary shadow-md' 
@@ -172,16 +170,16 @@ function FileContainer({ fileState, setFileState }) {
 
                     <Link 
                         className='flex flex-col gap-1 hover:text-primary'
-                        href={`/tiedosto/${file.fileID}`}
+                        href={`/tiedosto/${file.id}`}
                         onClick={(e) => e.stopPropagation()}
-                        title={file.fileName}
+                        title={file.name}
                     >   
                         <div className='align-middle'>
                             {getCardPreview({ file })}
                         </div>
                        
                         <p className="flex text-sm font-semibold hover:text-primary text-ellipsis whitespace-nowrap">
-                            {file.fileName}
+                            {file.name}
                         </p>
                     </Link>
                 </div>
@@ -194,7 +192,7 @@ function FileContainer({ fileState, setFileState }) {
         <div className='flex flex-col gap-4 px-1'>
             {displayFiles.map((file) => (
                 <div 
-                    key={file.fileID} 
+                    key={file.id} 
                     className={`relative grid grid-cols-1 md:grid-cols-2 gap-2 py-2 border-b border-navlink ${fileState.selectedFiles.includes(file) && 'border-primary'}`}
                 >   
                     <div className='flex items-center gap-4 overflow-hidden'>
@@ -209,21 +207,21 @@ function FileContainer({ fileState, setFileState }) {
                                 checked={fileState.selectedFiles.includes(file)}
                             />
                         </>)}
-                        <img src={getFileIcon(file.fileType)} alt={file.fileName} className="w-7 h-auto" />
+                        <img src={getFileIcon(file.type)} alt={file.name} className="w-7 h-auto" />
                         <Link 
-                            href={`/tiedosto/${file.fileID}`} 
+                            href={`/tiedosto/${file.id}`} 
                             className="text-sm font-semibold hover:text-primary truncate-2-row text-ellipsis"
                             onClick={(e) => e.stopPropagation()}
                         >
-                            {file.fileName}
+                            {file.name}
                         </Link>
                     </div>
                     <div className='flex items-center gap-3 justify-start md:justify-end'>
                         {file.shared && <p title='Jaettu' className='text-xs text-success'><Share2 size={18} /></p>}
                         {file.password && <p title='Salasana suojattu' className='text-xs text-success'><LockKeyhole size={18} /></p>}
                         <p className='text-sm whitespace-nowrap text-navlink'>{formatDateFromCollection(file.uploadedAt)}</p>
-                        <p className="text-sm whitespace-nowrap text-navlink">{cleanDataType(file.fileType)}</p>
-                        <p className="text-sm whitespace-nowrap text-navlink">{translateFileSize(file.fileSize)}</p>
+                        <p className="text-sm whitespace-nowrap text-navlink">{cleanDataType(file.type)}</p>
+                        <p className="text-sm whitespace-nowrap text-navlink">{translateFileSize(file.size)}</p>
                     </div>
                 </div>
             ))}

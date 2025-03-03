@@ -32,7 +32,7 @@ function FileNav({ fileState, setFileState }) {
                 filtered: false,
             }));
         } else {
-            const filesAfterFilter = fileState.files.filter((file) => simplifyFileType(file.fileType) === filter);
+            const filesAfterFilter = fileState.files.filter((file) => simplifyFileType(file.type) === filter);
             setFileState(prevState => ({
                 ...prevState,
                 filteredFiles: filesAfterFilter,
@@ -99,7 +99,7 @@ function FileNav({ fileState, setFileState }) {
                 }));
                 break;
             case 'name-asc':
-                const sortedFiles3 = filesToSort.sort((a, b) => a.fileName.localeCompare(b.fileName));
+                const sortedFiles3 = filesToSort.sort((a, b) => a.name.localeCompare(b.name));
                 setFileState(prevState => ({
                     ...prevState,
                     sortedFiles: sortedFiles3,
@@ -108,7 +108,7 @@ function FileNav({ fileState, setFileState }) {
                 }));
                 break;
             case 'name-desc':
-                const sortedFiles4 = filesToSort.sort((a, b) => b.fileName.localeCompare(a.fileName));
+                const sortedFiles4 = filesToSort.sort((a, b) => b.name.localeCompare(a.name));
                 setFileState(prevState => ({
                     ...prevState,
                     sortedFiles: sortedFiles4,
@@ -153,7 +153,7 @@ function FileNav({ fileState, setFileState }) {
     };
 
     return (
-        <div className='relative flex flex-wrap items-end justify-between pb-2'>
+        <div className='relative flex flex-wrap items-end gap-4 justify-between pb-2'>
             <h1 className='text-2xl md:text-3xl'><strong>Omat tiedostot</strong></h1>
 
             <div ref={dropDowns} className='flex items-center gap-4'>

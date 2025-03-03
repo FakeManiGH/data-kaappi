@@ -17,8 +17,8 @@ function SpaceMeterCircle({ usedSpace, totalSpace }) {
 
             {/* Text */}
             <div className="absolute top-1/2 start-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
-                <p className="text-lg font-bold">{translateFileSize(usedSpace)}</p>
-                <p className="text-sm">/ {translateFileSize(totalSpace)}</p>
+                <p className="text-lg font-black">{translateFileSize(usedSpace)}</p>
+                <p className="text-md">/ {translateFileSize(totalSpace)}</p>
             </div>
         </div>
         </>

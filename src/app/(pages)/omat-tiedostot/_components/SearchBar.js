@@ -9,19 +9,35 @@ function SearchBar({ fileState, setFileState }) {
 
         if (searchValue.length > 1) {
             const searchedFiles = filesToSearch.filter((file) => {
-                return file.fileName.toLowerCase().includes(searchValue)
+                return file.name.toLowerCase().includes(searchValue)
             })
             setFileState(prevState => ({
                 ...prevState,
                 searchedFiles,
-                searched: true
+                searched: true,
             }))
+            
+            // If files are sorted, search from sorted files
+            if (fileState.sorted) {
+                setFileState(prevState => ({
+                    ...prevState,
+                    sortedFiles: searchedFiles
+                }))
+            }
+
         } else {
             setFileState(prevState => ({
                 ...prevState,
                 searchedFiles: [],
                 searched: false
             }))
+
+            if (fileState.sorted) {
+                setFileState(prevState => ({
+                    ...prevState,
+                    sortedFiles: fileState.filtered ? fileState.filteredFiles : fileState.files
+                }))
+            }
         }
     }
 

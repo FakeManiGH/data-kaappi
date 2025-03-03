@@ -29,13 +29,19 @@ function Page({ params }) {
     useEffect(() => {
         const getFile = async (id) => {
             try {
-                const fileData = await getFileInfo(id)
-                setFile(fileData)
-                setLoading(false)
+                const response = await fetch(`/api/get-file-info?fileID=${id}`)
+                const data = await response.json()
+                if (response.ok) {
+                    setFile(data.file)
+                } else {
+                    setError(data.message)
+                    showAlert(data.message, 'error')
+                }
             } catch (error) {
                 console.error("Error fetching file: ", error)
+            } finally {
                 setLoading(false)
-            } 
+            }
         }
 
         if (isLoaded) {
@@ -104,7 +110,7 @@ function Page({ params }) {
     if (error) return <ErrorView message={error} />
     if (!user) return <ErrorView message="Kirjaudu sisään nähdäksesi tämän sivun." />
 
-    if (!file || (file && !file.shared && user?.id !== file.userID)) return (
+    if (!file || (file && !file.shared && user?.id !== file.user.id)) return (
         <main>
             <Link href="/omat-tiedostot" className='flex items-center text-sm text-navlink gap-2 hover:text-foreground'>
                 <ArrowLeftCircle size={24} className='text-primary' />
@@ -118,7 +124,7 @@ function Page({ params }) {
         </main>
     )
 
-    if (file.password && !isPasswordValid && user?.id !== file.userID) return (
+    if (file.password && !isPasswordValid && user?.id !== file.user.id) return (
         <main>
             <Link href="/jaetut-tiedostot" className='flex items-center text-sm text-navlink space-x-2 gap-1 hover:text-foreground'>
                 <ArrowLeftCircle className='text-primary' />
@@ -138,15 +144,15 @@ function Page({ params }) {
             <FileNav file={file} setFile={setFile} setDeleted={setDeleted} />
 
             <div className='flex flex-col gap-1'>
-                <h1 className='text-xl md:text-3xl'><strong>{file.fileName}</strong></h1>
-                <p className='flex gap-1 items-center text-sm'><User2 size={20} /> {file.uploadedBy}</p>
+                <h1 className='text-xl md:text-3xl'><strong>{file.name}</strong></h1>
+                <p className='flex gap-1 items-center text-sm'><User2 size={20} /> {file.user.name}</p>
             </div>
 
             <FilePreview file={file} setFile={setFile} />
 
             <div className='grid grid-cols-2 lg:grid-cols-3 items-center gap-2 w-full max-w-full'>
                 <button 
-                    href={file.fileUrl}
+                    href={file.url}
                     className='flex items-center justify-center px-3 py-3 group border border-navlink rounded-full text-navlink text-sm gap-2 hover:text-foreground hover:border-primary transition-colors'
                     onClick={() => setLivePreview(true)}
                 >
@@ -154,7 +160,7 @@ function Page({ params }) {
                     Esikatsele
                 </button>
 
-                <DownloadBtn url={file.fileUrl} fileName={file.fileName} buttonStyle="w-full py-3" />
+                <DownloadBtn url={file.url} fileName={file.name} buttonStyle="w-full py-3" />
 
                 <button 
                     className='flex items-center justify-center px-3 py-3 group border border-navlink rounded-full text-navlink text-sm gap-2 hover:text-foreground hover:border-primary transition-colors'

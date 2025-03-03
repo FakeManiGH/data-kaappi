@@ -3,14 +3,13 @@ import React, { useEffect, useState } from 'react'
 import FileNav from './_components/FileNav'
 import FileContainer from './_components/FileContainer'
 import { useUser } from '@clerk/nextjs'
-import { getFiles } from '@/app/file-requests/api'
 import { useNavigation } from '@/app/contexts/NavigationContext'
 import { useAlert } from '@/app/contexts/AlertContext'
 import PageLoading from '@/app/_components/_common/PageLoading'
 import SearchBar from './_components/SearchBar'
 
 function Page() {
-  const { setCurrentIndex } = useNavigation()
+  const { setCurrentIndex, navigatePage } = useNavigation()
   const { user, isLoaded } = useUser()
   const { showAlert } = useAlert()
   const [fileState, setFileState] = useState({
@@ -32,22 +31,40 @@ function Page() {
     const fetchFiles = async () => {
       if (isLoaded && user) {
         try {
-          const userFiles = await getFiles(user.id)
+          const response = await fetch(`/api/get-files-user?userID=${user.id}`, {
+            method: 'GET',
+          })
+
+          const data = await response.json()
+
+          if (!response.ok) {
+            showAlert(data.message, 'error')
+            return
+          } 
+
+          const userFiles = data.files.map(file => ({
+            ...file,
+          }))
+
           setFileState(prevState => ({
             ...prevState,
             files: userFiles,
             filteredFiles: userFiles,
             loading: false,
           }))
+
         } catch (error) {
           showAlert('Tiedostojen hakeminen epäonnistui. Yritä uudelleen.', 'error')
           setFileState(prevState => ({ ...prevState, loading: false }))
         }
+      } else {
+        navigatePage('/sign-in')
       }
     }
-    setCurrentIndex('/omat-tiedostot')
+
     fetchFiles()
-  }, [isLoaded, user, setCurrentIndex, setFileState])
+    setCurrentIndex('/omat-tiedostot')
+  }, [isLoaded, user, setCurrentIndex, setFileState, navigatePage])
 
   if (fileState.loading) return <PageLoading />
     
