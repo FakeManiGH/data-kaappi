@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react';
-import { BookMarked, CircleGauge, FolderHeart, Home, PackageOpen, UploadCloud } from 'lucide-react';
+import { BookMarked, CircleGauge, GalleryVerticalEnd, Home, LucideFolderTree, PackageOpen, UploadCloud } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 const NavigationContext = createContext();
@@ -29,18 +29,24 @@ export const NavigationProvider = ({ children }) => {
         },
         {
             id: 3,
-            name: 'Omat tiedostot',
-            icon: FolderHeart,
-            path: '/omat-tiedostot'
+            name: 'Kansiot',
+            icon: LucideFolderTree,
+            path: '/kansiot'
         },
         {
             id: 4,
+            name: 'Kaikki tiedostot',
+            icon: GalleryVerticalEnd,
+            path: '/kaikki-tiedostot'
+        },
+        {
+            id: 5,
             name: 'Jaetut tiedostot',
             icon: PackageOpen,
             path: '/jaetut-tiedostot'
         },
         {
-            id: 5,
+            id: 6,
             name: 'Tietoa',
             icon: BookMarked,
             path: '/tietoa'

@@ -37,7 +37,7 @@ function DeleteConfirmPopup({ file, setDeletePopup, setDeleted }) {
             }
 
             setDeletePopup(false)
-            navigatePage('/omat-tiedostot')
+            navigatePage('/kaikki-tiedostot')
         } catch (error) {
             console.error("Error deleting file: ", error)
             showAlert('Tiedoston poistaminen epäonnistui.', 'error')

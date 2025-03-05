@@ -146,10 +146,10 @@ function FileContainer({ fileState, setFileState }) {
             {displayFiles.map((file) => (
                 <div 
                     key={file.id} 
-                    className={`masonry-item bg-background group border rounded-lg 
+                    className={`masonry-item bg-background group border rounded-lg transition-colors
                         ${fileState.selectedFiles.includes(file) 
                             ? 'border-primary hover:border-primary shadow-md' 
-                            : 'border-transparent hover:border-navlink'
+                            : 'border-transparent hover:border-contrast'
                         }`}
                 >   
                     <div className={`absolute flex flex-col items-center bg-background rounded-lg top-0 left-0 gap-1 ${file.shared || file.password ? 'p-1' : 'p-0'}`}>

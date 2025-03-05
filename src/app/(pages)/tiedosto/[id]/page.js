@@ -48,7 +48,7 @@ function Page({ params }) {
             if (!user) {
                 navigatePage('/sign-in')
             } else if (deleted) {
-                navigatePage('/omat-tiedostot')
+                navigatePage('/kaikki-tiedostot')
             } else {
                 setCurrentIndex(`/tiedosto/${id}`)
                 id && getFile(id)
@@ -112,9 +112,9 @@ function Page({ params }) {
 
     if (!file || (file && !file.shared && user?.id !== file.user.id)) return (
         <main>
-            <Link href="/omat-tiedostot" className='flex items-center text-sm text-navlink gap-2 hover:text-foreground'>
+            <Link href="/kaikki-tiedostot" className='flex items-center text-sm text-navlink gap-2 hover:text-foreground'>
                 <ArrowLeftCircle size={24} className='text-primary' />
-                Omat tiedostot
+                Kaikki tiedostot
             </Link>
 
             <div className='flex flex-col items-center justify-center gap-2 w-full mt-8'>

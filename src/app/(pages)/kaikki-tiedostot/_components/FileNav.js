@@ -154,7 +154,7 @@ function FileNav({ fileState, setFileState }) {
 
     return (
         <div className='relative flex flex-wrap items-end gap-4 justify-between pb-2'>
-            <h1 className='text-2xl md:text-3xl'><strong>Omat tiedostot</strong></h1>
+            <h1 className='text-2xl md:text-3xl'><strong>Kaikki tiedostot</strong></h1>
 
             <div ref={dropDowns} className='flex items-center gap-4'>
                 <div>

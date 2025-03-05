@@ -9,15 +9,16 @@ function NavigationGrid() {
     const filteredList = navList.filter((item) => item.path !== currentIndex)
 
     return (
-        <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-2 w-full'>
+        <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2'>
             {filteredList.map((item) => (
                 <Link 
                     href={item.path}
                     key={item.id}
-                    className="flex justify-center text-navlink gap-2 items-center w-full px-4 py-3 border border-navlink 
-                    rounded-full group hover:border-primary active:border-primary">
-                        <item.icon className='text-primary' />
-                        <p className="text-sm  whitespace-nowrap group-hover:text-foreground">{item.name}</p>
+                    className="flex flex-col items-center p-4 cursor-pointer bg-background rounded-lg shadow-md hover:shadow-lg 
+                        transition-colors border border-navlink hover:border-primary group"
+                    >
+                        <item.icon className='text-primary mb-2' />
+                        <p className="text-sm whitespace-nowrap text-foreground">{item.name}</p>
                 </Link>
             ))}
         </div>

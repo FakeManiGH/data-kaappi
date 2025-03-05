@@ -52,7 +52,9 @@ function Header() {
                 <div className="flex items-center">
                     {isLoaded && isSignedIn ? (
                         <Link
-                            className="flex gap-2 items-center rounded-full border border-contrast px-4 py-3 text-sm text-navlink shadow-md hover:border-primary hover:text-foreground"
+                            className="flex gap-2 items-center rounded-full border border-contrast px-4 py-3 text-sm 
+                                text-navlink shadow-md shadow-black/15 hover:border-primary hover:text-foreground
+                                hover:shadow-sm transition-all"
                             href="/kojelauta"
                         >   
                             <CircleGauge size={20} className='text-primary' />
@@ -60,7 +62,9 @@ function Header() {
                         </Link>
                     ) : (
                         <Link
-                            className="flex gap-2 items-center rounded-full border border-contrast px-4 py-3 text-sm text-navlink shadow-md hover:border-primary hover:text-foreground"
+                            className="flex gap-2 items-center rounded-full border border-contrast px-4 py-3 text-sm 
+                                text-navlink shadow-md shadow-black/15 hover:border-primary hover:text-foreground
+                                hover:shadow-sm transition-all"
                             href="/sign-in"
                         >   
                             <LogIn size={20} className='text-primary' />

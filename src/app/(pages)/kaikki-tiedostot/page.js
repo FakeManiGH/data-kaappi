@@ -63,7 +63,7 @@ function Page() {
     }
 
     fetchFiles()
-    setCurrentIndex('/omat-tiedostot')
+    setCurrentIndex('/kaikki-tiedostot')
   }, [isLoaded, user, setCurrentIndex, setFileState, navigatePage])
 
   if (fileState.loading) return <PageLoading />

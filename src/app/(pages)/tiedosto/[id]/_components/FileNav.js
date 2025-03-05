@@ -43,7 +43,7 @@ function FileNav({ file, setFile, setDeleted }) {
     return (
         <div className='relative flex flex-wrap items-baseline justify-between mb-2 w-full'>
             <Link  
-                href={isLoaded && user.id === file.user.id ? '/omat-tiedostot' : '/jaetut-tiedostot'} 
+                href={isLoaded && user.id === file.user.id ? '/kaikki-tiedostot' : '/jaetut-tiedostot'} 
                 className='flex items-center group text-navlink text-sm gap-2 hover:text-foreground hover:border-primary transition-colors'
             >
                 <ArrowLeftCircle className='text-primary' />
