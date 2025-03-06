@@ -153,17 +153,18 @@ function FileNav({ fileState, setFileState }) {
     };
 
     return (
-        <div className='relative flex flex-wrap items-end gap-4 justify-between pb-2'>
+        <div className='relative flex flex-wrap items-center gap-4 justify-between pb-2'>
             <h1 className='text-2xl md:text-3xl'><strong>Kaikki tiedostot</strong></h1>
 
-            <div ref={dropDowns} className='flex items-center gap-4'>
+            <div ref={dropDowns} className='flex items-center gap-2'>
                 <div>
                     <button 
-                        className={`flex items-center gap-1 text-sm hover:text-foreground leading-[1.7] ${dropMenu ? 'text-foreground' : 'text-navlink'}`} 
+                        className={`flex items-center gap-1 px-3 py-2 rounded-full text-sm border-2  hover:bg-primary hover:border-primary hover:text-white leading-[1.7] 
+                            ${fileState.filter !== 'all' || dropMenu ? 'bg-primary text-white border-primary' : 'bg-transparent text-foreground border-contrast'}`} 
                         role="button"
                         onClick={() => {setDropMenu(!dropMenu); setDropMenu2(false);}}
                     >   
-                        <ListFilter size={24} className={fileState.filter !== 'all' ? 'text-green-600 dark:text-green-500' : 'text-primary'} />
+                        <ListFilter size={24} />
                         {translateFilter(fileState.filter)}
                     </button>
 
@@ -186,7 +187,7 @@ function FileNav({ fileState, setFileState }) {
                                     Kaikki
                                 </button>
                                 <button 
-                                    className={`flex w-full items-center gap-2 px-4 py-2 text-sm hover:text-green-600 ${fileState.filter === 'media' ? 'text-green-600' : 'text-navlink'}`} 
+                                    className={`flex w-full items-center gap-2 px-4 py-2 text-sm hover:text-primary ${fileState.filter === 'media' ? 'text-primary' : 'text-navlink'}`} 
                                     role="menuitem"
                                     onClick={() => addTypeFilter('media')}
                                 >
@@ -194,7 +195,7 @@ function FileNav({ fileState, setFileState }) {
                                     Media
                                 </button>
                                 <button 
-                                    className={`flex w-full items-center gap-2 px-4 py-2 text-sm hover:text-green-600 ${fileState.filter === 'document' ? 'text-green-600' : 'text-navlink'}`}  
+                                    className={`flex w-full items-center gap-2 px-4 py-2 text-sm hover:text-primary ${fileState.filter === 'document' ? 'text-primary' : 'text-navlink'}`}  
                                     role="menuitem"
                                     onClick={() => addTypeFilter('document')}
                                 >
@@ -209,7 +210,7 @@ function FileNav({ fileState, setFileState }) {
                                 </strong>
                                 
                                 <button
-                                    className={`flex w-full items-center gap-2 px-4 py-2 text-sm hover:text-green-600 ${fileState.filter === 'password' ? 'text-green-600' : 'text-navlink'}`} 
+                                    className={`flex w-full items-center gap-2 px-4 py-2 text-sm hover:text-primary ${fileState.filter === 'password' ? 'text-primary' : 'text-navlink'}`} 
                                     role="menuitem"
                                     onClick={() => addPreferenceFilter('password')}
                                 >
@@ -217,7 +218,7 @@ function FileNav({ fileState, setFileState }) {
                                     Salasana
                                 </button>
                                 <button
-                                    className={`flex w-full items-center gap-2 px-4 py-2 text-sm hover:text-green-600 ${fileState.filter === 'shared' ? 'text-green-600' : 'text-navlink'}`} 
+                                    className={`flex w-full items-center gap-2 px-4 py-2 text-sm hover:text-primary ${fileState.filter === 'shared' ? 'text-primary' : 'text-navlink'}`} 
                                     role="menuitem"
                                     onClick={() => addPreferenceFilter('shared')}
                                 >   
@@ -230,11 +231,12 @@ function FileNav({ fileState, setFileState }) {
                 </div>
                 <div>
                     <button 
-                        className={`flex items-center gap-1 text-sm hover:text-foreground ${dropMenu2 ? 'text-foreground' : 'text-navlink'}`}
+                        className={`flex items-center gap-1 px-3 py-2 rounded-full text-sm border-2  hover:bg-primary hover:border-primary hover:text-white leading-[1.7] 
+                            ${(fileState.sortedBy !== 'date-desc' || fileState.sortedBy === '') || dropMenu2 ? 'bg-primary text-white border-primary' : 'bg-transparent text-foreground border-contrast'}`}
                         role="button"
                         onClick={() => {setDropMenu2(!dropMenu2); setDropMenu(false);}}
                     >
-                        <ListStart size={24} className={fileState.sortedBy !== 'date-desc' ? 'text-green-600 dark:text-green-500' : 'text-primary'} />
+                        <ListStart size={24} />
                         {translateSort(fileState.sortedBy)}
                     </button>
                     {dropMenu2 && (
@@ -256,7 +258,7 @@ function FileNav({ fileState, setFileState }) {
                                     Uusin ensin
                                 </button>
                                 <button 
-                                    className={`flex w-full items-center gap-2 px-4 py-2 text-sm hover:text-green-600 ${fileState.sortedBy === 'date-asc' ? 'text-green-600' : 'text-navlink'}`} 
+                                    className={`flex w-full items-center gap-2 px-4 py-2 text-sm hover:text-primary ${fileState.sortedBy === 'date-asc' ? 'text-primary' : 'text-navlink'}`} 
                                     role="menuitem"
                                     onClick={() => addSort('date-asc')}
                                 >
@@ -264,7 +266,7 @@ function FileNav({ fileState, setFileState }) {
                                     Vanhin ensin
                                 </button>
                                 <button 
-                                    className={`flex w-full items-center gap-2 px-4 py-2 text-sm hover:text-green-600 ${fileState.sortedBy === 'name-asc' ? 'text-green-600' : 'text-navlink'}`}  
+                                    className={`flex w-full items-center gap-2 px-4 py-2 text-sm hover:text-primary ${fileState.sortedBy === 'name-asc' ? 'text-primary' : 'text-navlink'}`}  
                                     role="menuitem"
                                     onClick={() => addSort('name-asc')}
                                 >
@@ -272,7 +274,7 @@ function FileNav({ fileState, setFileState }) {
                                     Nimi A-Ö
                                 </button>
                                 <button 
-                                    className={`flex w-full items-center gap-2 px-4 py-2 text-sm hover:text-green-600 ${fileState.sortedBy === 'name-desc' ? 'text-green-600' : 'text-navlink'}`}  
+                                    className={`flex w-full items-center gap-2 px-4 py-2 text-sm hover:text-primary ${fileState.sortedBy === 'name-desc' ? 'text-primary' : 'text-navlink'}`}  
                                     role="menuitem"
                                     onClick={() => addSort('name-desc')}
                                 >

@@ -14,11 +14,11 @@ function NavigationGrid() {
                 <Link 
                     href={item.path}
                     key={item.id}
-                    className="flex flex-col items-center p-4 cursor-pointer bg-background rounded-lg shadow-md hover:shadow-lg 
-                        transition-colors border border-navlink hover:border-primary group"
+                    className="flex flex-col items-center p-4 cursor-pointer text-foreground rounded-lg shadow-md hover:shadow-lg 
+                        transition-colors border-2 border-primary hover:text-white hover:bg-primary"
                     >
-                        <item.icon className='text-primary mb-2' />
-                        <p className="text-sm whitespace-nowrap text-foreground">{item.name}</p>
+                        <item.icon className='mb-2' />
+                        <p className="text-sm whitespace-nowrap">{item.name}</p>
                 </Link>
             ))}
         </div>

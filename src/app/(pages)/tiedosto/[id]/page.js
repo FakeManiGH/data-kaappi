@@ -153,20 +153,22 @@ function Page({ params }) {
             <div className='grid grid-cols-2 lg:grid-cols-3 items-center gap-2 w-full max-w-full'>
                 <button 
                     href={file.url}
-                    className='flex items-center justify-center px-3 py-3 group border border-navlink rounded-full text-navlink text-sm gap-2 hover:text-foreground hover:border-primary transition-colors'
+                    className='flex items-center justify-center px-4 py-3 group rounded-full 
+                    text-white bg-primary text-sm gap-2 hover:bg-primary/85 transition-colors'
                     onClick={() => setLivePreview(true)}
                 >
-                    <ScanEye className='text-primary' />
+                    <ScanEye />
                     Esikatsele
                 </button>
 
                 <DownloadBtn url={file.url} fileName={file.name} buttonStyle="w-full py-3" />
 
                 <button 
-                    className='flex items-center justify-center px-3 py-3 group border border-navlink rounded-full text-navlink text-sm gap-2 hover:text-foreground hover:border-primary transition-colors'
+                    className='flex items-center justify-center px-4 py-3 group rounded-full 
+                    text-white bg-primary text-sm gap-2 hover:bg-primary/85 transition-colors'
                     onClick={handleShare}
                 >
-                    <Share2 className='text-primary' />
+                    <Share2 />
                     <span className='flex items-center gap-1'>Jaa suoraan</span>
                 </button>
             </div>

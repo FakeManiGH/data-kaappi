@@ -79,30 +79,30 @@ function FileContainer({ fileState, setFileState }) {
             <div className='flex items-center gap-1'>
                 <button 
                     title='Ruudukko' 
-                    className={`p-3 border bg-background rounded-full
-                        ${view === 'grid' ? 'text-white bg-primary border-primary hover:text-white' : 'text-navlink border-navlink hover:border-primary hover:text-foreground'}`} 
+                    className={`p-3 border-2 border-contrast rounded-full
+                        ${view === 'grid' ? 'bg-primary text-white border-primary' : 'text-foreground bg-transparent hover:bg-primary hover:border-primary hover:text-white'}` } 
                     onClick={() => setView('grid')}>
                         <Grid size={20} />
                 </button>
                 <button 
                     title='Lista' 
-                    className={`p-3 border bg-background rounded-full 
-                        ${view === 'list' ? 'text-white bg-primary border-primary hover:text-white' : 'text-navlink border-navlink hover:border-primary hover:text-foreground'}` } 
+                    className={`p-3 border-2 border-contrast rounded-full 
+                        ${view === 'list' ? 'bg-primary text-white border-primary' : 'text-foreground bg-transparent hover:bg-primary hover:border-primary hover:text-white'}` } 
                     onClick={() => setView('list')}>
                         <List size={20} />
                 </button>
                 <button 
                     title='Valitse tiedostoja'
-                    className={`p-3 border bg-background rounded-full 
-                        ${fileState.selecting ? 'text-white bg-primary border-primary hover:text-white' : 'text-navlink border-navlink hover:border-primary hover:text-foreground'}` } 
+                    className={`p-3 border-2 border-contrast rounded-full 
+                        ${fileState.selecting ? 'bg-primary text-white border-primary' : 'text-foreground bg-transparent hover:bg-primary hover:border-primary hover:text-white'}` } 
                     onClick={() => setFileState(prevState => ({...prevState, selecting: !prevState.selecting, selectedFiles: prevState.selecting ? [] : prevState.selectedFiles}))}>
                         <Copy size={20} />
                 </button>
                 {fileState.selecting && (
                     <button
                         title='Valitse kaikki'
-                        className={`p-3 border border-navlink text-navlink bg-background rounded-full hover:text-foreground hover:border-primary
-                            ${fileState.selectedFiles.length === displayFiles.length && fileState.selectedFiles.length > 0 && 'bg-primary text-white border-primary hover:text-white'}`}
+                        className={`p-3 border-2 border-contrast text-foreground rounded-full hover:text-white hover:border-primary hover:bg-primary
+                            ${fileState.selectedFiles.length === displayFiles.length && fileState.selectedFiles.length > 0 && 'bg-primary text-white border-primary'}`}
                         onClick={() => setFileState(prevState => ({...prevState, selectedFiles: prevState.selectedFiles.length === displayFiles.length ? [] : displayFiles}))}
                     >
                         <CopyCheckIcon size={20} />
@@ -113,11 +113,11 @@ function FileContainer({ fileState, setFileState }) {
             {fileState.selectedFiles.length > 0 && 
                 <div className='flex items-center gap-1 text-sm'>
                     <button 
-                        className='flex items-center gap-1 px-4 py-3 text-navlink hover:border-primary hover:text-foreground border border-navlink rounded-full group' 
+                        className='flex items-center gap-1 px-3 py-2 text-foreground border-2 border-contrast hover:bg-primary hover:border-primary hover:text-white rounded-full group' 
                         onClick={() => setFileState(prevState => ({...prevState, selectedFiles: [], selecting: false}))}
                         title='Peruuta valinta'
                     >
-                        <X size={20} className='text-primary' />
+                        <X size={25} />
                         {fileState.selectedFiles.length} valittu
                     </button>
                 
@@ -148,8 +148,8 @@ function FileContainer({ fileState, setFileState }) {
                     key={file.id} 
                     className={`masonry-item bg-background group border rounded-lg transition-colors
                         ${fileState.selectedFiles.includes(file) 
-                            ? 'border-primary hover:border-primary shadow-md' 
-                            : 'border-transparent hover:border-contrast'
+                            ? 'border-primary shadow-md' 
+                            : 'border-transparent'
                         }`}
                 >   
                     <div className={`absolute flex flex-col items-center bg-background rounded-lg top-0 left-0 gap-1 ${file.shared || file.password ? 'p-1' : 'p-0'}`}>

@@ -52,22 +52,22 @@ function Header() {
                 <div className="flex items-center">
                     {isLoaded && isSignedIn ? (
                         <Link
-                            className="flex gap-2 items-center rounded-full border border-contrast px-4 py-3 text-sm 
-                                text-navlink shadow-md shadow-black/15 hover:border-primary hover:text-foreground
+                            className="flex gap-1 items-center rounded-full border-2 border-primary px-3 py-2 text-sm 
+                                text-foreground shadow-md shadow-black/15 hover:bg-primary hover:text-white
                                 hover:shadow-sm transition-all"
                             href="/kojelauta"
                         >   
-                            <CircleGauge size={20} className='text-primary' />
+                            <CircleGauge size={20} />
                             Kojelauta
                         </Link>
                     ) : (
                         <Link
-                            className="flex gap-2 items-center rounded-full border border-contrast px-4 py-3 text-sm 
-                                text-navlink shadow-md shadow-black/15 hover:border-primary hover:text-foreground
+                            className="flex gap-1 items-center rounded-full border-2 border-primary px-3 py-2 text-sm 
+                                text-foreground shadow-md shadow-black/15 hover:bg-primary hover:text-white
                                 hover:shadow-sm transition-all"
                             href="/sign-in"
                         >   
-                            <LogIn size={20} className='text-primary' />
+                            <LogIn size={20} />
                             Kirjaudu
                         </Link>
                     )}

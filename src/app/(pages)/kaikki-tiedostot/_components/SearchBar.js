@@ -42,11 +42,11 @@ function SearchBar({ fileState, setFileState }) {
     }
 
     return (
-        <div className="flex items-center gap-1 w-full mb-[-12px]">
-            <div className="flex items-center group w-full bg-background border border-navlink rounded-full hover:border-primary focus-within:border-primary overflow-hidden">
+        <div className="flex items-center gap-1 w-full my-[-10px]">
+            <div className="flex items-center group w-full bg-background border-2 border-contrast rounded-full hover:border-primary focus-within:border-primary overflow-hidden">
                 <label htmlFor="search" 
-                    className='px-4 py-3 pr-3 text-navlink border-r border-navlink cursor-pointer group-focus-within:bg-primary 
-                    group-focus-within:text-white group-hover:text-foreground group-hover:border-primary group-focus-within:group-hover:text-white
+                    className='px-4 py-3 pr-3 text-foreground border-r-2 border-contrast cursor-pointer group-focus-within:bg-primary 
+                    group-focus-within:text-white group-hover:text-white group-hover:border-primary group-hover:bg-primary group-focus-within:group-hover:text-white
                     group-focus-within:border-primary'
                 >
                     <Search size={20} />

@@ -15,9 +15,9 @@ const exampleFolders = [
     { id: 6, name: 'Downloads', fileCount: 20 },
 ];
 
-function Page({ children }) {
+function Page() {
     const { setCurrentIndex } = useNavigation();
-    const [currentFolder, setCurrentFolder] = useState();
+    const [folders, setFolders] = useState(exampleFolders);
     const [createFolder, setCreateFolder] = useState(false);
 
     useEffect(() => {
@@ -30,9 +30,8 @@ function Page({ children }) {
 
     return (
         <main>
-            <h1 className="text-2xl md:text-3xl mb-4"><strong>Kansiot</strong></h1>
             <div className='flex items-center justify-between gap-4'>
-                <BreadGrumps />
+                <h1 className="text-2xl md:text-3xl"><strong>Kansiot</strong></h1>
                 <button 
                     onClick={() => setCreateFolder(true)} 
                     className='flex gap-2 items-center rounded-full border border-navlink px-4 py-3 text-sm text-navlink shadow-md 
@@ -42,8 +41,8 @@ function Page({ children }) {
                     Uusi kansio
                 </button>
             </div>
-            {children}
-            <FolderView folders={exampleFolders} />
+            <BreadGrumps />
+            <FolderView folders={folders} setFolders={setFolders} setCreateFolder={setCreateFolder} />
             {createFolder && <CreateFolder setCreateFolder={setCreateFolder} />}
         </main>
     );

@@ -125,7 +125,8 @@ function UploadForm({ uploadFile, files, setFiles, fileErrors, setFileErrors, se
         <button 
           type="submit"
           {...(files.length === 0 && { disabled: true })}
-          className="mt-4 px-4 py-3 w-[30%] min-w-fit disabled:bg-secondary disabled:text-gray-500 bg-primary hover:bg-primary/90 text-white rounded-full"
+          className="mt-4 px-4 py-3 w-[30%] min-w-fit disabled:border-contrast disabled:bg-transparent disabled:text-gray-500 
+            border-2 border-primary text-foreground hover:bg-primary hover:text-white rounded-full"
         >Tallenna</button>
       </form>
       {fileErrors?.length > 0 && fileErrors.map((error, index) => (

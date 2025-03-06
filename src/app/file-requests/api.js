@@ -157,3 +157,23 @@ export const updateFilePassword = async (userID, fileID, password) => {
         console.error("Error updating file password: ", error)
     }
 }
+
+
+// FOLDER FUNCTIONS
+// Create folder
+export const createFolder = async (folderID, folderData) => {
+    try {
+        // Check if folder already exists
+        const folderRef = doc(db, 'folders', folderID)
+        const docSnap = await getDoc(folderRef)
+
+        if (docSnap.exists()) {
+            const newFolderID = generateRandomString(11)
+            return createFolder(newFolderID, folderData)
+        }
+
+        await setDoc(doc(db, 'folders', folderID), folderData)
+    } catch (error) {
+        console.error("Error creating folder: ", error)
+    }
+}

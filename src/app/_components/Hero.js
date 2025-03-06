@@ -20,14 +20,14 @@ function Hero() {
 
                 <div className="flex flex-col items-center gap-3 w-full">
                     <a
-                        className="flex gap-1 items-center justify-center rounded-full border border-navlink w-72 px-5 py-3
-                            text-lg text-navlink shadow-md shadow-black/25 hover:shadow-sm hover:border-primary 
-                            hover:text-foreground transition-all"
+                        className="flex gap-1 items-center justify-center rounded-full border-2 border-primary w-72 px-5 py-3
+                            text-lg text-foreground shadow-md shadow-black/25 hover:shadow-sm hover:bg-primary 
+                            transition-all"
                         href="/sign-in"
                     >   
-                        <ChevronsRight className='text-primary' />
+                        <ChevronsRight />
                         Aloita tästä
-                        <ChevronsLeft className='text-primary' />
+                        <ChevronsLeft />
                     </a>
 
                     <a

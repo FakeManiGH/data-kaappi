@@ -9,7 +9,7 @@ function FilePreview({ files, removeFile, uploadProgress }) {
   return (
     <div className='grid grid-cols-1 lg:grid-cols-2  w-full gap-4'>
       {files?.map((file, index) => (
-        <div key={index} className='flex flex-1 items-center justify-between bg-gradient-to-b from-contrast to-background rounded-lg rounded-b-none'>
+        <div key={index} className='flex flex-1 items-center justify-between rounded-lg bg-gradient-to-r from-contrast to-background'>
           <div className='flex flex-1 items-center gap-4 p-2 pr-12'>
             <Image 
               src={getFileIcon(file?.type)} 

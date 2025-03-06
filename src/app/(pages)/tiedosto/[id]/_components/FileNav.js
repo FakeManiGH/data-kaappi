@@ -41,12 +41,12 @@ function FileNav({ file, setFile, setDeleted }) {
     }
 
     return (
-        <div className='relative flex flex-wrap items-baseline justify-between mb-2 w-full'>
+        <div className='relative flex flex-wrap items-center justify-between mb-2 w-full'>
             <Link  
                 href={isLoaded && user.id === file.user.id ? '/kaikki-tiedostot' : '/jaetut-tiedostot'} 
-                className='flex items-center group text-navlink text-sm gap-2 hover:text-foreground hover:border-primary transition-colors'
+                className='flex items-center gap-2 px-3 py-2 rounded-full text-navlink border-2 border-navlink text-sm hover:text-foreground hover:border-primary transition-colors'
             >
-                <ArrowLeftCircle className='text-primary' />
+                <ArrowLeftCircle />
                 Palaa takaisin
             </Link>
 
@@ -54,11 +54,13 @@ function FileNav({ file, setFile, setDeleted }) {
         <>
             <div>
                 <button 
-                    className={`flex items-center group text-sm gap-2 hover:text-foreground hover:border-primary transition-colors ${dropMenu ? 'text-foreground' : 'text-navlink'}`} 
+                    className={`flex items-center text-sm gap-2 px-3 py-2 border-2 hover:text-foreground
+                        hover:border-primary transition-colors rounded-full
+                        ${dropMenu ? 'text-white bg-primary border-primary' : 'text-navlink bg-transparent border-navlink'}`} 
                     role="button"
                     onClick={() => setDropMenu(!dropMenu)}
                 >
-                    <Settings size={24} className='text-primary' />
+                    <Settings size={24} />
                     Toiminnot
                 </button>
 
