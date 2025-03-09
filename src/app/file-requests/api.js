@@ -177,3 +177,16 @@ export const createFolder = async (folderID, folderData) => {
         console.error("Error creating folder: ", error)
     }
 }
+
+// Get folders (with userID)
+export const getFolders = async (userID) => {
+    try {
+        console.log('Fetching folders for userID:', userID);
+        const q = query(collection(db, "folders"), where("userID", "==", userID));
+        const querySnapshot = await getDocs(q);
+        const folders = querySnapshot.docs.map(doc => doc.data());
+        return folders;
+    } catch (error) {
+        console.error("Error fetching folders: ", error);
+    }
+}

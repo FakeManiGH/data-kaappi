@@ -4,11 +4,11 @@ import { cleanDataType } from "./DataTranslation";
 export const getCardPreview = ({ file }) => {
     if (file.type.includes('image')) {
         return (
-            <img src={file.url} alt={file.name} style={{height: '100%', width: '100%', objectFit: 'contain', borderRadius: '6px'}} />
+            <img src={file.url} alt={file.name} style={{height: '100%', width: '100%', objectFit: 'contain'}} />
         );
     } else if (file.type.includes('video')) {
         return (
-            <video src={file.url} controls style={{height: '100%', width: '100%', objectFit: 'contain', borderRadius: '6px'}} />
+            <video src={file.url} controls style={{height: '100%', width: '100%', objectFit: 'contain'}} />
         );
     } else if (file.type.includes('audio')) {
         return (

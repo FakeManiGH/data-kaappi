@@ -44,7 +44,7 @@ function FileNav({ file, setFile, setDeleted }) {
         <div className='relative flex flex-wrap items-center justify-between mb-2 w-full'>
             <Link  
                 href={isLoaded && user.id === file.user.id ? '/kaikki-tiedostot' : '/jaetut-tiedostot'} 
-                className='flex items-center gap-2 px-3 py-2 rounded-full text-navlink border-2 border-navlink text-sm hover:text-foreground hover:border-primary transition-colors'
+                className='flex items-center w-fit gap-2 px-3 py-2 mt-2 border-2 border-transparent text-sm bg-primary text-white hover:bg-primary/75 transition-colors'
             >
                 <ArrowLeftCircle />
                 Palaa takaisin
@@ -54,9 +54,8 @@ function FileNav({ file, setFile, setDeleted }) {
         <>
             <div>
                 <button 
-                    className={`flex items-center text-sm gap-2 px-3 py-2 border-2 hover:text-foreground
-                        hover:border-primary transition-colors rounded-full
-                        ${dropMenu ? 'text-white bg-primary border-primary' : 'text-navlink bg-transparent border-navlink'}`} 
+                    className={`flex items-center w-fit gap-2 px-3 py-2 mt-2 border-2 text-sm bg-primary text-white hover:bg-primary/75 transition-colors
+                        ${dropMenu ? 'border-foreground' : 'border-transparent'}`} 
                     role="button"
                     onClick={() => setDropMenu(!dropMenu)}
                 >
@@ -66,7 +65,7 @@ function FileNav({ file, setFile, setDeleted }) {
 
                 {dropMenu && (
                     <div
-                        className="absolute z-10 right-0 mt-1 w-full sm:max-w-64 divide-y divide-contrast rounded-lg overflow-hidden border border-contrast bg-background shadow-lg"
+                        className="absolute z-10 right-0 mt-2 w-full sm:max-w-64 divide-y divide-contrast overflow-hidden border border-contrast bg-background shadow-lg"
                         role="menu"
                     >
                         <div className='bg-background shadow-lg shadow-black/50'>

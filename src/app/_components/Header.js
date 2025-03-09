@@ -49,12 +49,11 @@ function Header() {
                     </ul>
                 </nav>
 
-                <div className="flex items-center">
+                <div className="flex items-center gap-4">
                     {isLoaded && isSignedIn ? (
                         <Link
-                            className="flex gap-1 items-center rounded-full border-2 border-primary px-3 py-2 text-sm 
-                                text-foreground shadow-md shadow-black/15 hover:bg-primary hover:text-white
-                                hover:shadow-sm transition-all"
+                            className="flex gap-1 items-center px-3 py-2.5 text-sm shadow-md bg-primary text-white
+                                hover:shadow-lg hover:bg-primary/75 transition-all"
                             href="/kojelauta"
                         >   
                             <CircleGauge size={20} />
@@ -62,9 +61,8 @@ function Header() {
                         </Link>
                     ) : (
                         <Link
-                            className="flex gap-1 items-center rounded-full border-2 border-primary px-3 py-2 text-sm 
-                                text-foreground shadow-md shadow-black/15 hover:bg-primary hover:text-white
-                                hover:shadow-sm transition-all"
+                            className="flex gap-1 items-center px-3 py-2.5 text-sm shadow-md bg-primary text-white
+                                hover:shadow-lg hover:bg-primary/75 transition-all"
                             href="/sign-in"
                         >   
                             <LogIn size={20} />
@@ -74,14 +72,14 @@ function Header() {
 
                     <div ref={dropdownRef} className="flex lg:hidden">
                         <button 
-                            className={`p-2 cursor-pointer transition hover:text-primary ${dropdown ? 'text-primary' : 'text-foreground'}`}
+                            className={`cursor-pointer transition hover:text-primary ${dropdown ? 'text-primary' : 'text-foreground'}`}
                             onClick={() => setDropdown(!dropdown)}
                         >
                             <AlignJustify size={30} />
                         </button>
                         {dropdown && (
                         <nav 
-                            className="absolute z-50 top-[85%] ml-auto inset-x-4 max-w-64 bg-background border border-contrast rounded-lg shadow-xl shadow-black/25 overflow-hidden" 
+                            className="absolute z-50 top-[85%] ml-auto inset-x-4 max-w-64 bg-background border border-contrast shadow-xl shadow-black/25 overflow-hidden" 
                             role="menu"
                         >
                             {publicNav && publicNav.map((item) => (

@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react';
-import { BookMarked, CircleGauge, GalleryVerticalEnd, Home, LucideFolderTree, PackageOpen, UploadCloud } from 'lucide-react';
+import { BookMarked, CircleGauge, FolderOpen, GalleryVerticalEnd, Home, LucideFolderTree, MessageCircleQuestion, PackageOpen, UploadCloud } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 const NavigationContext = createContext();
@@ -30,7 +30,7 @@ export const NavigationProvider = ({ children }) => {
         {
             id: 3,
             name: 'Kansiot',
-            icon: LucideFolderTree,
+            icon: FolderOpen,
             path: '/kansiot'
         },
         {
@@ -62,9 +62,9 @@ export const NavigationProvider = ({ children }) => {
         },
         {
             id: 2,
-            name: 'Tallenna',
-            icon: UploadCloud,
-            path: '/tallenna'
+            name: 'Tuki',
+            icon: MessageCircleQuestion,
+            path: '/tuki'
         },
         {
             id: 3,

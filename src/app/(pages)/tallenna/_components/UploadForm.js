@@ -103,8 +103,8 @@ function UploadForm({ uploadFile, files, setFiles, fileErrors, setFileErrors, se
           onDragEnter={handleDragEnter}
           onDragLeave={handleDragLeave}
         >
-          <label htmlFor="dropzone-file" className={`flex flex-col items-center w-full max-w-full justify-center h-64 
-          rounded-xl cursor-pointer bg-background border hover:border-primary  
+          <label htmlFor="dropzone-file" className={`flex flex-col items-center w-full max-w-full justify-center h-72 
+            cursor-pointer bg-background border-2 hover:border-primary  
             ${isDragging ? 'border-primary' : 'border-contrast'}`}>
             <div className="flex flex-col max-w-full items-center justify-center p-4 text-center pt-5 pb-6">
               {isDragging ?   
@@ -125,8 +125,8 @@ function UploadForm({ uploadFile, files, setFiles, fileErrors, setFileErrors, se
         <button 
           type="submit"
           {...(files.length === 0 && { disabled: true })}
-          className="mt-4 px-4 py-3 w-[30%] min-w-fit disabled:border-contrast disabled:bg-transparent disabled:text-gray-500 
-            border-2 border-primary text-foreground hover:bg-primary hover:text-white rounded-full"
+          className="mt-4 px-4 py-3 w-full disabled:bg-contrast disabled:text-gray-500 
+            text-white bg-primary hover:bg-primary/75 transition-colors"
         >Tallenna</button>
       </form>
       {fileErrors?.length > 0 && fileErrors.map((error, index) => (

@@ -22,10 +22,31 @@ function Page() {
     sortedFiles: [],
     sortedBy: 'date-desc', 
     sorted: false,
-    selectedFiles: [],
-    selecting: false,
+    view: 'grid',
     loading: true,
   })
+
+  const [isVisible, setIsVisible] = useState(true)
+  const [lastScrollY, setLastScrollY] = useState(0)
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > lastScrollY) {
+        // Scrolling down
+        setIsVisible(false)
+      } else {
+        // Scrolling up
+        setIsVisible(true)
+      }
+      setLastScrollY(window.scrollY)
+    }
+
+    window.addEventListener('scroll', handleScroll)
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll)
+    }
+  }, [lastScrollY])
 
   useEffect(() => {
     const fetchFiles = async () => {
@@ -70,8 +91,11 @@ function Page() {
     
   return (
     <main>
-      <FileNav fileState={fileState} setFileState={setFileState} />
-      <SearchBar fileState={fileState} setFileState={setFileState} />
+      <h1 className='text-2xl md:text-3xl'><strong>Kaikki tiedostot</strong></h1>
+      <div className={`flex flex-col z-10 py-2 gap-2 bg-background transition-transform duration-300 ${isVisible ? 'sticky top-0' : '-translate-y-full'}`}>
+        <SearchBar fileState={fileState} setFileState={setFileState} />
+        <FileNav fileState={fileState} setFileState={setFileState} />
+      </div>  
       <FileContainer fileState={fileState} setFileState={setFileState} />
     </main>
   )

@@ -13,8 +13,8 @@ function SpaceMeterBar({ usedSpace, totalSpace }) {
                     {translateFileSize(usedSpace)} / {translateFileSize(totalSpace)}
                 </p>
             </div>
-            <div className="w-full bg-contrast rounded-full relative h-4">
-                <div className="bg-primary rounded-full h-4" style={{ width: `${percentage}%` }}></div>
+            <div className="w-full bg-contrast relative h-5">
+                <div className="bg-primary h-5" style={{ width: `${percentage}%` }}></div>
                 <p className='text-sm px-1 absolute left-0'>{roundedPercentage}%</p>
             </div>
         </div> 

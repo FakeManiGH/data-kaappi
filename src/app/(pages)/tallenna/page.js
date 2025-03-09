@@ -9,7 +9,7 @@ import { generateRandomString } from '@/utils/GenerateRandomString';
 import { useUser } from '@clerk/nextjs';
 import { useNavigation } from '@/app/contexts/NavigationContext';
 import SpaceMeterBar from '@/app/_components/_common/SpaceMeterBar';
-import { getUser } from '@/app/file-requests/api';
+import { getUser, getFolders } from '@/app/file-requests/api';
 import PageLoading from '@/app/_components/_common/PageLoading';
 import ErrorView from '../_components/ErrorView';
 
@@ -22,28 +22,32 @@ function Page() {
   const { setCurrentIndex, navigatePage } = useNavigation();
   const [files, setFiles] = useState([]);
   const [fileErrors, setFileErrors] = useState([]);
+  const [folders, setFolders] = useState([]);
   const [uploadProgress, setUploadProgress] = useState([]);
   const storage = getStorage(app);
 
   useEffect(() => {
     setCurrentIndex('/tallenna');
-    if (isLoaded) {
-      if (user) {
-        getUser(user.id)
-          .then((doc) => {
-            setUserDoc(doc);
-            setLoading(false);
-          })
-          .catch((err) => {
-            console.error("Error fetching user document:", err);
-            setError("Käyttäjätietojen hakeminen epäonnistui. Yritä uudelleen.");
-            setLoading(false);
-          });
+
+    const getUserData = async () => {
+      if (isLoaded && user) {
+        try {
+          const doc = await getUser(user.id);
+          const folders = await getFolders(user.id);
+          setUserDoc(doc);
+          setFolders(folders);
+          setLoading(false);
+        } catch (error) {
+          console.error("Error fetching user document:", error);
+          setError("Käyttäjätietojen hakeminen epäonnistui. Yritä uudelleen.");
+          setLoading(false);
+        }
       } else {
-        setLoading(true);
         navigatePage('/sign-in');
       }
-    }
+    };
+    
+    getUserData();
   }, [isLoaded, user, setCurrentIndex, navigatePage]);
 
   // Upload file to storage
@@ -90,7 +94,7 @@ function Page() {
   if (!loading && isLoaded && !user) return <ErrorView message="Kirjaudu sisään nähdäksesi tämän sivun." />;
 
   return (
-    <main className='mt-4'>
+    <main>
       <h1 className='text-2xl md:text-3xl'><strong>Tallenna tiedostoja</strong></h1>
       <SpaceMeterBar usedSpace={userDoc?.usedSpace} totalSpace={userDoc?.totalSpace} />
       <br />
@@ -104,7 +108,8 @@ function Page() {
         setUserDoc={setUserDoc}
       />
       <FilePreview 
-        files={files} 
+        files={files}
+        folders={folders}
         removeFile={(file) => setFiles(files.filter(f => f !== file))} 
         uploadProgress={uploadProgress} 
       />

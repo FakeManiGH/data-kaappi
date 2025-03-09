@@ -150,11 +150,11 @@ function Page({ params }) {
 
             <FilePreview file={file} setFile={setFile} />
 
-            <div className='grid grid-cols-2 lg:grid-cols-3 items-center gap-2 w-full max-w-full'>
+            <div className='grid grid-cols-2 lg:grid-cols-3 items-center gap-2 sm:gap-4 w-full max-w-full'>
                 <button 
                     href={file.url}
-                    className='flex items-center justify-center px-4 py-3 group rounded-full 
-                    text-white bg-primary text-sm gap-2 hover:bg-primary/85 transition-colors'
+                    className='flex items-center justify-center px-4 py-3 group 
+                    text-white bg-primary text-sm gap-2 hover:bg-primary/75 transition-colors'
                     onClick={() => setLivePreview(true)}
                 >
                     <ScanEye />
@@ -164,8 +164,8 @@ function Page({ params }) {
                 <DownloadBtn url={file.url} fileName={file.name} buttonStyle="w-full py-3" />
 
                 <button 
-                    className='flex items-center justify-center px-4 py-3 group rounded-full 
-                    text-white bg-primary text-sm gap-2 hover:bg-primary/85 transition-colors'
+                    className='flex items-center justify-center px-4 py-3 group
+                    text-white bg-primary text-sm gap-2 hover:bg-primary/75 transition-colors'
                     onClick={handleShare}
                 >
                     <Share2 />

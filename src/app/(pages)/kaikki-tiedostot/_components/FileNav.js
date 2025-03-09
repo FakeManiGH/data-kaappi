@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { simplifyFileType } from '@/utils/DataTranslation';
-import { ArrowDownAZ, ArrowUpAZ, CalendarArrowDown, CalendarArrowUp, FileText, ImagePlay, ListCheck, ListFilter, ListStart, LockKeyhole, Share2 } from 'lucide-react';
+import { ArrowDownAZ, ArrowUpAZ, CalendarArrowDown, CalendarArrowUp, FileText, ImagePlay, ListCheck, ListFilter, ListStart, LockKeyhole, Share2, Grid, List } from 'lucide-react';
 
 function FileNav({ fileState, setFileState }) {
     const [dropMenu, setDropMenu] = useState(false);
@@ -153,14 +153,29 @@ function FileNav({ fileState, setFileState }) {
     };
 
     return (
-        <div className='relative flex flex-wrap items-center gap-4 justify-between pb-2'>
-            <h1 className='text-2xl md:text-3xl'><strong>Kaikki tiedostot</strong></h1>
+        <div className='flex items-center gap-2 justify-between bg-background'>
+            <nav className='flex items-center gap-1'>
+                <button 
+                    title='Ruudukko' 
+                    className={`p-3 hover:bg-primary/75
+                        ${fileState.view === 'grid' ? 'bg-primary text-white' : 'text-foreground bg-transparent hover:border-primary hover:text-white'}` } 
+                    onClick={() => setFileState(prevState => ({ ...prevState, view: 'grid' }))}>
+                        <Grid size={20} />
+                </button>
+                <button 
+                    title='Lista' 
+                    className={`p-3 hover:bg-primary/75
+                        ${fileState.view === 'list' ? 'bg-primary text-white' : 'text-foreground bg-transparent hover:border-primary hover:text-white'}` } 
+                    onClick={() => setFileState(prevState => ({ ...prevState, view: 'list' }))}>
+                        <List size={20} />
+                </button>
+            </nav>
 
-            <div ref={dropDowns} className='flex items-center gap-2'>
+            <div ref={dropDowns} className='flex items-center gap-1'>
                 <div>
                     <button 
-                        className={`flex items-center gap-1 px-3 py-2 rounded-full text-sm border-2  hover:bg-primary hover:border-primary hover:text-white leading-[1.7] 
-                            ${fileState.filter !== 'all' || dropMenu ? 'bg-primary text-white border-primary' : 'bg-transparent text-foreground border-contrast'}`} 
+                        className={`flex items-center w-fit gap-2 p-2 border-2 text-sm bg-primary text-white hover:bg-primary/75 transition-colors 
+                            ${fileState.filter !== 'all' ? 'border-foreground' : 'border-transparent'}`} 
                         role="button"
                         onClick={() => {setDropMenu(!dropMenu); setDropMenu2(false);}}
                     >   
@@ -170,7 +185,7 @@ function FileNav({ fileState, setFileState }) {
 
                     {dropMenu && (
                         <div
-                            className="absolute z-20 mt-1 end-0 sm:max-w-64 w-full pb-2 rounded-lg divide-y divide-contrast overflow-hidden border border-contrast bg-background shadow-lg shadow-black/25"
+                            className="absolute z-20 mt-2 end-0 sm:max-w-64 w-full pb-2 divide-y divide-contrast overflow-hidden border border-contrast bg-background shadow-lg shadow-black/25"
                             role="menu"
                         >
                             <div className='bg-background'>
@@ -231,8 +246,8 @@ function FileNav({ fileState, setFileState }) {
                 </div>
                 <div>
                     <button 
-                        className={`flex items-center gap-1 px-3 py-2 rounded-full text-sm border-2  hover:bg-primary hover:border-primary hover:text-white leading-[1.7] 
-                            ${(fileState.sortedBy !== 'date-desc' || fileState.sortedBy === '') || dropMenu2 ? 'bg-primary text-white border-primary' : 'bg-transparent text-foreground border-contrast'}`}
+                        className={`flex items-center w-fit gap-2 p-2 border-2 text-sm bg-primary text-white hover:bg-primary/75 transition-colors
+                            ${(fileState.sortedBy !== 'date-desc' || fileState.sortedBy === '') ? 'border-foreground' : 'border-transparent'}`}
                         role="button"
                         onClick={() => {setDropMenu2(!dropMenu2); setDropMenu(false);}}
                     >
@@ -241,7 +256,7 @@ function FileNav({ fileState, setFileState }) {
                     </button>
                     {dropMenu2 && (
                         <div
-                            className="absolute z-20 mt-1 end-0 sm:max-w-64 w-full pb-2 rounded-lg divide-y divide-contrast overflow-hidden border border-contrast bg-background shadow-lg shadow-black/25"
+                            className="absolute z-20 mt-2 end-0 sm:max-w-64 w-full pb-2 divide-y divide-contrast overflow-hidden border border-contrast bg-background shadow-lg shadow-black/25"
                             role="menu"
                         >
                             <div className='bg-background'>

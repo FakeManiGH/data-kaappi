@@ -5,28 +5,62 @@ import FolderView from './_components/FolderView';
 import BreadGrumps from './_components/BreadGrumps';
 import CreateFolder from './_components/CreateFolder';
 import { FolderPlus } from 'lucide-react';
+import { useUser } from '@clerk/nextjs';
+import { useAlert } from '@/app/contexts/AlertContext';
+import PageLoading from '@/app/_components/_common/PageLoading';
+import ErrorView from '../_components/ErrorView';
+import FolderOptions from './_components/FolderOptions';
 
-const exampleFolders = [
-    { id: 1, name: 'Documents', fileCount: 10 },
-    { id: 2, name: 'Pictures', fileCount: 25 },
-    { id: 3, name: 'Music', fileCount: 15 },
-    { id: 4, name: 'Videos', fileCount: 5 },
-    { id: 5, name: 'Projects', fileCount: 8 },
-    { id: 6, name: 'Downloads', fileCount: 20 },
-];
 
 function Page() {
-    const { setCurrentIndex } = useNavigation();
-    const [folders, setFolders] = useState(exampleFolders);
+    const { setCurrentIndex, navigatePage } = useNavigation();
+    const [folders, setFolders] = useState([]);
+    const [selectedFolders, setSelectedFolders] = useState([]);
     const [createFolder, setCreateFolder] = useState(false);
+    const [folderOptions, setFolderOptions] = useState(false);
+    const [loading, setLoading] = useState(true);
+    const [pageError, setPageError] = useState(null);
+    const { user, isLoaded } = useUser();
+    const { showAlert } = useAlert();
 
     useEffect(() => {
+        const fetchFolders = async () => {
+            if (isLoaded && user) {
+                try {
+                    const response = await fetch(`/api/get-folders?userID=${user.id}`, {
+                        method: 'GET',
+                    });
+
+                    const data = await response.json();
+
+                    if (!response.ok) {
+                        showAlert(data.message, 'error');
+                        setPageError(data.message);
+                        return;
+                    }
+
+                    setFolders(data.folders);
+                } catch (error) {
+                    setPageError('Palvelinvirhe! Yritä uudelleen.');
+                    showAlert('Palvelinvirhe! Yritä uudelleen.', 'error');
+                } finally {
+                    setLoading(false);
+                }
+            } else if (isLoaded && !user) {
+                navigatePage('/sign-in');
+            }
+        };
+
         setCurrentIndex('/kansiot');
+        fetchFolders();
 
         return () => {
             setCurrentIndex('');
         };
-    }, [setCurrentIndex]);
+    }, [isLoaded, user, setCurrentIndex, navigatePage ]);
+
+    if (loading) return <PageLoading />;
+    if (pageError) return <ErrorView message={pageError} />;
 
     return (
         <main>
@@ -34,16 +68,23 @@ function Page() {
                 <h1 className="text-2xl md:text-3xl"><strong>Kansiot</strong></h1>
                 <button 
                     onClick={() => setCreateFolder(true)} 
-                    className='flex gap-2 items-center rounded-full border border-navlink px-4 py-3 text-sm text-navlink shadow-md 
-                    hover:border-primary hover:text-foreground hover:shadow-sm transition-all'
+                    className='flex items-center w-fit gap-2 p-3 text-sm bg-primary text-white hover:bg-primary/75 transition-colors'
                 >
-                    <FolderPlus size={20} className='text-primary' />
+                    <FolderPlus />
                     Uusi kansio
                 </button>
             </div>
             <BreadGrumps />
-            <FolderView folders={folders} setFolders={setFolders} setCreateFolder={setCreateFolder} />
-            {createFolder && <CreateFolder setCreateFolder={setCreateFolder} />}
+            <FolderView 
+                folders={folders} 
+                setFolders={setFolders} 
+                setCreateFolder={setCreateFolder}
+                selectedFolders={selectedFolders}
+                setSelectedFolders={setSelectedFolders}
+                setFolderOptions={setFolderOptions}
+            />
+            {createFolder && <CreateFolder folders={folders} setFolders={setFolders} setCreateFolder={setCreateFolder} />}
+            {folderOptions && <FolderOptions folder={selectedFolders[0]} setFolders={setFolders} setFolderOptions={setFolderOptions} />}
         </main>
     );
 }
