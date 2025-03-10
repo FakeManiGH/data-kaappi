@@ -9,9 +9,10 @@ import { generateRandomString } from '@/utils/GenerateRandomString';
 import { useUser } from '@clerk/nextjs';
 import { useNavigation } from '@/app/contexts/NavigationContext';
 import SpaceMeterBar from '@/app/_components/_common/SpaceMeterBar';
-import { getUser, getFolders } from '@/app/file-requests/api';
+import { getUser, getFolders, updateFolderFileCount } from '@/app/file-requests/api';
 import PageLoading from '@/app/_components/_common/PageLoading';
 import ErrorView from '../_components/ErrorView';
+import CreateFolder from './_components/CreateFolder';
 
 function Page() {
   const { user } = useUser();
@@ -23,6 +24,8 @@ function Page() {
   const [files, setFiles] = useState([]);
   const [fileErrors, setFileErrors] = useState([]);
   const [folders, setFolders] = useState([]);
+  const [newFolder, setNewFolder] = useState(false);
+  const [uploadFolder, setUploadFolder] = useState('');
   const [uploadProgress, setUploadProgress] = useState([]);
   const storage = getStorage(app);
 
@@ -72,6 +75,7 @@ function Page() {
         fileType: file.type, // String
         fileUrl: downloadURL, // String
         shortUrl: shortURL, // String
+        folder: file.folderID, // String
         shared: false,  // Boolean
         password: '', // String
         uploadedBy: user.fullName, // String
@@ -81,6 +85,7 @@ function Page() {
       };
 
       await setDoc(doc(db, 'files', fileID), fileData);
+      await updateFolderFileCount(file.folderID, 1);
       setFiles((prevFiles) => prevFiles.filter(f => f !== file));
       
     } catch (error) {
@@ -110,9 +115,12 @@ function Page() {
       <FilePreview 
         files={files}
         folders={folders}
+        setNewFolder={setNewFolder}
         removeFile={(file) => setFiles(files.filter(f => f !== file))} 
-        uploadProgress={uploadProgress} 
+        uploadProgress={uploadProgress}
+        setFiles={setFiles}
       />
+      {newFolder && <CreateFolder setNewFolder={setNewFolder} folders={folders} setFolders={setFolders} />}
     </main>
   );
 }

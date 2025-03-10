@@ -1,6 +1,6 @@
 "use server"
 import { getStorage, ref, deleteObject } from "firebase/storage";
-import { doc, setDoc, deleteDoc, getDoc, updateDoc, orderBy, collection, query, where, getDocs, limit } from "firebase/firestore";
+import { doc, setDoc, deleteDoc, getDoc, updateDoc, orderBy, collection, query, where, getDocs, limit, increment } from "firebase/firestore";
 import { db } from '@/../firebaseConfig';
 import bcrypt from 'bcrypt';
 
@@ -185,8 +185,38 @@ export const getFolders = async (userID) => {
         const q = query(collection(db, "folders"), where("userID", "==", userID));
         const querySnapshot = await getDocs(q);
         const folders = querySnapshot.docs.map(doc => doc.data());
-        return folders;
+        const publicFolders = folders.map(folder => {
+            return {
+                id: folder.folderID,
+                name: folder.folderName,
+                parentID: folder.parentFolderID,
+                fileCount: folder.fileCount,
+                user: {
+                    id: folder.userID,
+                    name: folder.userName,
+                    email: folder.userEmail
+                },
+                created: folder.createdAt,
+                modified: folder.modifiedAt,
+                files: folder.files,
+                password: folder.password ? true : false,
+                shared: folder.shared,
+                sharedWith: folder.sharedWith
+            }
+        });
+        return publicFolders;
     } catch (error) {
         console.error("Error fetching folders: ", error);
     }
 }
+
+// Update folder file count
+export const updateFolderFileCount = async (folderID, incrementBy) => {
+    const folderRef = doc(db, 'folders', folderID);
+    try {
+        await updateDoc(folderRef, { fileCount: increment(incrementBy) });
+    } catch (error) {
+        console.error("Error updating folder file count: ", error);
+    }
+}
+

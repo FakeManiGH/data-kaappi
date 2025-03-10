@@ -79,8 +79,6 @@ function UploadForm({ uploadFile, files, setFiles, fileErrors, setFileErrors, se
     // Update used space
     const totalSize = files.reduce((acc, file) => acc + file.size, 0);
     await updateUserDocumentValue(user.id, 'usedSpace', userDoc.usedSpace + totalSize);
-    
-    // Update user document used space
     setUserDoc({ ...userDoc, usedSpace: userDoc.usedSpace + totalSize });
 
     showAlert('Tiedosto(t) ladattu onnistuneesti.', 'success');
@@ -104,7 +102,7 @@ function UploadForm({ uploadFile, files, setFiles, fileErrors, setFileErrors, se
           onDragLeave={handleDragLeave}
         >
           <label htmlFor="dropzone-file" className={`flex flex-col items-center w-full max-w-full justify-center h-72 
-            cursor-pointer bg-background border-2 hover:border-primary  
+            cursor-pointer bg-background border-2 border-dashed hover:border-primary transition-colors
             ${isDragging ? 'border-primary' : 'border-contrast'}`}>
             <div className="flex flex-col max-w-full items-center justify-center p-4 text-center pt-5 pb-6">
               {isDragging ?   

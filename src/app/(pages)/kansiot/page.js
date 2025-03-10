@@ -10,6 +10,7 @@ import { useAlert } from '@/app/contexts/AlertContext';
 import PageLoading from '@/app/_components/_common/PageLoading';
 import ErrorView from '../_components/ErrorView';
 import FolderOptions from './_components/FolderOptions';
+import { getFolders } from '@/app/file-requests/api';
 
 
 function Page() {
@@ -27,19 +28,8 @@ function Page() {
         const fetchFolders = async () => {
             if (isLoaded && user) {
                 try {
-                    const response = await fetch(`/api/get-folders?userID=${user.id}`, {
-                        method: 'GET',
-                    });
-
-                    const data = await response.json();
-
-                    if (!response.ok) {
-                        showAlert(data.message, 'error');
-                        setPageError(data.message);
-                        return;
-                    }
-
-                    setFolders(data.folders);
+                    const folders = await getFolders(user.id);
+                    setFolders(folders);
                 } catch (error) {
                     setPageError('Palvelinvirhe! Yritä uudelleen.');
                     showAlert('Palvelinvirhe! Yritä uudelleen.', 'error');
