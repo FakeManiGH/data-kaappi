@@ -75,7 +75,7 @@ function Page() {
         fileType: file.type, // String
         fileUrl: downloadURL, // String
         shortUrl: shortURL, // String
-        folder: file.folderID, // String
+        folder: file.folderID ? file.folderID : '', // String
         shared: false,  // Boolean
         password: '', // String
         uploadedBy: user.fullName, // String
@@ -85,7 +85,9 @@ function Page() {
       };
 
       await setDoc(doc(db, 'files', fileID), fileData);
-      await updateFolderFileCount(file.folderID, 1);
+      if (file.folderID) {
+        await updateFolderFileCount(file.folderID, 1);
+      }
       setFiles((prevFiles) => prevFiles.filter(f => f !== file));
       
     } catch (error) {

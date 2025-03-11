@@ -1,10 +1,42 @@
 import React, { useState } from 'react';
-import { Check, CheckCheck, CheckCircle, Folder, FolderPlus, FolderX, Pencil, PencilLine, Settings, Share2, Trash2, X } from 'lucide-react';
+import { Check, CheckCheck, CheckCircle, Folder, FolderPlus, FolderX, GripVertical, Pencil, PencilLine, Plus, Settings, Share2, Trash2, X } from 'lucide-react';
 import DownloadBtn from './DownloadBtn';
 import Link from 'next/link';
+import { translateFileSize } from '@/utils/DataTranslation';
+import { getFileIcon } from '@/utils/GetFileIcon';
 
-function FolderView({ folders, setFolders, setCreateFolder, selectedFolders, setSelectedFolders, setFolderOptions }) {
+function FolderView({ folders, files, setFolders, setFiles, setCreateFolder, selectedFolders, setSelectedFolders, setFolderOptions }) {
+    const [draggedFile, setDraggedFile] = useState(null);
+    const [dragOverFolder, setDragOverFolder] = useState(null);
     const [touchStartTime, setTouchStartTime] = useState(null);
+
+    const handleDragStart = (file) => {
+        setDraggedFile(file);
+    };
+
+    const handleDrop = (folder) => {
+        if (draggedFile) {
+            const updatedFiles = files.map(file => 
+                file.id === draggedFile.id ? { ...file, folderID: folder.id } : file
+            );
+            setFiles(updatedFiles);
+            // Update the database here
+            setDraggedFile(null);
+            setDragOverFolder(null);
+        }
+    };
+
+    const handleDragOver = (e) => {
+        e.preventDefault();
+    };
+
+    const handleDragEnter = (folder) => {
+        setDragOverFolder(folder.id);
+    };
+
+    const handleDragLeave = () => {
+        setDragOverFolder(null);
+    };
 
     const handleFolderSelect = (folder) => {
         if (selectedFolders.includes(folder)) {
@@ -12,8 +44,7 @@ function FolderView({ folders, setFolders, setCreateFolder, selectedFolders, set
         } else {
             setSelectedFolders([...selectedFolders, folder]);
         }
-    }
-
+    };
 
     // Handle long press on touch devices
     const handleTouchStart = (folder) => {
@@ -90,8 +121,13 @@ function FolderView({ folders, setFolders, setCreateFolder, selectedFolders, set
                     key={folder.id} 
                     onTouchStart={() => handleTouchStart(folder)}
                     onTouchEnd={() => handleTouchEnd(folder)}
-                    className={`relative flex flex-col items-center p-4 bg-gradient-to-br from-background to-contrast shadow-md hover:shadow-lg 
-                        transition-colors border group ${selectedFolders.includes(folder) ? 'border-primary' : 'border-transparent'}`}
+                    onDragOver={handleDragOver}
+                    onDragEnter={() => handleDragEnter(folder)}
+                    onDragLeave={handleDragLeave}
+                    onDrop={() => handleDrop(folder)}
+                    className={`relative flex flex-col items-center p-4 bg-gradient-to-br shadow-md hover:shadow-lg 
+                        transition-colors group 
+                        ${dragOverFolder === folder.id ? 'from-background to-primary/50' : 'from-background to-contrast'}`}
                 >   
                     <input 
                         type="checkbox" 
@@ -105,7 +141,25 @@ function FolderView({ folders, setFolders, setCreateFolder, selectedFolders, set
                         <img src={folder.shared ? "/icons/folder_share.png" : "/icons/folder.png"} alt="folder" className="w-16 h-16" />
                         <h2 className="text-sm font-semibold transition-colors">{folder.name}</h2>
                         <p className="text-sm text-navlink">{folder.fileCount} tiedostoa</p>
-                    </Link>    
+                    </Link>  
+                </div>
+            ))}
+
+            {files.map(file => (
+                <div 
+                    key={file.id}
+                    title={file.name} 
+                    draggable
+                    onDragStart={() => handleDragStart(file)}
+                    className="relative flex flex-col items-center p-4 bg-gradient-to-br from-background to-contrast shadow-md hover:shadow-lg 
+                        transition-colors overflow-hidden"
+                >   
+                    <GripVertical size={20} className='absolute top-2 right-2 cursor-move' />
+                    <Link href={`/tiedosto/${file.id}`} className='flex flex-col items-center text-foreground hover:text-primary'>
+                        <img src={getFileIcon(file.type)} alt="file" className="w-16 h-16 mb-1" />
+                        <h2 className="text-sm max-w-full font-semibold whitespace-nowrap text-ellipsis">{file.name}</h2>
+                        <p className="text-sm text-navlink">{translateFileSize(file.size)}</p>
+                    </Link>
                 </div>
             ))}
         </div>

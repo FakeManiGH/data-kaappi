@@ -95,6 +95,53 @@ export const getFiles = async (userID) => {
     }
 }
 
+// Get folderless files
+export const getFolderlessFiles = async (userID) => {
+    try {
+        const q = query(
+            collection(db, "files"),
+            where("folder", "==", ""),
+            where("userID", "==", userID),
+            orderBy("uploadedAt", "desc")
+        );
+        const querySnapshot = await getDocs(q);
+        if (querySnapshot.empty) {
+            console.log("No matching documents.");
+            return [];
+        }
+        const files = querySnapshot.docs.map(doc => {
+            const data = doc.data();
+            return {
+                ...data,
+                uploadedAt: data.uploadedAt.toDate() // Convert Firestore timestamp to JavaScript Date
+            };
+        });
+        const publicFiles = files.map(file => {
+            return {
+                id: file.fileID,
+                name: file.fileName,
+                size: file.fileSize,
+                type: file.fileType,
+                url: file.fileUrl,
+                shortUrl: file.shortUrl,
+                folder: file.folder,
+                shared: file.shared,
+                password: file.password ? true : false,
+                uploadedBy: file.uploadedBy,
+                user: {
+                    id: file.userID,
+                    name: file.userName,
+                    email: file.userEmail
+                },
+                uploadedAt: file.uploadedAt
+            };
+        });
+        return publicFiles;
+    } catch (error) {
+        console.error("Error fetching folderless files: ", error);
+    }
+};
+
 // Get shared files
 export const getSharedFiles = async () => {
     try {

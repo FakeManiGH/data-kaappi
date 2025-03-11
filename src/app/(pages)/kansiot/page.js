@@ -10,12 +10,13 @@ import { useAlert } from '@/app/contexts/AlertContext';
 import PageLoading from '@/app/_components/_common/PageLoading';
 import ErrorView from '../_components/ErrorView';
 import FolderOptions from './_components/FolderOptions';
-import { getFolders } from '@/app/file-requests/api';
+import { getFolders, getFolderlessFiles } from '@/app/file-requests/api';
 
 
 function Page() {
     const { setCurrentIndex, navigatePage } = useNavigation();
     const [folders, setFolders] = useState([]);
+    const [files, setFiles] = useState([]);
     const [selectedFolders, setSelectedFolders] = useState([]);
     const [createFolder, setCreateFolder] = useState(false);
     const [folderOptions, setFolderOptions] = useState(false);
@@ -29,6 +30,8 @@ function Page() {
             if (isLoaded && user) {
                 try {
                     const folders = await getFolders(user.id);
+                    const files = await getFolderlessFiles(user.id);
+                    setFiles(files);
                     setFolders(folders);
                 } catch (error) {
                     setPageError('Palvelinvirhe! Yritä uudelleen.');
@@ -66,8 +69,10 @@ function Page() {
             </div>
             <BreadGrumps />
             <FolderView 
-                folders={folders} 
+                folders={folders}
+                files={files}
                 setFolders={setFolders} 
+                setFiles={setFiles}
                 setCreateFolder={setCreateFolder}
                 selectedFolders={selectedFolders}
                 setSelectedFolders={setSelectedFolders}
