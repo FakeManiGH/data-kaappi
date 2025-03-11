@@ -1,10 +1,10 @@
 import { X } from 'lucide-react'
 import React from 'react'
 import { generateRandomString } from '@/utils/GenerateRandomString'
-import { createFolder } from '@/app/file-requests/api'
+import { createFolder } from '@/app/file-requests/folders'
 import { useAlert } from '@/app/contexts/AlertContext'
 import { useUser } from '@clerk/nextjs'
-import { Timestamp } from 'firebase/firestore'
+import { DateDB } from '@/utils/DataTranslation'
 
 function CreateFolder({ setNewFolder, folders, setFolders }) {
   const { showAlert } = useAlert()
@@ -22,30 +22,22 @@ function CreateFolder({ setNewFolder, folders, setFolders }) {
 
     try {
       const folderID = generateRandomString(11)
-      const now = new Date()
-      const formattedDate = now.toLocaleString('fi-FI', {
-        day: 'numeric',
-        month: 'long',
-        year: 'numeric',
-        hour: 'numeric',
-        minute: 'numeric',
-        second: 'numeric',
-        timeZoneName: 'short'
-      })
-
+    
       const folderData = {
+        docType: 'folder', // String
         folderID: folderID, // String
         folderName: folderName, // String
         parentFolderName: null, // String
-        parentFolderID: null, // String
+        parentID: null, // String
         fileCount: 0, // Number
         userID: user.id, // String
         userName: user.fullName, // String
         userEmail: user.primaryEmailAddress.emailAddress, // String
-        createdAt: formattedDate, // String
-        modifiedAt: formattedDate, // String
+        createdAt: DateDB(new Date()), // String
+        modifiedAt: DateDB(new Date()), // String
         files: [], // Array
-        password: '', // String
+        pwdProtected: false, // Boolean
+        pwd: '', // String
         shared: false, // Boolean
         sharedWith: [], // Array
       }
@@ -55,9 +47,10 @@ function CreateFolder({ setNewFolder, folders, setFolders }) {
 
       // Transform folderData to publicFolder
       const publicFolder = {
+        docType: folderData.docType,
         id: folderData.folderID,
         name: folderData.folderName,
-        parentID: folderData.parentFolderID,
+        parent: folderData.parentFolderID,
         fileCount: folderData.fileCount,
         user: {
           id: folderData.userID,
@@ -67,7 +60,7 @@ function CreateFolder({ setNewFolder, folders, setFolders }) {
         created: folderData.createdAt,
         modified: folderData.modifiedAt,
         files: folderData.files,
-        password: folderData.password ? true : false,
+        password: folderData.pwdProtected,
         shared: folderData.shared,
         sharedWith: folderData.sharedWith
       }

@@ -1,4 +1,4 @@
-import { getFolders } from "@/app/file-requests/api";
+import { getUserFolders } from "@/app/file-requests/api";
 import { NextResponse } from "next/server";
 
 export async function GET(request) {
@@ -10,7 +10,7 @@ export async function GET(request) {
             return NextResponse.json({ message: 'Ei tarvittavia käyttäjätietoja.' }, { status: 400 });
         }
 
-        const folders = await getFolders(userID);
+        const folders = await getUserFolders(userID);
 
         if (!folders) {
             console.error('No folders found for user:', userID);

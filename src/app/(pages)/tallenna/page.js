@@ -9,7 +9,9 @@ import { generateRandomString } from '@/utils/GenerateRandomString';
 import { useUser } from '@clerk/nextjs';
 import { useNavigation } from '@/app/contexts/NavigationContext';
 import SpaceMeterBar from '@/app/_components/_common/SpaceMeterBar';
-import { getUser, getFolders, updateFolderFileCount } from '@/app/file-requests/api';
+import { getUser } from '@/app/file-requests/api';
+import { updateFolderFileCount } from '@/app/file-requests/folders';
+import { getUserFolders } from '@/app/file-requests/folders';
 import PageLoading from '@/app/_components/_common/PageLoading';
 import ErrorView from '../_components/ErrorView';
 import CreateFolder from './_components/CreateFolder';
@@ -36,7 +38,7 @@ function Page() {
       if (isLoaded && user) {
         try {
           const doc = await getUser(user.id);
-          const folders = await getFolders(user.id);
+          const folders = await getUserFolders(user.id);
           setUserDoc(doc);
           setFolders(folders);
           setLoading(false);
@@ -69,6 +71,7 @@ function Page() {
       const downloadURL = await getDownloadURL(storageRef);
       const shortURL = process.env.NEXT_PUBLIC_BASE_URL + 'tiedosto/' + fileID;
       const fileData = {
+        docType: 'file', // String
         fileID: fileID, // String
         fileName: file.name,  // String
         fileSize: parseInt(file.size), // Number

@@ -119,6 +119,7 @@ export const getFolderlessFiles = async (userID) => {
         const publicFiles = files.map(file => {
             return {
                 id: file.fileID,
+                docType: file.docType,
                 name: file.fileName,
                 size: file.fileSize,
                 type: file.fileType,
@@ -202,68 +203,6 @@ export const updateFilePassword = async (userID, fileID, password) => {
 
     } catch (error) {
         console.error("Error updating file password: ", error)
-    }
-}
-
-
-// FOLDER FUNCTIONS
-// Create folder
-export const createFolder = async (folderID, folderData) => {
-    try {
-        // Check if folder already exists
-        const folderRef = doc(db, 'folders', folderID)
-        const docSnap = await getDoc(folderRef)
-
-        if (docSnap.exists()) {
-            const newFolderID = generateRandomString(11)
-            return createFolder(newFolderID, folderData)
-        }
-
-        await setDoc(doc(db, 'folders', folderID), folderData)
-    } catch (error) {
-        console.error("Error creating folder: ", error)
-    }
-}
-
-// Get folders (with userID)
-export const getFolders = async (userID) => {
-    try {
-        console.log('Fetching folders for userID:', userID);
-        const q = query(collection(db, "folders"), where("userID", "==", userID));
-        const querySnapshot = await getDocs(q);
-        const folders = querySnapshot.docs.map(doc => doc.data());
-        const publicFolders = folders.map(folder => {
-            return {
-                id: folder.folderID,
-                name: folder.folderName,
-                parentID: folder.parentFolderID,
-                fileCount: folder.fileCount,
-                user: {
-                    id: folder.userID,
-                    name: folder.userName,
-                    email: folder.userEmail
-                },
-                created: folder.createdAt,
-                modified: folder.modifiedAt,
-                files: folder.files,
-                password: folder.password ? true : false,
-                shared: folder.shared,
-                sharedWith: folder.sharedWith
-            }
-        });
-        return publicFolders;
-    } catch (error) {
-        console.error("Error fetching folders: ", error);
-    }
-}
-
-// Update folder file count
-export const updateFolderFileCount = async (folderID, incrementBy) => {
-    const folderRef = doc(db, 'folders', folderID);
-    try {
-        await updateDoc(folderRef, { fileCount: increment(incrementBy) });
-    } catch (error) {
-        console.error("Error updating folder file count: ", error);
     }
 }
 

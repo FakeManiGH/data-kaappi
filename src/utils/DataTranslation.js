@@ -31,3 +31,16 @@ export const simplifyFileType = (type) => {
         return 'other';
     }
 }
+
+export const DateDB = (date) => { 
+    const dateDB = date.toLocaleString('fi-FI', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+        hour: 'numeric',
+        minute: 'numeric',
+        second: 'numeric',
+        timeZoneName: 'short'
+    })
+    return dateDB
+}

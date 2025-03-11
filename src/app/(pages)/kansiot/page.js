@@ -9,17 +9,18 @@ import { useUser } from '@clerk/nextjs';
 import { useAlert } from '@/app/contexts/AlertContext';
 import PageLoading from '@/app/_components/_common/PageLoading';
 import ErrorView from '../_components/ErrorView';
-import FolderOptions from './_components/FolderOptions';
-import { getFolders, getFolderlessFiles } from '@/app/file-requests/api';
+import OptionsPopup from './_components/OptionsPopup';
+import { getFolderlessFiles } from '@/app/file-requests/api';
+import { getUserFolders } from '@/app/file-requests/folders';
 
 
 function Page() {
     const { setCurrentIndex, navigatePage } = useNavigation();
     const [folders, setFolders] = useState([]);
     const [files, setFiles] = useState([]);
-    const [selectedFolders, setSelectedFolders] = useState([]);
+    const [selectedObjects, setSelectedObjects] = useState([]);
     const [createFolder, setCreateFolder] = useState(false);
-    const [folderOptions, setFolderOptions] = useState(false);
+    const [objectOptions, setObjectOptions] = useState(false);
     const [loading, setLoading] = useState(true);
     const [pageError, setPageError] = useState(null);
     const { user, isLoaded } = useUser();
@@ -29,7 +30,7 @@ function Page() {
         const fetchFolders = async () => {
             if (isLoaded && user) {
                 try {
-                    const folders = await getFolders(user.id);
+                    const folders = await getUserFolders(user.id);
                     const files = await getFolderlessFiles(user.id);
                     setFiles(files);
                     setFolders(folders);
@@ -74,12 +75,12 @@ function Page() {
                 setFolders={setFolders} 
                 setFiles={setFiles}
                 setCreateFolder={setCreateFolder}
-                selectedFolders={selectedFolders}
-                setSelectedFolders={setSelectedFolders}
-                setFolderOptions={setFolderOptions}
+                selectedObjects={selectedObjects}
+                setSelectedObjects={setSelectedObjects}
+                setObjectOptions={setObjectOptions}
             />
             {createFolder && <CreateFolder folders={folders} setFolders={setFolders} setCreateFolder={setCreateFolder} />}
-            {folderOptions && <FolderOptions folder={selectedFolders[0]} setFolders={setFolders} setFolderOptions={setFolderOptions} />}
+            {objectOptions && <OptionsPopup selectedObject={selectedObjects[0]} setFolders={setFolders} setFiles={setFiles} setObjectOptions={setObjectOptions} />}
         </main>
     );
 }
