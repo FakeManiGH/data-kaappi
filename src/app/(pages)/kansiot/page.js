@@ -10,7 +10,7 @@ import { useAlert } from '@/app/contexts/AlertContext';
 import PageLoading from '@/app/_components/_common/PageLoading';
 import ErrorView from '../_components/ErrorView';
 import OptionsPopup from './_components/OptionsPopup';
-import { getFolderlessFiles } from '@/app/file-requests/api';
+import { getUserRogueFiles } from '@/app/file-requests/files';
 import { getUserFolders } from '@/app/file-requests/folders';
 
 
@@ -31,7 +31,7 @@ function Page() {
             if (isLoaded && user) {
                 try {
                     const folders = await getUserFolders(user.id);
-                    const files = await getFolderlessFiles(user.id);
+                    const files = await getUserRogueFiles(user.id);
                     setFiles(files);
                     setFolders(folders);
                 } catch (error) {

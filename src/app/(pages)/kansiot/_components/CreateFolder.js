@@ -4,7 +4,7 @@ import { generateRandomString } from '@/utils/GenerateRandomString'
 import { createFolder } from '@/app/file-requests/folders'
 import { useAlert } from '@/app/contexts/AlertContext'
 import { useUser } from '@clerk/nextjs'
-import { DateDB } from '@/utils/DataTranslation'
+import { DateDB, transformFolderDataPublic } from '@/utils/DataTranslation'
 
 function CreateFolder({ folders, setFolders, setCreateFolder }) {
   const { showAlert } = useAlert()
@@ -35,7 +35,6 @@ function CreateFolder({ folders, setFolders, setCreateFolder }) {
         userEmail: user.primaryEmailAddress.emailAddress, // String
         createdAt: DateDB(new Date()), // String
         modifiedAt: DateDB(new Date()), // String
-        files: [], // Array
         pwdProtected: false, // Boolean
         pwd: '', // String
         shared: false, // Boolean
@@ -46,24 +45,7 @@ function CreateFolder({ folders, setFolders, setCreateFolder }) {
       await createFolder(folderID, folderData)
 
       // Transform folderData to publicFolder
-      const publicFolder = {
-        docType: folderData.docType,
-        id: folderData.folderID,
-        name: folderData.folderName,
-        parent: folderData.parentFolderID,
-        fileCount: folderData.fileCount,
-        user: {
-          id: folderData.userID,
-          name: folderData.userName,
-          email: folderData.userEmail
-        },
-        created: folderData.createdAt,
-        modified: folderData.modifiedAt,
-        files: folderData.files,
-        password: folderData.pwdProtected,
-        shared: folderData.shared,
-        sharedWith: folderData.sharedWith
-      }
+      const publicFolder = transformFolderDataPublic(folderData)
 
       // Add publicFolder to the folders state
       setFolders([...folders, publicFolder])

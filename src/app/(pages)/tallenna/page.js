@@ -79,8 +79,10 @@ function Page() {
         fileUrl: downloadURL, // String
         shortUrl: shortURL, // String
         folder: file.folderID ? file.folderID : '', // String
-        shared: false,  // Boolean
-        password: '', // String
+        shared: false, // Boolean
+        sharedWith: [],  // Array
+        pwdProtected: false, // Boolean
+        pwd: '', // String
         uploadedBy: user.fullName, // String
         userID: user.id,  // String
         userEmail: user.primaryEmailAddress.emailAddress, // String

@@ -5,7 +5,7 @@ const AlertContext = createContext();
 export const AlertProvider = ({ children }) => {
   const [alert, setAlert] = useState({ message: '', type: '', isOpen: false });
 
-  const showAlert = (message, type = 'info') => {
+  const showAlert = (message, type = '') => {
     setAlert({ message, type, isOpen: true });
     setTimeout(() => {
       setAlert({ message: '', type: '', isOpen: false });

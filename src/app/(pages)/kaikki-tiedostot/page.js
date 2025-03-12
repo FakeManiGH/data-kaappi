@@ -7,6 +7,7 @@ import { useNavigation } from '@/app/contexts/NavigationContext'
 import { useAlert } from '@/app/contexts/AlertContext'
 import PageLoading from '@/app/_components/_common/PageLoading'
 import SearchBar from './_components/SearchBar'
+import { getUserFiles } from '@/app/file-requests/files'
 
 function Page() {
   const { setCurrentIndex, navigatePage } = useNavigation()
@@ -52,20 +53,7 @@ function Page() {
     const fetchFiles = async () => {
       if (isLoaded && user) {
         try {
-          const response = await fetch(`/api/get-files-user?userID=${user.id}`, {
-            method: 'GET',
-          })
-
-          const data = await response.json()
-
-          if (!response.ok) {
-            showAlert(data.message, 'error')
-            return
-          } 
-
-          const userFiles = data.files.map(file => ({
-            ...file,
-          }))
+          const userFiles = await getUserFiles(user.id)
 
           setFileState(prevState => ({
             ...prevState,

@@ -32,6 +32,7 @@ export const simplifyFileType = (type) => {
     }
 }
 
+// Translate date to database format
 export const DateDB = (date) => { 
     const dateDB = date.toLocaleString('fi-FI', {
         day: 'numeric',
@@ -43,4 +44,25 @@ export const DateDB = (date) => {
         timeZoneName: 'short'
     })
     return dateDB
+}
+
+// Transform file data for public use
+export const transformFolderDataPublic = (folder) => {
+    return {
+        id: folder.folderID,
+        name: folder.folderName,
+        parent: folder.parentID,
+        fileCount: folder.fileCount,
+        user: {
+            id: folder.userID,
+            name: folder.userName,
+            email: folder.userEmail
+        },
+        created: folder.createdAt,
+        modified: folder.modifiedAt,
+        passwordProtected: folder.pwdProtected,
+        password: '',
+        shared: folder.shared,
+        sharedWith: folder.sharedWith
+    }
 }

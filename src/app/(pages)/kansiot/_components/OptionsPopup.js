@@ -1,17 +1,21 @@
 import React, { useState, useEffect } from 'react'
 import { updateFolderData } from '@/app/file-requests/folders';
+import { updateFileData } from '@/app/file-requests/files'; // Assuming you have a similar function for files
 import { useAlert } from '@/app/contexts/AlertContext';
 import { X } from 'lucide-react'
+import { useUser } from '@clerk/nextjs';
 
 function OptionsPopup({ selectedObject, setFolders, setFiles, setObjectOptions }) {
   const [objectName, setObjectName] = useState('');
+  const [objectPasswordProtected, setObjectPasswordProtected] = useState(false);
   const [objectPassword, setObjectPassword] = useState('');
   const { showAlert } = useAlert();
+  const { user } = useUser();
 
   useEffect(() => {
     if (selectedObject) {
       setObjectName(selectedObject.name);
-      setObjectPassword(selectedObject.password || '');
+      setObjectPasswordProtected(selectedObject.passwordProtected);
     }
   }, [selectedObject]);
 
@@ -23,37 +27,44 @@ function OptionsPopup({ selectedObject, setFolders, setFiles, setObjectOptions }
     setObjectPassword(e.target.value);
   };
 
-  const handleSubmit = async (e) => {
+  const handlePasswordProtection = (e) => {
+    setObjectPasswordProtected(e.target.checked);
+  }
+
+  const handleFolderUpdate = async (e) => {
     e.preventDefault();
-    if (selectedObject.type === 'folder') {
-      try {
-        const newFolderName = e.target.objectName.value;
-        const newFolderPassword = e.target.objectPassword.value;
 
-        if (newFolderName === selectedObject.name && newFolderPassword === selectedObject.password) {
-          showAlert('Ei tallennettavia muutoksia.', 'info');
-          return;
-        }
-
-        const updatedFolder = {
-          ...selectedObject,
-          name: newFolderName,
-          password: newFolderPassword
-        };
-
-        await updateFolderData(updatedFolder);
-        setFolders(prevFolders => prevFolders.map(f => f.id === selectedObject.id ? updatedFolder : f));
-        showAlert('Kansion tiedot päivitetty.', 'success');
-      } catch (error) {
-        showAlert('Kansion tietojen päivitys epäonnistui.', 'error');
+    try {
+      if (selectedObject.name === objectName && selectedObject.passwordProtected === objectPasswordProtected && objectPassword === '') {
+        showAlert('Ei tallennettavia muutoksia.', 'info');
+        return;
       }
-        
-    } else if (selectedObject.type === 'file') {
-      // Update the file name and password in the files state
-      setFiles(prevFiles => prevFiles.map(f => f.id === selectedObject.id ? { ...f, name: objectName, password: objectPassword } : f));
+
+      const updatedData = {
+        ...selectedObject,
+        name: objectName,
+        passwordProtected: objectPasswordProtected,
+        password: objectPassword
+      };
+
+      await updateFolderData(user.id, updatedData);
+
+      // Assuming setFolders is a function to update the state of folders
+      setFolders(prevFolders => prevFolders.map(folder => 
+        folder.id === updatedData.id ? updatedData : folder
+      ));
+
+      showAlert('Kansio päivitetty onnistuneesti.', 'success');
+      setObjectOptions(false); // Close the options popup
+    } catch (error) {
+      console.error("Error updating folder: ", error);
+      showAlert('Virhe kansion päivittämisessä.', 'error');
     }
-    setObjectOptions(false);
   };
+
+  const handleFileUpdate = async (e) => {
+    e.preventDefault();
+  }
 
   return (
     <span className='fixed z-50 inset-0 flex justify-center items-center bg-black/50 px-4 py-2'>
@@ -65,7 +76,7 @@ function OptionsPopup({ selectedObject, setFolders, setFiles, setObjectOptions }
           <X />
         </button>
         <h2 className="text-2xl md:text-3xl mb-6 text-center font-bold">Muokkaa</h2>
-        <form className="flex flex-col" onSubmit={handleSubmit}>
+        <form className="flex flex-col" onSubmit={selectedObject.docType == 'folder' ? handleFolderUpdate : handleFileUpdate}>
           <div>
             <label htmlFor="objectName" className="block text-sm font-semibold">{selectedObject.docType === 'file' ? 'Tiedoston nimi' : 'Kansion nimi'}</label>
             <input 
@@ -74,24 +85,43 @@ function OptionsPopup({ selectedObject, setFolders, setFiles, setObjectOptions }
               name="objectName"
               value={objectName}
               onChange={handleNameChange}
-              placeholder={selectedObject.docType === 'file' ? 'Tiedoston nimi' : 'Kansion nimi'}
+              placeholder={selectedObject.type === 'file' ? 'Tiedoston nimi' : 'Kansion nimi'}
               className="w-full py-2.5 px-3 bg-background text-sm border border-transparent outline-none focus:border-primary focus:ring-1"
             />
           </div>
-          <div>
-            <label htmlFor="objectPassword" className="block text-sm font-semibold mt-4">{selectedObject.docType === 'file' ? 'Tiedoston salasana' : 'Kansion salasana'}</label>
-            <input 
-              type="password" 
-              id="objectPassword" 
-              name="objectPassword"
-              value={objectPassword}
-              onChange={handlePasswordChange}
-              placeholder={selectedObject.docType === 'file' ? 'Anna tiedostolle salasana...' : 'Anna kansiolle salasana...'}
-              className="w-full py-2.5 px-3 bg-background text-sm border border-transparent outline-none focus:border-primary focus:ring-1"
-            />
-          </div>
+
+          <label className='flex items-center cursor-pointer w-fit mt-4'>
+              <input 
+                  type="checkbox" 
+                  value="" 
+                  className="sr-only peer" 
+                  checked={objectPasswordProtected}
+                  onChange={handlePasswordProtection}
+              />
+              <div className="relative w-11 h-6 bg-gray-400 dark:bg-contrast peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 
+                  dark:peer-focus:ring-blue-800 rounded-full peer peer-checked:after:translate-x-full 
+                  rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] 
+                  after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all 
+                  dark:border-gray-600 peer-checked:bg-primary"></div>
+              <span className="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">Salasana</span>
+          </label>
+        
+          {objectPasswordProtected && (
+            <div>
+              <label htmlFor="objectPassword" className="block text-sm font-semibold mt-4">{selectedObject.docType === 'file' ? 'Tiedoston salasana' : 'Kansion salasana'}</label>
+              <input 
+                type="password" 
+                id="objectPassword" 
+                name="objectPassword"
+                value={objectPassword}
+                onChange={handlePasswordChange}
+                placeholder={selectedObject.docType === 'file' ? 'Anna tiedostolle salasana...' : 'Anna kansiolle salasana...'}
+                className="w-full py-2.5 px-3 bg-background text-sm border border-transparent outline-none focus:border-primary focus:ring-1"
+              />
+            </div>
+          )}
+
           <button type="submit" className="w-full mt-4 py-2.5 px-3 bg-primary text-white text-sm hover:bg-primary/90 transition-colors">Tallenna</button>
-          <button type="button" onClick={() => setObjectOptions(false)} className="mt-2 text-sm text-navlink hover:text-primary transition-colors">Peruuta</button>
         </form>
       </div>
     </span>

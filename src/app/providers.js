@@ -53,7 +53,6 @@ export function Providers({ children }) {
     }>
     <NavigationProvider>
       {children}
-    
     </NavigationProvider>
     </ClerkProvider>
     </AlertProvider>

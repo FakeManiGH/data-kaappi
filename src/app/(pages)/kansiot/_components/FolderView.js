@@ -86,14 +86,14 @@ function FolderView({ folders, files, setFolders, setFiles, setCreateFolder, sel
                 <div className='flex items-center gap-1'>
                     {selectedObjects.length < 2 && (
                         <button 
-                            className='flex items-center w-fit gap-2 p-2 text-sm bg-primary text-white hover:bg-primary/75 transition-colors' 
+                            className='flex items-center w-fit gap-1 p-2 text-sm bg-primary text-white hover:bg-primary/75 transition-colors' 
                             onClick={() => setObjectOptions(true)}
                         >
-                            <PencilLine size={20} />
-                            Muokkaa
+                            <Settings size={20} />
+                            Asetukset
                         </button>
                     )}
-                    <button className='flex items-center w-fit gap-2 p-2 text-sm bg-primary text-white hover:bg-primary/75 transition-colors'>
+                    <button className='flex items-center w-fit gap-1 p-2 text-sm bg-primary text-white hover:bg-primary/75 transition-colors'>
                         <Share2 size={20} />
                         Jaa
                     </button>
@@ -103,7 +103,7 @@ function FolderView({ folders, files, setFolders, setFiles, setCreateFolder, sel
                 <div className='flex items-center gap-1'>
                     <button
                         onClick={() => setSelectedObjects([])}
-                        className='flex items-center w-fit gap-2 px-2 py-[6.2px] border-2 border-contrast text-sm bg-background text-foreground hover:border-primary transition-colors'
+                        className='flex items-center w-fit gap-1 px-2 py-[6.2px] border-2 border-contrast text-sm bg-background text-foreground hover:border-primary transition-colors'
                     >
                         <X size={20} />
                         {selectedObjects.length} valittu
@@ -113,7 +113,7 @@ function FolderView({ folders, files, setFolders, setFiles, setCreateFolder, sel
                             setFolders(folders.filter(folder => !selectedObjects.includes(folder)));
                             setSelectedObjects([]);
                         }}
-                        className='flex items-center w-fit gap-2 p-2 text-sm bg-red-500 text-white hover:bg-red-600 transition-colors'
+                        className='flex items-center w-fit gap-1 p-2 text-sm bg-red-500 text-white hover:bg-red-600 transition-colors'
                     >
                         <Trash2 size={20} />
                         Poista
