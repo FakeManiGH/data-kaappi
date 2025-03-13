@@ -4,14 +4,15 @@ import { useNavigation } from '@/app/contexts/NavigationContext';
 import FolderView from './_components/FolderView';
 import BreadGrumps from './_components/BreadGrumps';
 import CreateFolder from './_components/CreateFolder';
-import { FolderPlus } from 'lucide-react';
+import { FilePlus, FolderPlus } from 'lucide-react';
 import { useUser } from '@clerk/nextjs';
 import { useAlert } from '@/app/contexts/AlertContext';
 import PageLoading from '@/app/_components/_common/PageLoading';
 import ErrorView from '../_components/ErrorView';
 import OptionsPopup from './_components/OptionsPopup';
-import { getUserRogueFiles } from '@/app/file-requests/files';
+import { getUserFilesByFolder } from '@/app/file-requests/files';
 import { getUserFolders } from '@/app/file-requests/folders';
+import Link from 'next/link';
 
 
 function Page() {
@@ -31,7 +32,7 @@ function Page() {
             if (isLoaded && user) {
                 try {
                     const folders = await getUserFolders(user.id);
-                    const files = await getUserRogueFiles(user.id);
+                    const files = await getUserFilesByFolder(user.id, "");
                     setFiles(files);
                     setFolders(folders);
                 } catch (error) {
@@ -58,11 +59,16 @@ function Page() {
 
     return (
         <main>
-            <div className='flex items-center justify-between gap-4'>
-                <h1 className="text-2xl md:text-3xl"><strong>Kansiot</strong></h1>
+            <h1 className="text-2xl md:text-3xl"><strong>Kansiot</strong></h1>
+
+            <div className='flex items-center justify-end gap-2'>
+                <Link href='/tallenna' className='flex flex-1 sm:flex-none items-center justify-center w-fit gap-2 p-3 text-sm bg-primary text-white hover:bg-primary/75 transition-colors'>
+                    <FilePlus />
+                    Tallenna
+                </Link>
                 <button 
                     onClick={() => setCreateFolder(true)} 
-                    className='flex items-center w-fit gap-2 p-3 text-sm bg-primary text-white hover:bg-primary/75 transition-colors'
+                    className='flex flex-1 sm:flex-none items-center justify-center w-fit gap-2 p-3 text-sm bg-primary text-white hover:bg-primary/75 transition-colors'
                 >
                     <FolderPlus />
                     Uusi kansio
@@ -80,7 +86,7 @@ function Page() {
                 setObjectOptions={setObjectOptions}
             />
             {createFolder && <CreateFolder folders={folders} setFolders={setFolders} setCreateFolder={setCreateFolder} />}
-            {objectOptions && <OptionsPopup selectedObject={selectedObjects[0]} setFolders={setFolders} setFiles={setFiles} setObjectOptions={setObjectOptions} />}
+            {objectOptions && <OptionsPopup selectedObject={selectedObjects[0]} setFolders={setFolders} setFiles={setFiles} setSelectedObjects={setSelectedObjects} setObjectOptions={setObjectOptions} />}
         </main>
     );
 }

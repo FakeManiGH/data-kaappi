@@ -70,14 +70,27 @@ export const updateFolderFileCount = async (folderID, incrementBy) => {
 // Update folder data
 export const updateFolderData = async (userID, updatedData) => {
     try {
-        const originalData = await getFolderInfo(updatedData.id);
+        const orginalFolder = await getFolderInfo(updatedData.id);
 
-        if (userID !== originalData.userID) {
+        if (!orginalFolder) {
+            throw new Error("No folder found.")
+        }
+
+        if (userID !== orginalFolder.userID) {
             throw new Error("Invalid update request");
         }
 
+        // Password hashing
+        if (updatedData.password !== '') {
+            const saltRounds = 13;
+            const hash = await bcrypt.hash(updatedData.password, saltRounds);
+            updatedData = {
+                ...updatedData,
+                password: hash
+            }
+        }
+
         const newFolder = transformFolderDataPrivate(updatedData)
-        console.log(newFolder)
         const folderRef = doc(db, 'folders', newFolder.folderID);
         await updateDoc(folderRef, newFolder);
     } catch (error) {

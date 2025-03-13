@@ -1,28 +1,45 @@
 import React, { useState } from 'react';
-import { Check, CheckCheck, CheckCircle, FilePlus, Folder, FolderPlus, FolderX, GripVertical, Pencil, PencilLine, Plus, Settings, Share2, Trash2, X } from 'lucide-react';
+import { FilePlus, FolderPlus, FolderX, GripVertical, LockKeyhole, Pencil, Share2, Trash2, X } from 'lucide-react';
 import DownloadBtn from './DownloadBtn';
 import Link from 'next/link';
 import { translateFileSize } from '@/utils/DataTranslation';
 import { getFileIcon } from '@/utils/GetFileIcon';
+import { useAlert } from '@/app/contexts/AlertContext';
+import { moveFileToFolder } from '@/app/file-requests/files';
+import { useUser } from '@clerk/nextjs';
+
 
 function FolderView({ folders, files, setFolders, setFiles, setCreateFolder, selectedObjects, setSelectedObjects, setObjectOptions }) {
     const [draggedFile, setDraggedFile] = useState(null);
     const [dragOverFolder, setDragOverFolder] = useState(null);
     const [touchStartTime, setTouchStartTime] = useState(null);
+    const { showAlert } = useAlert();
+    const { user } = useUser();
 
     const handleDragStart = (file) => {
         setDraggedFile(file);
     };
 
-    const handleDrop = (folder) => {
+    const handleDrop = async (folder) => {
         if (draggedFile) {
-            const updatedFiles = files.map(file => 
-                file.id === draggedFile.id ? { ...file, folderID: folder.id } : file
-            );
-            setFiles(updatedFiles);
-            // Update the database here
-            setDraggedFile(null);
-            setDragOverFolder(null);
+            try {
+                await moveFileToFolder(user.id, draggedFile.id, folder.id);
+                // Remove the moved file from the files array
+                const updatedFiles = files.filter(file => file.id !== draggedFile.id);
+                // Increase the folder fileCount by 1
+                const updatedFolders = folders.map(f => 
+                    f.id === folder.id ? { ...f, fileCount: f.fileCount + 1 } : f
+                );
+                setFiles(updatedFiles);
+                setFolders(updatedFolders);
+                showAlert(`Tiedosto siirretty kansioon ${folder.name}`, 'success');
+            } catch (error) {
+                console.error('Error moving file to folder: ', error);
+                showAlert('Tiedoston siirtäminen epäonnistui', 'error');
+            } finally {
+                setDraggedFile(null);
+                setDragOverFolder(null); 
+            }
         }
     };
 
@@ -89,8 +106,8 @@ function FolderView({ folders, files, setFolders, setFiles, setCreateFolder, sel
                             className='flex items-center w-fit gap-1 p-2 text-sm bg-primary text-white hover:bg-primary/75 transition-colors' 
                             onClick={() => setObjectOptions(true)}
                         >
-                            <Settings size={20} />
-                            Asetukset
+                            <Pencil size={20} />
+                            Muokkaa
                         </button>
                     )}
                     <button className='flex items-center w-fit gap-1 p-2 text-sm bg-primary text-white hover:bg-primary/75 transition-colors'>
@@ -148,14 +165,16 @@ function FolderView({ folders, files, setFolders, setFiles, setCreateFolder, sel
                         <img src={folder.shared ? "/icons/folder_share.png" : "/icons/folder.png"} alt="folder" className="w-16 h-16" />
                         <h2 className="text-sm font-semibold transition-colors">{folder.name}</h2>
                         <p className="text-sm text-navlink">{folder.fileCount} tiedostoa</p>
-                    </Link>  
+                    </Link>
+
+                    {folder.passwordProtected && <LockKeyhole className='absolute bottom-2 left-2' size={20} />}
                 </div>
             ))}
 
             {files.map(file => (
                 <div 
                     key={file.id}
-                    title={file.name}
+                    title={(file.name) + (file.passwordProtected ? ' - suojattu salasanalla' : '')}
                     onTouchStart={() => handleTouchStart(object)}
                     onTouchEnd={() => handleTouchEnd(object)}
                     draggable
@@ -174,9 +193,11 @@ function FolderView({ folders, files, setFolders, setFiles, setCreateFolder, sel
                     <GripVertical className='absolute top-2 left-2 cursor-move' />
                     <Link href={`/tiedosto/${file.id}`} className='flex flex-col items-center text-foreground hover:text-primary'>
                         <img src={getFileIcon(file.type)} alt="file" className="w-16 h-16 mb-1" />
-                        <h2 className="text-sm max-w-full font-semibold whitespace-nowrap text-ellipsis">{file.name}</h2>
+                        <h2 className=" text-sm max-w-full font-semibold whitespace-nowrap text-ellipsis">{file.name}</h2>
                         <p className="text-sm text-navlink">{translateFileSize(file.size)}</p>
                     </Link>
+
+                    {file.passwordProtected && <LockKeyhole className='absolute bottom-2 left-2' size={20} />}
                 </div>
             ))}
         </div>

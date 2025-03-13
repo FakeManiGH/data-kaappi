@@ -6,9 +6,9 @@ const outfit = Outfit({ subsets: ["latin"] });
 
 export const metadata = {
   title: "Datakaappi",
-  description: "Tallenna, säilytä ja jaa tiedostoja helposti kaikilla laitteillasi.",
+  description: "Tallenna, säilytä ja jaa tiedostoja helposti läheistesi kanssa.",
   image: "/logo.svg",
-  keywords: ["tiedostot", "tallennus", "jako", "data", "kaappi"],
+  keywords: ["pilvi", "tallenna", "tiedostot", "kuvat", "videot", "jaa"],
 };
 
 export default function RootLayout({ children }) {

@@ -3,16 +3,17 @@ import { getStorage, ref, deleteObject } from "firebase/storage";
 import { doc, setDoc, deleteDoc, getDoc, updateDoc, orderBy, collection, query, where, getDocs, limit, increment } from "firebase/firestore";
 import { db } from '@/../firebaseConfig';
 import bcrypt from 'bcrypt';
+import { getFolderInfo, updateFolderFileCount } from "./folders";
 
 // Config
 const storage = getStorage();
 
 
 // GET FILE FUNCTIONS
-// Get file
-export const getFileInfo = async (docID) => {
+// Get file info by fileID
+export const getFileInfo = async (fileID) => {
     try {
-        const docRef = doc(db, 'files', docID)
+        const docRef = doc(db, 'files', fileID)
         const docSnap = await getDoc(docRef)
         const data = docSnap.data()
         return {
@@ -24,7 +25,7 @@ export const getFileInfo = async (docID) => {
     }
 }
 
-// Get files
+// Get user files by userID
 export const getUserFiles = async (userID) => {
     try {
         const q = query(collection(db, "files"), where("userID", "==", userID), orderBy("uploadedAt", "desc"));
@@ -43,12 +44,12 @@ export const getUserFiles = async (userID) => {
     }
 }
 
-// Get folderless files
-export const getUserRogueFiles = async (userID) => {
+// Get files by folder
+export const getUserFilesByFolder = async (userID, folder) => {
     try {
         const q = query(
             collection(db, "files"),
-            where("folder", "==", ""),
+            where("folder", "==", folder),
             where("userID", "==", userID),
             orderBy("uploadedAt", "desc")
         );
@@ -71,78 +72,39 @@ export const getUserRogueFiles = async (userID) => {
     }
 };
 
-// Get shared files
-export const getSharedFiles = async () => {
-    try {
-        const q = query(collection(db, "files"), where("shared", "==", true));
-        const querySnapshot = await getDocs(q);
-        const files = querySnapshot.docs.map(doc => {
-            const data = doc.data()
-            return {
-                ...data,
-                uploadedAt: data.uploadedAt.toDate() // Convert Firestore timestamp to JavaScript Date
-            }
-        })
-        return files
-    } catch (error) {
-        console.error("Error fetching files: ", error)
-    }
-}
-
 
 // UPDATE FILE FUNCTIONS
 // Update file document
-export const updateFile = async (file) => {
-    const docRef = doc(db, 'files', file.id)
+export const updateFileData = async (userID, updatedData) => {
     try {
-        await updateDoc(docRef, file)
+        const orginalFile = await getFileInfo(updatedData.id);
+
+        if (!orginalFile) {
+            throw new Error("File not found.")
+        }
+
+        // Request validation
+        if (userID !== orginalFile.userID) {
+            throw new Error("Invalid update request.")
+        }
+
+        // Password hashing
+        if (updatedData.password !== '') {
+            const saltRounds = 13;
+            const hash = await bcrypt.hash(updatedData.password, saltRounds);
+            updatedData = {
+                ...updatedData,
+                password: hash
+            }
+        }
+
+        const newFile = transformFileDataPrivate(updatedData);
+        const fileRef = doc(db, "files", newFile.fileID);
+        await updateDoc(fileRef, newFile);
     } catch (error) {
-        console.error("Error updating document: ", error)
+        console.error("Error updating file data: ", error)
     }
-}
 
-
-// Update file document value
-export const updateFileValue = async (fileID, key, value) => {
-    const docRef = doc(db, 'files', fileID)
-    try {
-        await updateDoc(docRef, { [key]: value })
-    } catch (error) {
-        console.error("Error updating document: ", error)
-    }
-}
-
-// Update file password
-export const updateFilePassword = async (userID, fileID, password) => {
-    try {
-        if (!userID) {
-            console.error("User not authenticated")
-            return
-        }
-
-        const file = await getFileInfo(fileID)
-        if (!file) {
-            console.error("File not found")
-            return
-        }
-
-        if (file.userID !== userID) {
-            console.error("User does not have permission to update file")
-            return
-        }
-
-        if (!password) {
-            await updateDocumentValue(fileID, 'password', '')
-            return
-        }
-
-        const saltRounds = 13;
-        const hash = await bcrypt.hash(password, saltRounds);
-        await updateDocumentValue(fileID, 'password', hash);
-
-    } catch (error) {
-        console.error("Error updating file password: ", error)
-    }
 }
 
 
@@ -160,6 +122,38 @@ export const deleteFile = async (file) => {
 }
 
 
+// MOVING FILES
+// Move file to a folder (from)
+export const moveFileToFolder = async (userID, fileID, folderID) => {
+    try {
+        let originalFile = await getFileInfo(fileID);
+        if (!originalFile) throw new Error("File not found.");
+        if (userID !== originalFile.userID) throw new Error("Unauthorized file moving request")
+
+        const toFolder = await getFolderInfo(folderID);
+        if (!toFolder) throw new Error("Folder-to not found.");
+        if (userID !== toFolder.userID) throw new Error("Unauthorized to folder access.")
+
+        if (originalFile.folder !== '') {
+            const fromFolder = await getFolderInfo(originalFile.folder)
+            if (!fromFolder) throw new Error("Folder-from not found.");
+            if (fromFolder.userID !== userID) throw new Error("Unauthorized from folder access.");
+            await updateFolderFileCount(fromFolder.folderID, -1)
+        }
+
+        // update the folder (on file doc)
+        originalFile = {
+            ...originalFile,
+            folder: toFolder.folderID
+        }
+
+        const fileRef = doc(db, "files", originalFile.fileID);
+        await updateDoc(fileRef, originalFile);
+        await updateFolderFileCount(toFolder.folderID, 1)
+    } catch (error) {
+        console.error("Error moving file to folder: ", error);
+    }
+}
 
 
 
@@ -176,11 +170,13 @@ const transformFileDataPublic = (file) => {
         shortUrl: file.shortUrl,
         folder: file.folder,
         shared: file.shared,
-        password: file.pwdProtected ? true : false,
+        sharedWith: file.sharedWith,
+        passwordProtected: file.pwdProtected,
+        password: '',
         uploadedBy: file.uploadedBy,
         user: {
             id: file.userID,
-            name: file.userName,
+            name: file.uploadedBy,
             email: file.userEmail
         },
         uploadedAt: file.uploadedAt
@@ -199,12 +195,12 @@ const transformFileDataPrivate = (file) => {
         shortUrl: file.shortUrl,
         folder: file.folder,
         shared: file.shared,
-        pwdProtected: file.password ? true : false,
+        sharedWith: file.sharedWith,
+        pwdProtected: file.passwordProtected,
         pwd: file.password,
-        uploadedBy: file.uploadedBy,
-        userID: file.user.id,
-        userName: file.user.name,
+        uploadedBy: file.user.name,
         userEmail: file.user.email,
+        userID: file.user.id,
         uploadedAt: file.uploadedAt
     };
 }
