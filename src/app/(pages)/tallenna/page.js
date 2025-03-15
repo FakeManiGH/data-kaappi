@@ -15,6 +15,7 @@ import { getUserFolders } from '@/app/file-requests/folders';
 import PageLoading from '@/app/_components/_common/PageLoading';
 import ErrorView from '../_components/ErrorView';
 import CreateFolder from './_components/CreateFolder';
+import { DateDB } from '@/utils/DataTranslation';
 
 function Page() {
   const { user } = useUser();
@@ -27,7 +28,6 @@ function Page() {
   const [fileErrors, setFileErrors] = useState([]);
   const [folders, setFolders] = useState([]);
   const [newFolder, setNewFolder] = useState(false);
-  const [uploadFolder, setUploadFolder] = useState('');
   const [uploadProgress, setUploadProgress] = useState([]);
   const storage = getStorage(app);
 
@@ -38,7 +38,7 @@ function Page() {
       if (isLoaded && user) {
         try {
           const doc = await getUser(user.id);
-          const folders = await getUserFolders(user.id);
+          const folders = await getUserFolders(user.id, '');
           setUserDoc(doc);
           setFolders(folders);
           setLoading(false);
@@ -78,7 +78,7 @@ function Page() {
         fileType: file.type, // String
         fileUrl: downloadURL, // String
         shortUrl: shortURL, // String
-        folder: file.folderID ? file.folderID : '', // String
+        folderID: file.folderID ? file.folderID : '', // String
         shared: false, // Boolean
         sharedWith: [],  // Array
         pwdProtected: false, // Boolean
@@ -86,7 +86,8 @@ function Page() {
         uploadedBy: user.fullName, // String
         userID: user.id,  // String
         userEmail: user.primaryEmailAddress.emailAddress, // String
-        uploadedAt: Timestamp.fromDate(new Date())  // Firestore timestamp
+        uploadedAt: DateDB(new Date()),
+        modifiedAt: DateDB(new Date()) 
       };
 
       await setDoc(doc(db, 'files', fileID), fileData);

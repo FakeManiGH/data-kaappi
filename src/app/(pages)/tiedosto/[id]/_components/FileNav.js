@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { ArrowLeftCircle, ArrowLeftSquare, LockKeyhole, Settings, Share2, Trash } from 'lucide-react'
-import Link from 'next/link'
-import { useNavigation } from '@/app/contexts/NavigationContext'
+import { LockKeyhole, Pen, Settings, Share2, Trash } from 'lucide-react'
 import SharePopup from './SharePopup'
 import PasswordPopup from './PasswordPopup'
 import DeleteConfirmPopup from './DeleteConfirmPopup'
@@ -12,7 +10,6 @@ function FileNav({ file, setFile, setDeleted }) {
     const [sharePopup, setSharePopup] = useState(false)
     const [passwordPopup, setPasswordPopup] = useState(false)
     const [deletePopup, setDeletePopup] = useState(false)
-    const { isLoaded, user } = useUser()
 
     useEffect(() => {
         const handleClick = (e) => {
@@ -41,20 +38,10 @@ function FileNav({ file, setFile, setDeleted }) {
     }
 
     return (
-        <div className='relative flex flex-wrap items-center justify-between mb-2 w-full'>
-            <Link  
-                href={isLoaded && user.id === file.user.id ? '/kaikki-tiedostot' : '/jaetut-tiedostot'} 
-                className='flex items-center w-fit gap-2 px-3 py-2 mt-2 border-2 border-transparent text-sm bg-primary text-white hover:bg-primary/75 transition-colors'
-            >
-                <ArrowLeftCircle />
-                Palaa takaisin
-            </Link>
-
-        {isLoaded && user.id === file.user.id && (
-        <>
+        <div className='relative flex flex-wrap items-center justify-end w-full mb-2'>
             <div>
                 <button 
-                    className={`flex items-center w-fit gap-2 px-3 py-2 mt-2 border-2 text-sm bg-primary text-white hover:bg-primary/75 transition-colors
+                    className={`flex items-center w-fit gap-2 px-3 py-2 border-2 text-sm bg-primary text-white hover:bg-primary/75 transition-colors
                         ${dropMenu ? 'border-foreground' : 'border-transparent'}`} 
                     role="button"
                     onClick={() => setDropMenu(!dropMenu)}
@@ -78,9 +65,19 @@ function FileNav({ file, setFile, setDeleted }) {
                                 role="menuitem"
                                 onClick={handleSharePopup}
                             >
+                                <Pen size={16} />
+                                Muokkaa
+                            </button>
+
+                            <button 
+                                className='flex w-full items-center gap-2 px-4 py-2 text-sm text-navlink hover:text-primary' 
+                                role="menuitem"
+                                onClick={handleSharePopup}
+                            >
                                 <Share2 size={16} />
                                 Jaa tiedosto
                             </button>
+
                             <button 
                                 className='flex w-full items-center gap-2 px-4 py-2 text-sm text-navlink hover:text-primary' 
                                 role="menuitem"
@@ -92,7 +89,7 @@ function FileNav({ file, setFile, setDeleted }) {
                         </div>
 
                         <div className='bg-background pb-2'>
-                            <strong className="block p-2 text-xs font-medium uppercase text-red-400 dark:text-red-300">
+                            <strong className="block p-2 text-xs font-medium uppercase text-red-400">
                                 Vaaravyöhyke
                             </strong>
 
@@ -113,8 +110,6 @@ function FileNav({ file, setFile, setDeleted }) {
             {sharePopup && <SharePopup file={file} setFile={setFile} setSharePopup={setSharePopup} />}
             {passwordPopup && <PasswordPopup file={file} setFile={setFile} setPasswordPopup={setPasswordPopup} />}
             {deletePopup && <DeleteConfirmPopup file={file} setDeletePopup={setDeletePopup} setDeleted={setDeleted} />}
-        </>
-        )}
         </div>
     )
 }

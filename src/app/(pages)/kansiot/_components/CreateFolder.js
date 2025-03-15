@@ -27,8 +27,8 @@ function CreateFolder({ folders, setFolders, setCreateFolder }) {
         docType: 'folder', // String
         folderID: folderID, // String
         folderName: folderName, // String
-        parentFolderName: null, // String
-        parentID: null, // String
+        parentFolderName: '', // String
+        parentID: '', // String
         fileCount: 0, // Number
         userID: user.id, // String
         userName: user.fullName, // String

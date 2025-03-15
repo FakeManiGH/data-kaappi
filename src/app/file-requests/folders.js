@@ -5,6 +5,7 @@ import { db } from '@/../firebaseConfig';
 import bcrypt from 'bcrypt';
 
 // FOLDER API FUNCTIONS
+// CREATE
 // Create folder
 export const createFolder = async (folderID, folderData) => {
     try {
@@ -23,13 +24,16 @@ export const createFolder = async (folderID, folderData) => {
     }
 }
 
+// GET 
 // Get folders (with userID)
-export const getUserFolders = async (userID) => {
+export const getUserFolders = async (userID, parentID) => {
     try {
+        if (!userID) throw new Error("Request indentification error.")
         const q = query(
             collection(db, "folders"), 
             where("userID", "==", userID),
-            orderBy("folderName", "desc")
+            where("parentID", "==", parentID),
+            orderBy("folderName", "asc")
         );
         const querySnapshot = await getDocs(q);
         const folders = querySnapshot.docs.map(doc => doc.data());
@@ -46,9 +50,6 @@ export const getFolderInfo = async (folderID) => {
     try {
         const folderRef = doc(db, 'folders', folderID);
         const docSnap = await getDoc(folderRef);
-        if (!docSnap.exists()) {
-            throw new Error("Folder does not exist");
-        }
         const data = docSnap.data();
         return data;
     } catch (error) {
@@ -57,6 +58,22 @@ export const getFolderInfo = async (folderID) => {
     }
 }
 
+// Get Public FolderInfo (folderID)
+export const getPublicFolderInfo = async (folderID) => {
+    try {
+        const folderRef = doc(db, 'folders', folderID);
+        const docSnap = await getDoc(folderRef);
+        const data = docSnap.data();
+        const folder = transformFolderDataPublic(data)
+        return folder;
+    } catch (error) {
+        console.error("Error fetching folder data: ", error);
+        throw error;
+    }
+}
+
+
+// UPDATE
 // Update folder file count
 export const updateFolderFileCount = async (folderID, incrementBy) => {
     const folderRef = doc(db, 'folders', folderID);
@@ -98,6 +115,13 @@ export const updateFolderData = async (userID, updatedData) => {
         throw error;
     }
 }
+
+
+// DELETE
+// Delete Folder
+
+
+
 
 // SUPPORT FUNCTIONS
 // Transform folder data for public use

@@ -143,8 +143,8 @@ function FolderView({ folders, files, setFolders, setFiles, setCreateFolder, sel
             {folders.map(folder => (
                 <div 
                     key={folder.id} 
-                    onTouchStart={() => handleTouchStart(object)}
-                    onTouchEnd={() => handleTouchEnd(object)}
+                    onTouchStart={() => handleTouchStart(folder)}
+                    onTouchEnd={() => handleTouchEnd(folder)}
                     onDragOver={handleDragOver}
                     onDragEnter={() => handleDragEnter(folder)}
                     onDragLeave={handleDragLeave}
@@ -175,8 +175,8 @@ function FolderView({ folders, files, setFolders, setFiles, setCreateFolder, sel
                 <div 
                     key={file.id}
                     title={(file.name) + (file.passwordProtected ? ' - suojattu salasanalla' : '')}
-                    onTouchStart={() => handleTouchStart(object)}
-                    onTouchEnd={() => handleTouchEnd(object)}
+                    onTouchStart={() => handleTouchStart(file)}
+                    onTouchEnd={() => handleTouchEnd(file)}
                     draggable
                     onDragStart={() => handleDragStart(file)}
                     className="relative flex flex-col items-center p-4 bg-gradient-to-br from-background to-contrast shadow-md hover:shadow-lg 
@@ -190,7 +190,7 @@ function FolderView({ folders, files, setFolders, setFiles, setCreateFolder, sel
                         onChange={() => handleObjectSelect(file)}
                         checked={selectedObjects.includes(file)}
                     />
-                    <GripVertical className='absolute top-2 left-2 cursor-move' />
+                    <GripVertical className='absolute top-2 left-2 cursor-grab' />
                     <Link href={`/tiedosto/${file.id}`} className='flex flex-col items-center text-foreground hover:text-primary'>
                         <img src={getFileIcon(file.type)} alt="file" className="w-16 h-16 mb-1" />
                         <h2 className=" text-sm max-w-full font-semibold whitespace-nowrap text-ellipsis">{file.name}</h2>

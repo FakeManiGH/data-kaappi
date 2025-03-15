@@ -14,12 +14,10 @@ function FileLivePreview({ file, setLivePreview }) {
     }
 
     return (
-        <>
-        <span onClick={() => setLivePreview(false)} className='fixed inset-0 z-50 bg-black/50'></span>
-        <div className="fixed z-50 flex flex-col gap-4 p-4 inset-2 rounded-lg bg-gradient-to-br from-background to-contrast" >
+        <div className="fixed z-50 flex flex-col gap-4 p-4 inset-0 bg-gradient-to-br from-background to-contrast" >
             <div className="realtive flex items-center justify-between gap-4">
                 <h2 className="text-xl font-bold">{file.name}</h2>
-                <button onClick={() => setLivePreview(false)} className="p-1 text-white bg-red-500 hover:bg-red-600 rounded-full">
+                <button onClick={() => setLivePreview(false)} className="p-2 text-white bg-red-500 hover:bg-red-600">
                     <X size={20} />
                 </button>
             </div>
@@ -67,7 +65,6 @@ function FileLivePreview({ file, setLivePreview }) {
                 )}
             </div>
         </div>
-        </>
     )
 }
 

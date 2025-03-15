@@ -8,8 +8,6 @@ import { updateFilePassword } from '@/app/file-requests/api'
 function PasswordForm({ file, setFile, setPasswordPopup }) {
     const [showPassword, setShowPassword] = useState(false)
     const { showAlert } = useAlert()
-    const fileID = file.fileID
-    const password = file.password
     const { user } = useUser()
 
     // Save password
@@ -18,9 +16,9 @@ function PasswordForm({ file, setFile, setPasswordPopup }) {
         let newPassword = e.target.password.value
 
         try {
-            await updateFilePassword(user.id, fileID, newPassword)
+            await updateFilePassword(user.id, file.id, newPassword)
             showAlert('Tiedoston salasana tallennettu.', 'success')
-            setFile({ ...file, password: 'salasana' })
+            setFile({ ...file, passwordProtected: true })
             setPasswordPopup(false)
         } catch (error) {
             console.error('Error saving password: ', error)
@@ -31,9 +29,9 @@ function PasswordForm({ file, setFile, setPasswordPopup }) {
     // Remove password
     const removePassword = async () => {
         try {
-            await updateFilePassword(user.id, fileID, '')
+            await updateFilePassword(user.id, file.id, '')
             showAlert('Salasana poistettu.', 'success')
-            setFile({ ...file, password: '' })
+            setFile({ ...file, passwordProtected: false })
             setPasswordPopup(false)
         } catch (error) {
             console.error('Error removing password: ', error)
@@ -49,16 +47,17 @@ function PasswordForm({ file, setFile, setPasswordPopup }) {
     <>
         <label htmlFor="password" className="sr-only">Salasana</label>
 
-        <div className="relative">
+        <div className="relative mt-2">
             <form className="flex flex-col gap-2 text-sm" onSubmit={savePassword}>
-                <label htmlFor="password">Anna salasana:</label>
+                <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Aseta salasana</label>
                 <div className='relative'>
                     <input
                         id="password"
                         name="password"
                         type={showPassword ? 'text' : 'password'}
-                        className="relative w-full font-light border border-contrast rounded-full group overflow-hidden focus-within:border-primary px-3 py-2.5 outline-none bg-background focus:text-foreground pe-12"
+                        className="relative w-full py-2.5 px-3 bg-background text-sm border border-transparent outline-none focus:border-primary focus:ring-1 pe-12"
                         placeholder="Kirjoita salasana"
+                        autoFocus
                     />
                     <span className="flex items-center absolute inset-y-0 end-0 px-4">
                         <button 
@@ -70,15 +69,12 @@ function PasswordForm({ file, setFile, setPasswordPopup }) {
                         </button>
                     </span>
                 </div>
-                <div className='flex items-center gap-2'>
-                    <button type='submit' className="flex items-center justify-center w-fit px-3 py-2 group border border-contrast rounded-full text-navlink text-sm gap-2 hover:text-foreground hover:border-primary transition-colors">
-                        <Save className='text-primary' />
-                        Tallenna salasana
-                    </button>
-                    {password && (
+                <div className='flex flex-col sm:flex-row items-center gap-1'>
+                    <button type="submit" className="w-full py-2.5 px-3 bg-primary text-white text-sm hover:bg-primary/90 transition-colors">Tallenna</button>
+                    {file.passwordProtected && (
                         <button 
                             type='button'
-                            className='bg-red-500 hover:bg-red-600 text-sm text-white rounded-full p-2 px-3'
+                            className='w-full bg-red-500 hover:bg-red-600 text-sm text-white whitespace-nowrap py-2.5 px-3'
                             onClick={removePassword}
                         >Poista salasana</button>
                     )}

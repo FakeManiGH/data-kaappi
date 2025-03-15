@@ -1,24 +1,35 @@
 import React, { useState } from 'react';
-import { translateFileSize, cleanDataType, formatDateFromCollection } from '@/utils/DataTranslation';
+import { translateFileSize, cleanDataType, DatePublic, datePublic } from '@/utils/DataTranslation';
 import { getFilepagePreview } from '@/utils/FilePreview';
 import { LockKeyhole, Share2 } from 'lucide-react';
+import Link from 'next/link'
 
 
-function FilePreview({ file }) {
+function FileContainer({ file, folder, setFile, setLivePreview }) {
   return (
-    <div className="flex flex-col gap-4 w-full">
-      <div className="flex flex-col lg:flex-row lg:items-center w-full max-w-full">
-        <div className="flex flex-col justify-center items-center p-2 gap-2 lg:w-1/3 w-full min-h-40 max-h-96">
+    <div className="flex flex-col w-full">
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-center w-full max-w-full">
+        <div 
+          className="flex flex-col justify-center bg-gradient-to-br from-background to-gray-400/10 items-center gap-2 lg:w-1/3 w-full min-h-40 max-h-96 cursor-zoom-in"
+          onClick={() => setLivePreview(true)}
+        >
           {getFilepagePreview(file)}
         </div>
 
-        <div className='lg:w-2/3 w-full rounded-lg p-2 flex flex-col gap-4'>
+        <div className='lg:w-2/3 w-full flex flex-col gap-4'>
           <ul className="flex flex-col text-sm">
             <li className='flex gap-4 items-baseline justify-between border-b border-dashed border-contrast p-1'>
               <strong className='whitespace-nowrap'>Koko:</strong> {translateFileSize(file.size)}
             </li>
             <li className='flex gap-4 items-baseline justify-between border-b border-dashed border-contrast p-1'>
-              <strong className='whitespace-nowrap'>Tallennettu:</strong> {formatDateFromCollection(file.uploadedAt)}
+              <strong className='whitespace-nowrap'>Tallennettu:</strong> {file.uploaded}
+            </li>
+            <li className='flex gap-4 items-baseline justify-between border-b border-dashed border-contrast p-1'>
+              <strong className='whitespace-nowrap'>Kansio:</strong> 
+              {folder ? 
+                <Link href={`/kansio/${folder.id}`} className='text-primary hover:text-primary/75'>{folder.name}</Link> : 
+                <Link href='/kansiot' className='text-primary hover:text-primary/75'>Ei kansiota</Link>
+              }
             </li>
             <li className='flex gap-4 items-baseline justify-between border-b border-dashed border-contrast p-1'>
               <strong className='whitespace-nowrap'>Tyyppi:</strong> {cleanDataType(file.type)}
@@ -44,4 +55,4 @@ function FilePreview({ file }) {
   );
 }
 
-export default FilePreview;
+export default FileContainer;

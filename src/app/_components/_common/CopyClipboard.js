@@ -1,11 +1,11 @@
 import { Globe, Link } from 'lucide-react'
 import React, { useState } from 'react'
 
-function CopyClipboard({ message }) {
+function CopyClipboard({ content }) {
     const [copied, setCopied] = useState(false)
 
     const copyToClipboard = (e) => {
-        navigator.clipboard.writeText(message)
+        navigator.clipboard.writeText(content)
         setCopied(true)
         setTimeout(() => setCopied(false), 2000)
     }
@@ -14,17 +14,16 @@ function CopyClipboard({ message }) {
     return (
     <div>
         <div className="flex gap-1">
-            <div className='flex rounded-full border border-contrast overflow-hidden w-full'>
-                <label htmlFor="copy-text" className='bg-bacground text-foreground p-2 px-3 pr-2 border-r border-contrast'>
-                    <Globe />
+            <div className='flex w-full'>
+                <label htmlFor="copy-text" className='sr-only'>
+                    Kopioi leikepöydälle
                 </label>
-                <input id="copy-text" type="text" className="text-sm font-light p-2 px-3 w-full outline-none bg-background focus:text-foreground" value={message} readOnly />
+                <input id="copy-text" type="text" className="w-full py-2.5 px-3 bg-background text-sm border border-transparent outline-none focus:border-primary focus:ring-1" value={content} readOnly />
             </div>
             <button 
-                className="flex items-center justify-center px-3 py-2 border border-contrast rounded-full text-navlink text-sm gap-2 hover:text-foreground hover:border-primary transition-colors"
+                className="flex items-center justify-center px-3 py-2.5 text-white bg-primary text-sm gap-2 hover:border-primary/75 transition-colors"
                 onClick={copyToClipboard}
             >   
-                <Link className='text-primary' />
                 {copied ? 'Kopioitu!' : 'Kopioi'}
             </button>
         </div>

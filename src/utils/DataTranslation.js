@@ -10,10 +10,6 @@ export const translateFileSize = (bytes) => {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 };
 
-export const formatDateFromCollection = (timestamp) => {
-    return format(timestamp, 'd.M.yyyy HH:mm');
-}
-
 export const cleanDataType = (type) => {
     if (type.includes('word')) return 'WordDoc';
     if (type.includes('presentationml')) return 'PowerPoint';
@@ -44,6 +40,21 @@ export const DateDB = (date) => {
         timeZoneName: 'short'
     })
     return dateDB
+}
+
+// Translate date to public format
+export const datePublic = (date) => {
+    let dateDate = Date(date)
+    const datePublic = dateDate.toLocaleString('fi-FI', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+        hour: 'numeric',
+        minute: 'numeric',
+        second: 'none',
+        timeZoneName: 'none'
+    })
+    return datePublic;
 }
 
 // Transform file data for public use

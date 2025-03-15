@@ -4,6 +4,7 @@ import { updateFileData } from '@/app/file-requests/files'; // Assuming you have
 import { useAlert } from '@/app/contexts/AlertContext';
 import { X } from 'lucide-react';
 import { useUser } from '@clerk/nextjs';
+import { DateDB } from '@/utils/DataTranslation';
 
 function OptionsPopup({ selectedObject, setFolders, setFiles, setSelectedObjects, setObjectOptions }) {
   const [objectName, setObjectName] = useState('');
@@ -58,14 +59,16 @@ function OptionsPopup({ selectedObject, setFolders, setFiles, setSelectedObjects
       if (selectedObject.passwordProtected && objectPasswordProtected && objectPassword === '') {
           updatedData = {
               ...selectedObject,
-              name: objectName
+              name: objectName,
+              modified: DateDB(new Date())
           };
       } else {
           updatedData = {
               ...selectedObject,
               name: objectName,
               passwordProtected: objectPasswordProtected,
-              password: objectPassword
+              password: objectPassword,
+              modified: DateDB(new Date()),
           };
       }
 
@@ -105,20 +108,21 @@ function OptionsPopup({ selectedObject, setFolders, setFiles, setSelectedObjects
       if (selectedObject.passwordProtected && objectPasswordProtected && objectPassword === '') {
           updatedData = {
               ...selectedObject,
-              name: fullName
+              name: fullName,
+              modified: DateDB(new Date())
           };
       } else {
           updatedData = {
               ...selectedObject,
               name: fullName,
               passwordProtected: objectPasswordProtected,
-              password: objectPassword
+              password: objectPassword,
+              modified: DateDB(new Date())
           };
       }
 
       await updateFileData(user.id, updatedData);
 
-      // Assuming setFiles is a function to update the state of files
       setFiles(prevFiles => prevFiles.map(file => 
           file.id === updatedData.id ? updatedData : file
       ));

@@ -18,34 +18,30 @@ function SharePopup({ file, setFile, setPasswordPopup }) {
     }, [])
 
     return (
-        <div id="overlay" tabIndex="-1" aria-hidden="true" className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center">
-            <div className="relative flex flex-col max-w-2xl w-full h-[calc(100%-2rem)] max-h-[calc(100%-2rem)] sm:h-fit bg-background rounded-xl overflow-y-auto m-4">
-                <div className="flex items-center justify-between gap-2 p-3 px-4">
-                    <LockKeyhole size={24} />
-                    <h2 className="text-xl font-bold">Aseta salasana</h2>
-                    <button
-                        className="p-1 text-white bg-red-500 hover:bg-red-600 rounded-full"
-                        onClick={() => setPasswordPopup(false)}
-                    >
-                        <X size={20} />
-                    </button>
-                </div>
+        <div className='fixed z-50 inset-0 flex justify-center items-center bg-black/50 px-4 py-2'>
+            <div className='relative flex flex-col gap-2 w-full max-w-2xl p-4 z-50 bg-gradient-to-br from-background to-contrast shadow-md max-h-full overflow-y-auto'>
+                <button
+                    className="absolute top-2 right-2 p-2 text-white bg-red-500 hover:bg-red-600"
+                    onClick={() => setPasswordPopup(false)}
+                >
+                    <X size={20} />
+                </button>
 
-                {file.password ? (
-                    <div className="flex items-center justify-center gap-2 p-4 text-success">
+                <h2 className="text-2xl md:text-3xl mb-2 text-center font-bold">Salasana</h2>
+
+                {file.passwordProtected ? (
+                    <div className="flex items-center justify-center gap-2 p-2 mb-2 border border-success text-success">
                         <LockKeyhole size={20} />
                         <p className="text-sm text-center">Tiedosto on suojattu salasanalla.</p>
                     </div>
                 ) : null}
 
-                <ul className='flex flex-col gap-1 p-4 py-2 list-disc list-inside text-sm'>
-                    <li>Suojaa tiedosto ulkopuolisilta antamalla sille salasana.</li>
-                    <li>Vain tiedoston omistaja (sinä) näkee tiedoston ilman salasanaa.</li>
+                <ul className='flex flex-col gap-1 list-disc list-inside text-sm'>
+                    <li>Suojaa tiedosto antamalla sille salasana.</li>
+                    <li>Kun tiedosto on suojattu, vain sinä näet sen ilman salasanaa.</li>
                 </ul>
 
-                <div className="flex flex-col gap-2 p-4 pt-2">
-                    <PasswordForm file={file} setFile={setFile} setPasswordPopup={setPasswordPopup} />
-                </div>
+                <PasswordForm file={file} setFile={setFile} setPasswordPopup={setPasswordPopup} />
             </div>
         </div>
     )

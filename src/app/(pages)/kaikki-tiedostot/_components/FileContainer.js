@@ -4,7 +4,7 @@ import { Grid, List, LockKeyhole, Share2 } from 'lucide-react';
 import Link from 'next/link';
 import { getCardPreview } from '@/utils/FilePreview';
 import { useAlert } from '@/app/contexts/AlertContext';
-import { formatDateFromCollection, translateFileSize, cleanDataType } from '@/utils/DataTranslation';
+import { translateFileSize, cleanDataType } from '@/utils/DataTranslation';
 import DeleteConfirmPopup from './DeleteConfirmPopup';
 import { useUser } from '@clerk/nextjs';
 
@@ -82,7 +82,7 @@ function FileContainer({ fileState, setFileState }) {
                     <div className='flex items-center gap-3 justify-start md:justify-end'>
                         {file.shared && <p title='Jaettu' className='text-xs text-success'><Share2 size={18} /></p>}
                         {file.password && <p title='Salasana suojattu' className='text-xs text-success'><LockKeyhole size={18} /></p>}
-                        <p className='text-sm whitespace-nowrap text-navlink'>{formatDateFromCollection(file.uploadedAt)}</p>
+                        <p className='text-sm whitespace-nowrap text-navlink'>{file.uploaded}</p>
                         <p className="text-sm whitespace-nowrap text-navlink">{cleanDataType(file.type)}</p>
                         <p className="text-sm whitespace-nowrap text-navlink">{translateFileSize(file.size)}</p>
                     </div>

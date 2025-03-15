@@ -4,6 +4,7 @@ import { doc, setDoc, deleteDoc, getDoc, updateDoc, orderBy, collection, query, 
 import { db } from '@/../firebaseConfig';
 import bcrypt from 'bcrypt';
 import { getFolderInfo, updateFolderFileCount } from "./folders";
+import { DateDB } from "@/utils/DataTranslation";
 
 // Config
 const storage = getStorage();
@@ -16,10 +17,20 @@ export const getFileInfo = async (fileID) => {
         const docRef = doc(db, 'files', fileID)
         const docSnap = await getDoc(docRef)
         const data = docSnap.data()
-        return {
-            ...data,
-            uploadedAt: data.uploadedAt.toDate()
-        }
+        return data;
+    } catch (error) {
+        console.error("Error fetching file: ", error)
+    }
+}
+
+export const getPublicFileInfo = async (fileID) => {
+    try {
+        const docRef = doc(db, 'files', fileID)
+        const docSnap = await getDoc(docRef)
+        if (!docSnap) throw new Error("No file found.")
+        const data = docSnap.data()
+        const file = transformFileDataPublic(data)
+        return file;
     } catch (error) {
         console.error("Error fetching file: ", error)
     }
@@ -30,13 +41,7 @@ export const getUserFiles = async (userID) => {
     try {
         const q = query(collection(db, "files"), where("userID", "==", userID), orderBy("uploadedAt", "desc"));
         const querySnapshot = await getDocs(q);
-        const files = querySnapshot.docs.map(doc => {
-            const data = doc.data();
-            return {
-                ...data,
-                uploadedAt: data.uploadedAt.toDate() // Convert Firestore timestamp to JavaScript Date
-            };
-        });
+        const files = querySnapshot.docs.map(doc => doc.data());
         const publicFiles = files.map(file => transformFileDataPublic(file));
         return publicFiles;
     } catch (error) {
@@ -45,26 +50,20 @@ export const getUserFiles = async (userID) => {
 }
 
 // Get files by folder
-export const getUserFilesByFolder = async (userID, folder) => {
+export const getUserFilesByFolder = async (userID, folderID) => {
     try {
         const q = query(
             collection(db, "files"),
-            where("folder", "==", folder),
+            where("folderID", "==", folderID),
             where("userID", "==", userID),
-            orderBy("uploadedAt", "desc")
+            orderBy("uploadedAt", "asc")
         );
         const querySnapshot = await getDocs(q);
         if (querySnapshot.empty) {
             console.log("No matching documents.");
             return [];
         }
-        const files = querySnapshot.docs.map(doc => {
-            const data = doc.data();
-            return {
-                ...data,
-                uploadedAt: data.uploadedAt.toDate() // Convert Firestore timestamp to JavaScript Date
-            };
-        });
+        const files = querySnapshot.docs.map(doc => doc.data());
         const publicFiles = files.map(file => transformFileDataPublic(file));
         return publicFiles;
     } catch (error) {
@@ -144,7 +143,7 @@ export const moveFileToFolder = async (userID, fileID, folderID) => {
         // update the folder (on file doc)
         originalFile = {
             ...originalFile,
-            folder: toFolder.folderID
+            folder: toFolder.folderID,
         }
 
         const fileRef = doc(db, "files", originalFile.fileID);
@@ -168,7 +167,7 @@ const transformFileDataPublic = (file) => {
         type: file.fileType,
         url: file.fileUrl,
         shortUrl: file.shortUrl,
-        folder: file.folder,
+        folder: file.folderID,
         shared: file.shared,
         sharedWith: file.sharedWith,
         passwordProtected: file.pwdProtected,
@@ -179,7 +178,8 @@ const transformFileDataPublic = (file) => {
             name: file.uploadedBy,
             email: file.userEmail
         },
-        uploadedAt: file.uploadedAt
+        uploaded: file.uploadedAt,
+        modified: file.modifiedAt
     };
 }
 
@@ -193,7 +193,7 @@ const transformFileDataPrivate = (file) => {
         fileType: file.type,
         fileUrl: file.url,
         shortUrl: file.shortUrl,
-        folder: file.folder,
+        folderID: file.folder,
         shared: file.shared,
         sharedWith: file.sharedWith,
         pwdProtected: file.passwordProtected,
@@ -201,6 +201,7 @@ const transformFileDataPrivate = (file) => {
         uploadedBy: file.user.name,
         userEmail: file.user.email,
         userID: file.user.id,
-        uploadedAt: file.uploadedAt
+        uploadedAt: file.uploaded,
+        modifiedAt: file.modified
     };
 }

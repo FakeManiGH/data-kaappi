@@ -27,13 +27,13 @@ function DownloadBtn({ url, fileName, buttonStyle }) {
     return (
         <button 
             disabled={fetching}
-            className={`flex items-center justify-center px-4 py-3 group 
-                text-white bg-primary text-sm gap-2 hover:bg-primary/75 transition-colors
+            className={`flex items-center justify-center p-4 group max-w-2xl mt-4
+                text-white bg-success text-sm gap-2 hover:bg-success/75 transition-colors
                 ${buttonStyle} ${fetching ? 'cursor-not-allowed' : 'cursor-pointer'}`}
             onClick={downloadFile}
         >
             <DownloadCloud />
-            Lataa teidosto
+            Lataa
         </button>
     )
 }

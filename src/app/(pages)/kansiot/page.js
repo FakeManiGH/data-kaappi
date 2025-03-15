@@ -31,8 +31,8 @@ function Page() {
         const fetchFolders = async () => {
             if (isLoaded && user) {
                 try {
-                    const folders = await getUserFolders(user.id);
-                    const files = await getUserFilesByFolder(user.id, "");
+                    const folders = await getUserFolders(user.id, '');
+                    const files = await getUserFilesByFolder(user.id, '');
                     setFiles(files);
                     setFolders(folders);
                 } catch (error) {
@@ -59,12 +59,12 @@ function Page() {
 
     return (
         <main>
-            <h1 className="text-2xl md:text-3xl"><strong>Kansiot</strong></h1>
+            <h1 className="text-3xl"><strong>Kansiot</strong></h1>
 
             <div className='flex items-center justify-end gap-2'>
                 <Link href='/tallenna' className='flex flex-1 sm:flex-none items-center justify-center w-fit gap-2 p-3 text-sm bg-primary text-white hover:bg-primary/75 transition-colors'>
                     <FilePlus />
-                    Tallenna
+                    Lisää tiedosto
                 </Link>
                 <button 
                     onClick={() => setCreateFolder(true)} 
@@ -74,7 +74,6 @@ function Page() {
                     Uusi kansio
                 </button>
             </div>
-            <BreadGrumps />
             <FolderView 
                 folders={folders}
                 files={files}

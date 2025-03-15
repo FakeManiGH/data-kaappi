@@ -1,5 +1,5 @@
 "use client"
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import FileNav from './_components/FileNav'
 import FileContainer from './_components/FileContainer'
 import { useUser } from '@clerk/nextjs'
@@ -29,17 +29,28 @@ function Page() {
 
   const [isVisible, setIsVisible] = useState(true)
   const [lastScrollY, setLastScrollY] = useState(0)
+  const [scrollDelta, setScrollDelta] = useState(0)
+  const scrollThreshold = 200 // Hide from top
+  const sensitivityThreshold = 20 // Sensitivity
 
   useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > lastScrollY) {
-        // Scrolling down
-        setIsVisible(false)
+      const currentScrollY = window.scrollY
+      const delta = currentScrollY - lastScrollY
+
+      if (Math.abs(delta) > sensitivityThreshold) {
+        if (delta > 0 && currentScrollY > scrollThreshold) {
+          // Scrolling down
+          setIsVisible(false)
+        } else {
+          // Scrolling up
+          setIsVisible(true)
+        }
+        setLastScrollY(currentScrollY)
+        setScrollDelta(0)
       } else {
-        // Scrolling up
-        setIsVisible(true)
+        setScrollDelta(scrollDelta + delta)
       }
-      setLastScrollY(window.scrollY)
     }
 
     window.addEventListener('scroll', handleScroll)
@@ -47,7 +58,7 @@ function Page() {
     return () => {
       window.removeEventListener('scroll', handleScroll)
     }
-  }, [lastScrollY])
+  }, [lastScrollY, scrollThreshold, sensitivityThreshold, scrollDelta])
 
   useEffect(() => {
     const fetchFiles = async () => {
@@ -80,7 +91,7 @@ function Page() {
   return (
     <main>
       <h1 className='text-2xl md:text-3xl'><strong>Kaikki tiedostot</strong></h1>
-      <div className={`flex flex-col z-10 py-2 gap-2 bg-background transition-transform duration-300 ${isVisible ? 'sticky top-0' : '-translate-y-full'}`}>
+      <div className={`sticky top-0 flex flex-col z-10 py-2 gap-2 bg-background transition-transform duration-300 ${isVisible ? 'translate-y-0' : '-translate-y-full'}`}>
         <SearchBar fileState={fileState} setFileState={setFileState} />
         <FileNav fileState={fileState} setFileState={setFileState} />
       </div>  

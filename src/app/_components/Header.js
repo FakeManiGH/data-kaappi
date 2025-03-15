@@ -8,7 +8,8 @@ import { AlignJustify, CircleGauge, LogIn } from 'lucide-react'
 
 function Header() {
     const [dropdown, setDropdown] = useState(false)
-    const { isSignedIn, isLoaded } = useUser()
+    const [signedIn, setSignedIn] = useState(false)
+    const { isLoaded, user } = useUser()
     const { publicNav, currentIndex } = useNavigation()
     const dropdownRef = useRef(null)
 
@@ -50,7 +51,7 @@ function Header() {
                 </nav>
 
                 <div className="flex items-center gap-4">
-                    {isLoaded && isSignedIn ? (
+                    {isLoaded && user ? (
                         <Link
                             className="flex gap-1 items-center px-3 py-2.5 text-sm shadow-md bg-primary text-white
                                 hover:shadow-lg hover:bg-primary/75 transition-all"
