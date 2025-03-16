@@ -41,7 +41,7 @@ function FileNav({ file, setFile, setDeleted }) {
         <div className='relative flex flex-wrap items-center justify-end w-full mb-2'>
             <div>
                 <button 
-                    className={`flex items-center w-fit gap-2 px-3 py-2 border-2 text-sm bg-primary text-white hover:bg-primary/75 transition-colors
+                    className={`flex items-center w-fit gap-2 px-3 py-2 border text-sm bg-primary text-white hover:bg-primary/75 transition-colors
                         ${dropMenu ? 'border-foreground' : 'border-transparent'}`} 
                     role="button"
                     onClick={() => setDropMenu(!dropMenu)}

@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react';
-import { BookMarked, CircleGauge, FolderOpen, GalleryVerticalEnd, Home, LucideFolderTree, MessageCircleQuestion, PackageOpen, UploadCloud } from 'lucide-react';
+import { BookMarked, CircleGauge, FolderOpen, Home, Images, MailPlus, MessageCircleQuestion, UploadCloud, UserCog, UsersRound } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 const NavigationContext = createContext();
@@ -36,21 +36,27 @@ export const NavigationProvider = ({ children }) => {
         {
             id: 4,
             name: 'Kaikki tiedostot',
-            icon: GalleryVerticalEnd,
+            icon: Images,
             path: '/kaikki-tiedostot'
         },
         {
             id: 5,
-            name: 'Jaetut tiedostot',
-            icon: PackageOpen,
-            path: '/jaetut-tiedostot'
+            name: 'Ryhmät',
+            icon: UsersRound,
+            path: '/ryhmat'
         },
         {
             id: 6,
-            name: 'Tietoa',
-            icon: BookMarked,
-            path: '/tietoa'
-        }
+            name: 'Tuki',
+            icon: UserCog,
+            path: '/tuki'
+        },
+        {
+            id: 7,
+            name: 'Anna palautetta',
+            icon: MailPlus,
+            path: '/kaikki-tiedostot'
+        },
     ];
 
     const publicNav = [
@@ -73,6 +79,7 @@ export const NavigationProvider = ({ children }) => {
             path: '/tietoa'
         }
     ];
+
 
     const navigatePage = (path) => {
         setCurrentIndex(path)

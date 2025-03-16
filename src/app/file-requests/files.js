@@ -4,11 +4,9 @@ import { doc, setDoc, deleteDoc, getDoc, updateDoc, orderBy, collection, query, 
 import { db } from '@/../firebaseConfig';
 import bcrypt from 'bcrypt';
 import { getFolderInfo, updateFolderFileCount } from "./folders";
-import { DateDB } from "@/utils/DataTranslation";
 
 // Config
 const storage = getStorage();
-
 
 // GET FILE FUNCTIONS
 // Get file info by fileID
@@ -23,11 +21,12 @@ export const getFileInfo = async (fileID) => {
     }
 }
 
+// Get file info (-> public)
 export const getPublicFileInfo = async (fileID) => {
     try {
         const docRef = doc(db, 'files', fileID)
         const docSnap = await getDoc(docRef)
-        if (!docSnap) throw new Error("No file found.")
+        if (!docSnap.exists()) throw new Error("No file found.")
         const data = docSnap.data()
         const file = transformFileDataPublic(data)
         return file;
@@ -39,10 +38,11 @@ export const getPublicFileInfo = async (fileID) => {
 // Get user files by userID
 export const getUserFiles = async (userID) => {
     try {
-        const q = query(collection(db, "files"), where("userID", "==", userID), orderBy("uploadedAt", "desc"));
+        const q = query(collection(db, "files"), where("userID", "==", userID));
         const querySnapshot = await getDocs(q);
         const files = querySnapshot.docs.map(doc => doc.data());
         const publicFiles = files.map(file => transformFileDataPublic(file));
+        publicFiles.sort((a, b) => b.uploadedAt - a.uploadedAt);
         return publicFiles;
     } catch (error) {
         console.error("Error fetching files: ", error);
@@ -69,8 +69,7 @@ export const getUserFilesByFolder = async (userID, folderID) => {
     } catch (error) {
         console.error("Error fetching folderless files: ", error);
     }
-};
-
+}
 
 // UPDATE FILE FUNCTIONS
 // Update file document
@@ -103,9 +102,7 @@ export const updateFileData = async (userID, updatedData) => {
     } catch (error) {
         console.error("Error updating file data: ", error)
     }
-
 }
-
 
 // DELETE FILE FUNCTIONS
 // Delete file
@@ -119,7 +116,6 @@ export const deleteFile = async (file) => {
         console.error("Error deleting file: ", error)
     }   
 }
-
 
 // MOVING FILES
 // Move file to a folder (from)
@@ -154,8 +150,6 @@ export const moveFileToFolder = async (userID, fileID, folderID) => {
     }
 }
 
-
-
 // SUPPORT FUNCTIONS
 // transform file data to public file data
 const transformFileDataPublic = (file) => {
@@ -178,8 +172,8 @@ const transformFileDataPublic = (file) => {
             name: file.uploadedBy,
             email: file.userEmail
         },
-        uploaded: file.uploadedAt,
-        modified: file.modifiedAt
+        uploadedAt: new Date(file.uploadedAt.seconds * 1000),
+        modifiedAt: new Date(file.modifiedAt.seconds * 1000)
     };
 }
 
@@ -201,7 +195,7 @@ const transformFileDataPrivate = (file) => {
         uploadedBy: file.user.name,
         userEmail: file.user.email,
         userID: file.user.id,
-        uploadedAt: file.uploaded,
-        modifiedAt: file.modified
+        uploadedAt: file.uploadedAt instanceof Date ? file.uploadedAt : new Date(file.uploadedAt.seconds * 1000),
+        modifiedAt: file.modifiedAt instanceof Date ? file.modifiedAt : new Date(file.modifiedAt.seconds * 1000)
     };
 }

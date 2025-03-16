@@ -7,7 +7,7 @@
   --background: #e5e5e5;
   --contrast: #aaaaaa;
   --navlink: #555555;
-  --secondary: #c1c1c1;
+  --secondary: #d6d6d6;
   --linear: linear-gradient(90deg, #d1d1d1, #e5e5e5, #d1d1d1);
 }
 
@@ -17,7 +17,7 @@
     --background: #171717;
     --contrast: #444444;
     --navlink: #999999;
-    --secondary: #343434;
+    --secondary: #242424;
     --linear: linear-gradient(0deg, #1a1a1a, #333333, #1a1a1a);
   }
 }

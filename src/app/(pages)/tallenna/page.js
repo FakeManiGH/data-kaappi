@@ -14,8 +14,6 @@ import { updateFolderFileCount } from '@/app/file-requests/folders';
 import { getUserFolders } from '@/app/file-requests/folders';
 import PageLoading from '@/app/_components/_common/PageLoading';
 import ErrorView from '../_components/ErrorView';
-import CreateFolder from './_components/CreateFolder';
-import { DateDB } from '@/utils/DataTranslation';
 
 function Page() {
   const { user } = useUser();
@@ -86,8 +84,8 @@ function Page() {
         uploadedBy: user.fullName, // String
         userID: user.id,  // String
         userEmail: user.primaryEmailAddress.emailAddress, // String
-        uploadedAt: DateDB(new Date()),
-        modifiedAt: DateDB(new Date()) 
+        uploadedAt: Timestamp.fromDate(new Date()), // Store as Firestore timestamp
+        modifiedAt: Timestamp.fromDate(new Date()) // Store as Firestore timestamp
       };
 
       await setDoc(doc(db, 'files', fileID), fileData);

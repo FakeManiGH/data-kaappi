@@ -18,7 +18,7 @@ function FilePreview({ files, folders, setNewFolder, removeFile, uploadProgress,
   return (
     <div className='grid grid-cols-1 lg:grid-cols-2 w-full gap-4'>
       {files?.map((file, index) => (
-        <div key={index} className='flex flex-1 items-center gap-3 p-2 bg-gradient-to-br from-background to-contrast shadow-md hover:shadow-lg'>
+        <div key={index} className='flex flex-1 items-center gap-3 p-2 bg-gradient-to-br from-secondary to-contrast shadow-md hover:shadow-lg'>
           <Image 
             src={getFileIcon(file?.type)} 
             alt='file' 

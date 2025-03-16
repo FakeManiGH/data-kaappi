@@ -33,8 +33,8 @@ function CreateFolder({ folders, setFolders, setCreateFolder }) {
         userID: user.id, // String
         userName: user.fullName, // String
         userEmail: user.primaryEmailAddress.emailAddress, // String
-        createdAt: DateDB(new Date()), // String
-        modifiedAt: DateDB(new Date()), // String
+        uploadedAt: Timestamp.fromDate(new Date()), // Store as Firestore timestamp
+        modifiedAt: Timestamp.fromDate(new Date()), // Store as Firestore timestamp
         pwdProtected: false, // Boolean
         pwd: '', // String
         shared: false, // Boolean

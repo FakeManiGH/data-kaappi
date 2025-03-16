@@ -174,7 +174,7 @@ function FileNav({ fileState, setFileState }) {
             <div ref={dropDowns} className='flex items-center gap-1'>
                 <div>
                     <button 
-                        className={`flex items-center w-fit gap-2 p-2 border-2 text-sm bg-primary text-white hover:bg-primary/75 transition-colors 
+                        className={`flex items-center w-fit gap-2 p-2 border text-sm bg-primary text-white hover:bg-primary/75 transition-colors 
                             ${fileState.filter !== 'all' ? 'border-foreground' : 'border-transparent'}`} 
                         role="button"
                         onClick={() => {setDropMenu(!dropMenu); setDropMenu2(false);}}
@@ -246,7 +246,7 @@ function FileNav({ fileState, setFileState }) {
                 </div>
                 <div>
                     <button 
-                        className={`flex items-center w-fit gap-2 p-2 border-2 text-sm bg-primary text-white hover:bg-primary/75 transition-colors
+                        className={`flex items-center w-fit gap-2 p-2 border text-sm bg-primary text-white hover:bg-primary/75 transition-colors
                             ${(fileState.sortedBy !== 'date-desc' || fileState.sortedBy === '') ? 'border-foreground' : 'border-transparent'}`}
                         role="button"
                         onClick={() => {setDropMenu2(!dropMenu2); setDropMenu(false);}}

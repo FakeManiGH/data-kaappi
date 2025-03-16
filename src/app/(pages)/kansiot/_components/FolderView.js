@@ -120,7 +120,7 @@ function FolderView({ folders, files, setFolders, setFiles, setCreateFolder, sel
                 <div className='flex items-center gap-1'>
                     <button
                         onClick={() => setSelectedObjects([])}
-                        className='flex items-center w-fit gap-1 px-2 py-[6.2px] border-2 border-contrast text-sm bg-background text-foreground hover:border-primary transition-colors'
+                        className='flex items-center w-fit gap-1 px-2 py-[6.2px] border border-contrast text-sm bg-background text-foreground hover:border-primary transition-colors'
                     >
                         <X size={20} />
                         {selectedObjects.length} valittu
@@ -155,7 +155,7 @@ function FolderView({ folders, files, setFolders, setFiles, setCreateFolder, sel
                 >   
                     <input 
                         type="checkbox" 
-                        className={`absolute top-2 right-2 p-1.5 bg-background group-hover:block appearance-none rounded-full border-2 
+                        className={`absolute top-2 right-2 p-1.5 bg-background group-hover:block appearance-none rounded-full border 
                             border-contrast hover:border-primary checked:border-primary checked:bg-primary checked:hover:border-contrast transition-all
                             ${selectedObjects.includes(folder) ? 'block' : 'hidden'}`}
                         onChange={() => handleObjectSelect(folder)}
@@ -184,7 +184,7 @@ function FolderView({ folders, files, setFolders, setFiles, setCreateFolder, sel
                 >   
                     <input 
                         type="checkbox" 
-                        className={`absolute top-2 right-2 p-1.5 bg-background group-hover:block appearance-none rounded-full border-2 
+                        className={`absolute top-2 right-2 p-1.5 bg-background group-hover:block appearance-none rounded-full border 
                             border-contrast hover:border-primary checked:border-primary checked:bg-primary checked:hover:border-contrast transition-all
                             ${selectedObjects.includes(file) ? 'block' : 'hidden'}`}
                         onChange={() => handleObjectSelect(file)}

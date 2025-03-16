@@ -5,7 +5,7 @@ import { useUser } from '@clerk/nextjs'
 import PageLoading from '@/app/_components/_common/PageLoading'
 import { getUser } from '@/app/file-requests/api'
 import Link from 'next/link'
-import { Settings2 } from 'lucide-react'
+import { BadgeCheck, CircleAlert, Frown, Settings2 } from 'lucide-react'
 import { useNavigation } from '@/app/contexts/NavigationContext'
 import ErrorView from '../_components/ErrorView'
 
@@ -47,28 +47,44 @@ function Page() {
     <main>
       <h1 className='text-2xl md:text-3xl'><strong>Hei, {user?.firstName}</strong></h1>
       
-      <div className='flex items-center flex-wrap px-6 gap-4 min-h-72 shadow-md bg-gradient-to-br from-background to-contrast p-4'>
-        <SpaceMeterCircle usedSpace={userDoc?.usedSpace} totalSpace={userDoc?.totalSpace} />
-        <div className='flex flex-col gap-2'>
-          <h3 className='text-xl font-bold'>Tallennustilan käyttö</h3>
-          <p className='text-sm'>Voit tarvittaessa tilata lisää tallennustilaa (<strong>tulossa</strong>).</p>
-          <Link className='flex items-center w-fit gap-2 px-3 py-2 mt-2 text-sm bg-navlink cursor-not-allowed text-white transition-colors' href="#">
-            <Settings2 />
-            Hallitse tilausta
-          </Link>
+      <div className='grid grid-cols-1 lg:grid-cols-2 gap-4 min-h-72'>
+        <div className='flex gap-2 flex-wrap items-center justify-center bg-gradient-to-br from-secondary via-contrast to-secondary px-4 py-6'>
+          <SpaceMeterCircle usedSpace={userDoc?.usedSpace} totalSpace={userDoc?.totalSpace} />
+          <div className='flex flex-col gap-2'>
+            <h3 className='text-xl font-bold'>Tallennustilan käyttö</h3>
+            <p className='text-sm'>Voit tarvittaessa tilata lisää tallennustilaa (<strong>tulossa</strong>).</p>
+            <Link className='flex items-center w-fit gap-2 px-3 py-2.5 mt-2 text-sm bg-navlink cursor-not-allowed text-white transition-colors' href="#">
+              <Settings2 />
+              Hallitse tilausta
+            </Link>
+          </div>
+        </div>
+
+        <div className='flex items-center justify-center gap-2 bg-gradient-to-br from-contrast via-secondary to-contrast px-4 py-6'>
+          <div className='flex flex-col gap-2'>
+            <h3 className='text-xl font-bold'>Loppuiko kaapistasi tila?</h3>
+            <p className='text-sm'> 
+              Tilaa isompi ja parempi <strong>Jykevä-Kaappi</strong> -palvelu.
+            </p>
+
+            <button className='flex items-center text-sm gap-2 px-3 mt-2 py-2.5 w-fit bg-navlink cursor-not-allowed text-white transition-colors'>
+                <BadgeCheck /> Tilaa Jykevä-Kaappi
+            </button>
+            <p className='flex items-center gap-2 py-2 px-3 text-sm bg-white w-fit rounded-full'><CircleAlert size={20} /> Tulossa pian...</p>
+          </div>
         </div>
       </div>
 
-      <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2 mt-4'>
+      <div className='grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-8 gap-3 mt-2'>
           {filteredList.map((item) => (
           <Link 
               href={item.path}
               key={item.id}
-              className="flex flex-1 h-fit flex-col items-center justify-center p-4 text-sm cursor-pointer shadow-md hover:shadow-lg bg-primary text-white
-                 hover:bg-primary/75 transition-colors"
+              className="flex flex-1 aspect-square flex-col items-center bg-primary text-white justify-center p-4 text-sm cursor-pointer 
+                hover:bg-primary/75 transition-colors"
               >
-                  <item.icon className='mb-2' size={30} />
-                  <p className="whitespace-nowrap">{item.name}</p>
+                <item.icon size={52} className='mb-2 text-white' />
+                <p className="whitespace-nowrap">{item.name}</p>
           </Link>
           ))}
       </div>

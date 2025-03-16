@@ -1,6 +1,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { useNavigation } from '@/app/contexts/NavigationContext'
+import { BadgeCheck } from 'lucide-react'
 
 function SideNav() {
     const { navList, currentIndex } = useNavigation()
@@ -14,7 +15,7 @@ function SideNav() {
                 <Image src='/logo.svg' alt="Logo" width={40} height={40} />
                 <strong>Datakaappi</strong>
             </Link>
-            <div className='flex flex-col w-full mt-2 mb-2 px-2'>
+            <div className='flex flex-col w-full mt-2 mb-2'>
                 {navList && navList.map((item) => (
                     <Link 
                         href={item.path} 
