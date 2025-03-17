@@ -10,7 +10,7 @@ function FileContainer({ file, folder, setFile, setLivePreview }) {
     <div className="flex flex-col w-full">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center w-full max-w-full">
         <div 
-          className="flex flex-col justify-center bg-gradient-to-br from-background to-gray-400/10 items-center gap-2 lg:w-1/3 w-full min-h-40 max-h-96 cursor-zoom-in"
+          className="flex flex-col justify-center bg-gradient-to-br from-background to-gray-400/10 items-center gap-2 lg:w-1/3 w-full min-h-40 max-h-96 overflow-hidden cursor-zoom-in"
           onClick={() => setLivePreview(true)}
         >
           {getFilepagePreview(file)}

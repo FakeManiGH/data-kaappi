@@ -80,3 +80,7 @@ main {
   margin-bottom: 0.35rem;
 }
 
+.rogue-dropmenu {
+  width: calc(100vw - 32px);
+}
+

@@ -1,8 +1,9 @@
 "use server"
 import { getStorage, ref, deleteObject } from "firebase/storage";
-import { doc, setDoc, deleteDoc, getDoc, updateDoc, orderBy, collection, query, where, getDocs, limit, increment } from "firebase/firestore";
+import { doc, setDoc, deleteDoc, getDoc, updateDoc, orderBy, collection, query, where, getDocs, limit, increment, Timestamp } from "firebase/firestore";
 import { db } from '@/../firebaseConfig';
 import bcrypt from 'bcrypt';
+import { folderNameRegex } from "@/utils/Regex";
 
 // FOLDER API FUNCTIONS
 // CREATE
@@ -17,6 +18,9 @@ export const createFolder = async (folderID, folderData) => {
             const newFolderID = generateRandomString(11);
             return createFolder(newFolderID, folderData);
         }
+
+        folderData.createdAt = Timestamp.fromDate(new Date());
+        folderData.modifiedAt = Timestamp.fromDate(new Date());
 
         await setDoc(doc(db, 'folders', folderID), folderData);
     } catch (error) {
@@ -84,37 +88,40 @@ export const updateFolderFileCount = async (folderID, incrementBy) => {
     }
 }
 
-// Update folder data
-export const updateFolderData = async (userID, updatedData) => {
+// Update folder name
+export const updateFolderName = async (userID, folderID, newName) => {
     try {
-        const orginalFolder = await getFolderInfo(updatedData.id);
+        // Original data
+        const folderRef = doc(db, 'folders', folderID);
+        const docSnap = await getDoc(folderRef);
 
-        if (!orginalFolder) {
-            throw new Error("No folder found.")
+        if (!docSnap.exists()) {
+            throw new Error("Virhe, kansiota ei löytynyt.");
         }
 
-        if (userID !== orginalFolder.userID) {
-            throw new Error("Invalid update request");
+        const originalFolder = docSnap.data();
+
+        // Authorization
+        if (userID !== originalFolder.userID) {
+            throw new Error("Luvaton muutospyyntö.");
         }
 
-        // Password hashing
-        if (updatedData.password !== '') {
-            const saltRounds = 13;
-            const hash = await bcrypt.hash(updatedData.password, saltRounds);
-            updatedData = {
-                ...updatedData,
-                password: hash
-            }
+        // Validate the new folder name
+        if (!folderNameRegex.test(newName)) {
+            throw new Error("Virheellinen kansion nimi. Nimen tulee olla 2-50 merkkiä pitkä, eikä se saa sisältää <, >, /, \\ merkkejä.");
         }
 
-        const newFolder = transformFolderDataPrivate(updatedData)
-        const folderRef = doc(db, 'folders', newFolder.folderID);
-        await updateDoc(folderRef, newFolder);
+        // Update the folder name
+        await updateDoc(folderRef, { folderName: newName });
+
+        return { success: true, message: "Kansion nimi päivitetty." };
     } catch (error) {
-        console.error("Error updating folder data: ", error);
-        throw error;
+        console.error("Error updating folder name: ", error);
+        return { success: false, message: error.message };
     }
-}
+};
+
+
 
 
 // DELETE
@@ -137,8 +144,8 @@ const transformFolderDataPublic = (folder) => {
             name: folder.userName,
             email: folder.userEmail
         },
-        created: folder.createdAt,
-        modified: folder.modifiedAt,
+        created: new Date(folder.createdAt.seconds * 1000),
+        modified: new Date(folder.modifiedAt.seconds * 1000),
         passwordProtected: folder.pwdProtected,
         password: '',
         shared: folder.shared,
@@ -157,8 +164,8 @@ const transformFolderDataPrivate = (folder) => {
         userID: folder.user.id,
         userName: folder.user.name,
         userEmail: folder.user.email,
-        createdAt: folder.created,
-        modifiedAt: folder.modified,
+        createdAt: folder.created instanceof Date ? folder.created : new Date(folder.created.seconds * 1000),
+        modifiedAt: folder.modified instanceof Date ? folder.modified : new Date(folder.modified.seconds * 1000),
         pwdProtected: folder.passwordProtected,
         pwd: folder.password,
         shared: folder.shared,

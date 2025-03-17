@@ -39,7 +39,7 @@ function TopHeader() {
         {dropdown && (
           <div
             id='dropdownMenu'
-            className="absolute z-50 inset-x-4 max-w-64 bg-background border border-contrast shadow-xl shadow-black/25 overflow-hidden"
+            className="absolute z-50 rogue-dropmenu sm:max-w-64 bg-background border border-contrast shadow-xl shadow-black/25 overflow-hidden"
             role="menu"
           >
             {navList && navList.map((item) => (

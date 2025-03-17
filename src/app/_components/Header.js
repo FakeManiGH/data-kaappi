@@ -8,7 +8,7 @@ import { AlignJustify, CircleGauge, LogIn } from 'lucide-react'
 
 function Header() {
     const [dropdown, setDropdown] = useState(false)
-    const [signedIn, setSignedIn] = useState(false)
+    const [isLoggedIn, setIsLoggedIn] = useState(false)
     const { isLoaded, user } = useUser()
     const { publicNav, currentIndex } = useNavigation()
     const dropdownRef = useRef(null)
@@ -20,11 +20,13 @@ function Header() {
             }
         }
 
+        if (isLoaded && user) setIsLoggedIn(true)
+
         document.addEventListener('mousedown', handleClickOutside)
         return () => {
             document.removeEventListener('mousedown', handleClickOutside)
         }
-    }, [dropdownRef])
+    }, [dropdownRef, isLoaded, user])
 
     return (
     <header>

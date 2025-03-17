@@ -9,10 +9,10 @@ import { useUser } from '@clerk/nextjs';
 import { useAlert } from '@/app/contexts/AlertContext';
 import PageLoading from '@/app/_components/_common/PageLoading';
 import ErrorView from '../_components/ErrorView';
-import OptionsPopup from './_components/OptionsPopup';
 import { getUserFilesByFolder } from '@/app/file-requests/files';
 import { getUserFolders } from '@/app/file-requests/folders';
 import Link from 'next/link';
+import RenamePopup from './_components/RenamePopup';
 
 
 function Page() {
@@ -21,7 +21,7 @@ function Page() {
     const [files, setFiles] = useState([]);
     const [selectedObjects, setSelectedObjects] = useState([]);
     const [createFolder, setCreateFolder] = useState(false);
-    const [objectOptions, setObjectOptions] = useState(false);
+    const [renamePopup, setRenamePopup] = useState(false);
     const [loading, setLoading] = useState(true);
     const [pageError, setPageError] = useState(null);
     const { user, isLoaded } = useUser();
@@ -82,10 +82,10 @@ function Page() {
                 setCreateFolder={setCreateFolder}
                 selectedObjects={selectedObjects}
                 setSelectedObjects={setSelectedObjects}
-                setObjectOptions={setObjectOptions}
+                setRenamePopup={setRenamePopup}
             />
             {createFolder && <CreateFolder folders={folders} setFolders={setFolders} setCreateFolder={setCreateFolder} />}
-            {objectOptions && <OptionsPopup selectedObject={selectedObjects[0]} setFolders={setFolders} setFiles={setFiles} setSelectedObjects={setSelectedObjects} setObjectOptions={setObjectOptions} />}
+            {renamePopup && <RenamePopup selectedObject={selectedObjects[0]} setFolders={setFolders} setFiles={setFiles} setSelectedObjects={setSelectedObjects} setRenamePopup={setRenamePopup} />}
         </main>
     );
 }
