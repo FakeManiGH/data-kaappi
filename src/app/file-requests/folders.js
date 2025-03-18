@@ -3,7 +3,7 @@ import { getStorage, ref, deleteObject } from "firebase/storage";
 import { doc, setDoc, deleteDoc, getDoc, updateDoc, orderBy, collection, query, where, getDocs, limit, increment, Timestamp } from "firebase/firestore";
 import { db } from '@/../firebaseConfig';
 import bcrypt from 'bcrypt';
-import { folderNameRegex } from "@/utils/Regex";
+import { folderNameRegex, passwordRegex } from "@/utils/Regex";
 
 // FOLDER API FUNCTIONS
 // CREATE
@@ -106,20 +106,55 @@ export const updateFolderName = async (userID, folderID, newName) => {
             throw new Error("Luvaton muutospyyntö.");
         }
 
-        // Validate the new folder name
+        // Data validation
         if (!folderNameRegex.test(newName)) {
             throw new Error("Virheellinen kansion nimi. Nimen tulee olla 2-50 merkkiä pitkä, eikä se saa sisältää <, >, /, \\ merkkejä.");
         }
 
-        // Update the folder name
+        // Update 
         await updateDoc(folderRef, { folderName: newName });
-
         return { success: true, message: "Kansion nimi päivitetty." };
     } catch (error) {
         console.error("Error updating folder name: ", error);
         return { success: false, message: error.message };
     }
 };
+
+// Set/update folder password
+export const updateFolderPassword = async (userID, folderID, password) => {
+    try {
+        // Original
+        const folderRef = doc(db, 'folders', folderID);
+        const docSnap = await getDoc(folderRef);
+
+        if (!docSnap.exists()) {
+            throw new Error("Kansiota ei löytynyt.");
+        }
+
+        const originalFolder = docSnap.data();
+
+        // Authorization
+        if (userID !== originalFolder.userID) {
+            throw new Error("Luvaton muutospyyntö.");
+        }
+
+        // Data validation
+        if (!passwordRegex.test(password)) {
+            throw new Error("Virheellinen salasana. Salasana ei saa sisältää <, >, /, \\ merkkejä.");
+        }
+
+        // Password hash
+        const salt = bcrypt.genSaltSync(13)
+        const hashPass = bcrypt.hashSync(password, salt)
+
+        // Update
+        await updateDoc(folderRef, { pwd: hashPass, pwdProtected: true });
+        return { success: true, message: "Kansion salasana asetettu." };
+    } catch (error) {
+        console.error("Error updating folder name: ", error);
+        return { success: false, message: error.message };
+    }
+}
 
 
 

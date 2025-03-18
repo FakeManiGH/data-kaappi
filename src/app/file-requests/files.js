@@ -4,6 +4,7 @@ import { doc, setDoc, deleteDoc, getDoc, updateDoc, orderBy, collection, query, 
 import { db } from '@/../firebaseConfig';
 import bcrypt from 'bcrypt';
 import { getFolderInfo, updateFolderFileCount } from "./folders";
+import { fileNameRegex } from "@/utils/Regex";
 
 // Config
 const storage = getStorage();
@@ -72,37 +73,38 @@ export const getUserFilesByFolder = async (userID, folderID) => {
 }
 
 // UPDATE FILE FUNCTIONS
-// Update file document
-export const updateFileData = async (userID, updatedData) => {
+// Update file name
+export const updateFileName = async (userID, fileID, newName) => {
     try {
-        const orginalFile = await getFileInfo(updatedData.id);
+        // Original data
+        const fileRef = doc(db, 'files', fileID);
+        const docSnap = await getDoc(fileRef);
 
-        if (!orginalFile) {
-            throw new Error("File not found.")
+        if (!docSnap.exists()) {
+            throw new Error("Kansiota ei löytynyt.");
         }
 
-        // Request validation
-        if (userID !== orginalFile.userID) {
-            throw new Error("Invalid update request.")
+        const originalFile = docSnap.data();
+
+        // Authorization
+        if (userID !== originalFile.userID) {
+            throw new Error("Luvaton muutospyyntö.");
         }
 
-        // Password hashing
-        if (updatedData.password !== '') {
-            const saltRounds = 13;
-            const hash = await bcrypt.hash(updatedData.password, saltRounds);
-            updatedData = {
-                ...updatedData,
-                password: hash
-            }
+        // Data validation
+        if (!fileNameRegex.test(newName)) {
+            throw new Error("Virheellinen kansion nimi. Nimen tulee olla 2-50 merkkiä pitkä, eikä se saa sisältää <, >, /, \\ merkkejä.");
         }
 
-        const newFile = transformFileDataPrivate(updatedData);
-        const fileRef = doc(db, "files", newFile.fileID);
-        await updateDoc(fileRef, newFile);
+        // Update 
+        await updateDoc(fileRef, { fileName: newName });
+        return { success: true, message: "Tiedoston nimi päivitetty." };
     } catch (error) {
-        console.error("Error updating file data: ", error)
+        console.error("Error updating file name: ", error);
+        return { success: false, message: error.message };
     }
-}
+};
+
 
 // DELETE FILE FUNCTIONS
 // Delete file

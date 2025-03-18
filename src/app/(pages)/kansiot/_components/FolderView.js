@@ -9,7 +9,7 @@ import { moveFileToFolder } from '@/app/file-requests/files';
 import { useUser } from '@clerk/nextjs';
 
 
-function FolderView({ folders, files, setFolders, setFiles, setCreateFolder, selectedObjects, setSelectedObjects, setRenamePopup }) {
+function FolderView({ folders, files, setFolders, setFiles, setCreateFolder, selectedObjects, setSelectedObjects, setRenamePopup, setPasswordPopup }) {
     const [draggedFile, setDraggedFile] = useState(null);
     const [isDragging, setIsDragging] = useState(false)
     const [dropMenu, setDropMenu] = useState(false)
@@ -158,6 +158,7 @@ function FolderView({ folders, files, setFolders, setFiles, setCreateFolder, sel
                                     <button 
                                         className='flex w-full items-center gap-2 px-4 py-2 text-sm text-navlink hover:text-primary' 
                                         role="menuitem"
+                                        onClick={() => {setPasswordPopup(true), setDropMenu(false)}}
                                     >
                                         <LockKeyhole size={16} />
                                         Aseta salasana
@@ -224,15 +225,15 @@ function FolderView({ folders, files, setFolders, setFiles, setCreateFolder, sel
             </div>
         )}
 
-        <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-7 gap-2">
+        <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-8 gap-2">
             {folders.map(folder => (
                 <div 
                     key={folder.id} 
                     onTouchStart={() => handleTouchStart(folder)}
                     onTouchEnd={() => handleTouchEnd(folder)}
-                    className={`relative flex flex-col justify-center py-4 px-6 bg-gradient-to-br shadow-md hover:shadow-lg 
-                        transition-colors border group ${selectedObjects.includes(folder) ? 'border-primary' : 'border-background'}
-                        ${dragOverFolder === folder.id ? 'from-background to-primary/50' : 'from-background to-contrast'}`}
+                    className={`relative flex items-center py-4 px-6 transition-colors border group overflow-hidden
+                        ${selectedObjects.includes(folder) ? 'border-primary' : 'border-transparent'}
+                        ${dragOverFolder === folder.id ? 'bg-primary' : ''}`}
                     style={{ touchAction: 'none' }}
                 >   
                     {isDragging && 
@@ -254,11 +255,11 @@ function FolderView({ folders, files, setFolders, setFiles, setCreateFolder, sel
                     />
                     <Link style={{ touchAction: 'none' }} href={`/kansiot/${folder.id}`} className='flex flex-col max-w-full overflow-hidden text-foreground hover:text-primary'>
                         <img src={folder.shared ? "/icons/folder_share.png" : "/icons/folder.png"} alt="folder" className="w-16 h-16" />
-                        <h2 className="text-sm font-semibold transition-colors truncate">{folder.name}</h2>
-                        <p className="text-sm text-navlink">{folder.fileCount} tiedostoa</p>
+                        <h2 className="text-sm font-semibold transition-colors ">{folder.name}</h2>
+                        <p className="text-sm text-navlink truncate">{folder.fileCount} tiedostoa</p>
                     </Link>
 
-                    {folder.passwordProtected && <LockKeyhole className='absolute bottom-2 left-2' size={20} />}
+                    {folder.passwordProtected && <LockKeyhole className='absolute bottom-2 right-2' size={20} />}
                 </div>
             ))}
 
@@ -271,8 +272,8 @@ function FolderView({ folders, files, setFolders, setFiles, setCreateFolder, sel
                     draggable
                     onDragStart={() => handleDragStart(file)}
                     onDragEnd={() => handleDragEnd(file)}
-                    className={`relative flex flex-col justify-center py-4 px-6 bg-gradient-to-br from-background to-contrast shadow-md hover:shadow-lg 
-                        transition-colors group border overflow-hidden ${selectedObjects.includes(file) ? 'border-primary' : 'border-background'}`}
+                    className={`relative flex items-center py-4 px-6 transition-colors group border overflow-hidden
+                        ${selectedObjects.includes(file) ? 'border-primary' : 'border-transparent'}`}
                     style={{ touchAction: 'none' }}
                 >   
                     <input 
@@ -284,17 +285,17 @@ function FolderView({ folders, files, setFolders, setFiles, setCreateFolder, sel
                         checked={selectedObjects.includes(file)}
                     />
 
-                    <button className='absolute p-1 right-1 cursor-grab'>
+                    <button className='absolute py-2 right-1 cursor-grab text-contrast hover:text-foreground'>
                         <GripVertical />
                     </button>
                     
-                    <Link style={{ touchAction: 'none' }} href={`/tiedosto/${file.id}`} className='flex flex-col text-foreground hover:text-primary'>
-                        <img src={getFileIcon(file.type)} alt="file" className="w-16 h-16 mb-1" />
-                        <h2 className=" text-sm max-w-full font-semibold whitespace-nowrap text-ellipsis">{file.name}</h2>
+                    <Link style={{ touchAction: 'none' }} href={`/tiedosto/${file.id}`} className='flex flex-col justify-between text-foreground overflow-hidden hover:text-primary'>
+                        <img src={file.url} alt="file" className="w-14 h-14 object-cover mb-1" />
+                        <h2 className=" text-sm max-w-full font-semibold truncate">{file.name}</h2>
                         <p className="text-sm text-navlink">{translateFileSize(file.size)}</p>
                     </Link>
 
-                    {file.passwordProtected && <LockKeyhole className='absolute bottom-2 left-2' size={20} />}
+                    {file.passwordProtected && <LockKeyhole className='absolute bottom-2 right-2' size={20} />}
                 </div>
             ))}
         </div>

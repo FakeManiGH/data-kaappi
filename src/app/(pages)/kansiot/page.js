@@ -13,6 +13,7 @@ import { getUserFilesByFolder } from '@/app/file-requests/files';
 import { getUserFolders } from '@/app/file-requests/folders';
 import Link from 'next/link';
 import RenamePopup from './_components/RenamePopup';
+import PasswordPopup from './_components/PasswordPopup';
 
 
 function Page() {
@@ -22,6 +23,7 @@ function Page() {
     const [selectedObjects, setSelectedObjects] = useState([]);
     const [createFolder, setCreateFolder] = useState(false);
     const [renamePopup, setRenamePopup] = useState(false);
+    const [passwordPopup, setPasswordPopup] = useState(false)
     const [loading, setLoading] = useState(true);
     const [pageError, setPageError] = useState(null);
     const { user, isLoaded } = useUser();
@@ -83,9 +85,11 @@ function Page() {
                 selectedObjects={selectedObjects}
                 setSelectedObjects={setSelectedObjects}
                 setRenamePopup={setRenamePopup}
+                setPasswordPopup={setPasswordPopup}
             />
             {createFolder && <CreateFolder folders={folders} setFolders={setFolders} setCreateFolder={setCreateFolder} />}
             {renamePopup && <RenamePopup selectedObject={selectedObjects[0]} setFolders={setFolders} setFiles={setFiles} setSelectedObjects={setSelectedObjects} setRenamePopup={setRenamePopup} />}
+            {passwordPopup && <PasswordPopup selectedObject={selectedObjects[0]} setFolders={setFolders} setFiles={setFiles} setSelectedObjects={setSelectedObjects} setPasswordPopup={setPasswordPopup} />}
         </main>
     );
 }

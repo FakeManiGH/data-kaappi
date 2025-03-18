@@ -2,7 +2,7 @@ import { LockKeyhole, X } from 'lucide-react'
 import React, { useEffect } from 'react'
 import PasswordForm from './PasswordForm'
 
-function SharePopup({ file, setFile, setPasswordPopup }) {
+function PasswordPopup({ file, setFile, setPasswordPopup }) {
 
     useEffect(() => {
         // close popup when clicked outside
@@ -47,4 +47,4 @@ function SharePopup({ file, setFile, setPasswordPopup }) {
     )
 }
 
-export default SharePopup
+export default PasswordPopup

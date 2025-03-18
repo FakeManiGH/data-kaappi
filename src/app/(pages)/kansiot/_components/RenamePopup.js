@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { updateFolderName } from '@/app/file-requests/folders';
 import { folderNameRegex, fileNameRegex } from '@/utils/Regex';
-import { updateFileData } from '@/app/file-requests/files'; // Assuming you have a similar function for files
+import { updateFileData, updateFileName } from '@/app/file-requests/files'; // Assuming you have a similar function for files
 import { useAlert } from '@/app/contexts/AlertContext';
 import { X } from 'lucide-react';
 import { useUser } from '@clerk/nextjs';
@@ -73,22 +73,39 @@ function RenamePopup({ selectedObject, setFolders, setFiles, setSelectedObjects,
   };
 
 
-  const handleFileUpdate = async (e) => {
+  const handleFileNameChange = async (e) => {
     e.preventDefault();
+    const fullName = `${objectName}.${fileExtension}`;
+
+    if (!fullName || fullName === objectName) {
+      setNameError('Anna ensin uusi nimi.', 'info');
+      return;
+    }
+
+    if (!fileNameRegex.test(fullName)) {
+      setNameError('Nimi ei saa sisältää merkkejä <, >, /, \\ ja sen on oltava 2-75 merkkiä pitkä.');
+      return;
+    }
 
     try {
-      const fullName = `${objectName}.${fileExtension}`;
+      const response = await updateFileName(user.id, selectedObject.id, fullName);
 
-      
+      if (response.success) {
+        const updatedFile = {
+          ...selectedObject,
+          name: fullName
+        };
 
-      await updateFileData(user.id, updatedData);
+        setFiles(prevFiles => prevFiles.map(file => 
+          file.id === updatedFile.id ? updatedFile : file
+        ));
 
-      setFiles(prevFiles => prevFiles.map(file => 
-          file.id === updatedData.id ? updatedData : file
-      ));
-
-      setRenamePopup(false); // Close the options popup
-      setSelectedObjects([]); // Empty selected objects array
+        setRenamePopup(false); // Close the options popup
+        setSelectedObjects([]); // Empty selected objects array
+        showAlert(response.message, 'success');
+      } else {
+        showAlert(response.message, 'error');
+      }
     } catch (error) {
       console.error("Error updating file: ", error);
       showAlert('Virhe tiedoston päivittämisessä.', 'error');
@@ -106,7 +123,7 @@ function RenamePopup({ selectedObject, setFolders, setFiles, setSelectedObjects,
           <X />
         </button>
         <h2 className="text-2xl md:text-3xl mb-6 text-center font-bold">Nimeä uudelleen</h2>
-        <form className="flex flex-col" onSubmit={selectedObject.docType === 'folder' ? handleFolderNameChange : handleFileUpdate}>
+        <form className="flex flex-col" onSubmit={selectedObject.docType === 'folder' ? handleFolderNameChange : handleFileNameChange}>
           <div>
             <label htmlFor="objectName" className="block text-sm font-semibold">{selectedObject.docType === 'file' ? 'Tiedoston nimi' : 'Kansion nimi'}</label>
             <div className='flex items-center gap-1'>
