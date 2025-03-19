@@ -156,6 +156,34 @@ export const updateFolderPassword = async (userID, folderID, password) => {
     }
 }
 
+// Remove folder password
+export const removeFolderPassword = async (userID, folderID) => {
+    try {
+        // Original
+        const folderRef = doc(db, 'folders', folderID);
+        const docSnap = await getDoc(folderRef);
+
+        if (!docSnap.exists()) {
+            throw new Error("Kansiota ei löytynyt.");
+        }
+
+        const originalFolder = docSnap.data();
+
+        // Authorization
+        if (userID !== originalFolder.userID) {
+            throw new Error("Luvaton muutospyyntö.");
+        }
+
+        // Update
+        await updateDoc(folderRef, { pwd: '', pwdProtected: false });
+        return { success: true, message: "Salasana poistettu käytöstä." };
+
+    } catch (error) {
+        console.error("Error removing folder password: ", error);
+        return { success: false, message: error.message };
+    }
+}
+
 
 
 

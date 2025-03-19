@@ -47,16 +47,19 @@ function FolderView({ folders, files, setFolders, setFiles, setCreateFolder, sel
         setIsDragging(false)
         if (draggedFile) {
             try {
-                await moveFileToFolder(user.id, draggedFile.id, folder.id);
-                // Remove the moved file from the files array
-                const updatedFiles = files.filter(file => file.id !== draggedFile.id);
-                // Increase the folder fileCount by 1
-                const updatedFolders = folders.map(f => 
-                    f.id === folder.id ? { ...f, fileCount: f.fileCount + 1 } : f
-                );
-                setFiles(updatedFiles);
-                setFolders(updatedFolders);
-                showAlert(`Tiedosto siirretty kansioon ${folder.name}`, 'success');
+                const response = await moveFileToFolder(user.id, draggedFile.id, folder.id);
+
+                if (response.success) {
+                    const updatedFiles = files.filter(file => file.id !== draggedFile.id);
+                    const updatedFolders = folders.map(f => 
+                        f.id === folder.id ? { ...f, fileCount: f.fileCount + 1 } : f
+                    );
+                    setFiles(updatedFiles);
+                    setFolders(updatedFolders);
+                    showAlert(response.message, 'success');
+                } else {
+                    showAlert(response.message, 'error');
+                }  
             } catch (error) {
                 console.error('Error moving file to folder: ', error);
                 showAlert('Tiedoston siirtäminen epäonnistui', 'error');
@@ -161,7 +164,7 @@ function FolderView({ folders, files, setFolders, setFiles, setCreateFolder, sel
                                         onClick={() => {setPasswordPopup(true), setDropMenu(false)}}
                                     >
                                         <LockKeyhole size={16} />
-                                        Aseta salasana
+                                        Salasana
                                     </button>
                                 </>
                                 }
@@ -196,7 +199,7 @@ function FolderView({ folders, files, setFolders, setFiles, setCreateFolder, sel
                                 role="menuitem"
                                 >
                                     <Trash2 size={16} />
-                                    Poista tiedosto
+                                    Poista
                                 </button>                            
                             </div>
                         </div>
@@ -231,9 +234,9 @@ function FolderView({ folders, files, setFolders, setFiles, setCreateFolder, sel
                     key={folder.id} 
                     onTouchStart={() => handleTouchStart(folder)}
                     onTouchEnd={() => handleTouchEnd(folder)}
-                    className={`relative flex items-center py-4 px-6 transition-colors border group overflow-hidden
+                    className={`relative flex items-center justify-center p-4 transition-colors border group overflow-hidden
                         ${selectedObjects.includes(folder) ? 'border-primary' : 'border-transparent'}
-                        ${dragOverFolder === folder.id ? 'bg-primary' : ''}`}
+                        ${dragOverFolder === folder.id ? 'bg-primary' : 'bg-gray-500/10'}`}
                     style={{ touchAction: 'none' }}
                 >   
                     {isDragging && 
@@ -253,13 +256,13 @@ function FolderView({ folders, files, setFolders, setFiles, setCreateFolder, sel
                         onChange={() => handleObjectSelect(folder)}
                         checked={selectedObjects.includes(folder)}
                     />
-                    <Link style={{ touchAction: 'none' }} href={`/kansiot/${folder.id}`} className='flex flex-col max-w-full overflow-hidden text-foreground hover:text-primary'>
+                    <Link style={{ touchAction: 'none' }} href={`/kansiot/${folder.id}`} className='flex flex-col items-center max-w-full overflow-hidden text-foreground hover:text-primary'>
                         <img src={folder.shared ? "/icons/folder_share.png" : "/icons/folder.png"} alt="folder" className="w-16 h-16" />
                         <h2 className="text-sm font-semibold transition-colors ">{folder.name}</h2>
                         <p className="text-sm text-navlink truncate">{folder.fileCount} tiedostoa</p>
                     </Link>
 
-                    {folder.passwordProtected && <LockKeyhole className='absolute bottom-2 right-2' size={20} />}
+                    {folder.passwordProtected && <LockKeyhole className='absolute top-2 left-2' size={20} />}
                 </div>
             ))}
 
@@ -272,7 +275,7 @@ function FolderView({ folders, files, setFolders, setFiles, setCreateFolder, sel
                     draggable
                     onDragStart={() => handleDragStart(file)}
                     onDragEnd={() => handleDragEnd(file)}
-                    className={`relative flex items-center py-4 px-6 transition-colors group border overflow-hidden
+                    className={`relative flex items-center justify-center p-4 bg-gray-500/10 transition-colors group border overflow-hidden
                         ${selectedObjects.includes(file) ? 'border-primary' : 'border-transparent'}`}
                     style={{ touchAction: 'none' }}
                 >   
@@ -289,8 +292,17 @@ function FolderView({ folders, files, setFolders, setFiles, setCreateFolder, sel
                         <GripVertical />
                     </button>
                     
-                    <Link style={{ touchAction: 'none' }} href={`/tiedosto/${file.id}`} className='flex flex-col justify-between text-foreground overflow-hidden hover:text-primary'>
-                        <img src={file.url} alt="file" className="w-14 h-14 object-cover mb-1" />
+                    <Link 
+                        style={{ touchAction: 'none' }} 
+                        href={`/tiedosto/${file.id}`} 
+                        className='flex flex-col items-center justify-between text-foreground overflow-hidden 
+                            hover:text-primary group'>
+                        <img 
+                            src={file.url} 
+                            alt="file" 
+                            className={`w-16 h-16 object-cover mb-1 group-hover:brightness-100
+                                ${selectedObjects.includes(file) ? 'brightness-100' : 'brightness-75'}`} 
+                        />
                         <h2 className=" text-sm max-w-full font-semibold truncate">{file.name}</h2>
                         <p className="text-sm text-navlink">{translateFileSize(file.size)}</p>
                     </Link>

@@ -1,21 +1,74 @@
 import { LockKeyhole, X } from 'lucide-react'
 import React, { useEffect } from 'react'
 import PasswordForm from './PasswordForm'
+import { useUser } from '@clerk/nextjs'
+import { removeFolderPassword } from '@/app/file-requests/folders';
+import { useAlert } from '@/app/contexts/AlertContext';
+import { removeFilePassword } from '@/app/file-requests/files';
 
 function PasswordPopup({ selectedObject, setFolders, setFiles, setSelectedObjects, setPasswordPopup }) {
+    const { user } = useUser();
+    const { showAlert } = useAlert();
 
     useEffect(() => {
         // close popup when clicked outside
         const handleClick = (e) => {
-            let overlay = document.getElementById('overlay')
+            let overlay = document.getElementById('overlay');
             if (e.target === overlay) {
-                setPasswordPopup(false)
+                setPasswordPopup(false);
             }
         }
 
         document.addEventListener('click', handleClick)
         return () => document.removeEventListener('click', handleClick)
     }, [])
+
+    // Remove folder password
+    const removePasswordFromFolder = async () => {
+        try {
+            const response = await removeFolderPassword(user.id, selectedObject.id);
+            if (response.success) {
+                showAlert(response.message, 'success');
+                const updatedFolder = {
+                    ...selectedObject,
+                    passwordProtected: false
+                }
+                setFolders(prevFolders => prevFolders.map(folder => 
+                    folder.id === updatedFolder.id ? updatedFolder : folder
+                ));
+                setSelectedObjects([updatedFolder]);
+            } else {
+                showAlert(response.message, 'error');
+            }
+        } catch (error) {
+            console.error('Error removing password: ' + error);
+            showAlert(response.message, 'error');
+        }
+    }
+
+    // Remove file password
+    const removePasswordFromFile = async () => {
+        try {
+            const response = await removeFilePassword(user.id, selectedObject.id);
+            if (response.success) {
+                showAlert(response.message, 'success');
+                const updatedFile = {
+                    ...selectedObject,
+                    passwordProtected: false
+                }
+                setFiles(prevFiles => prevFiles.map(file =>
+                    file.id === updatedFile.id ? updatedFile : file
+                ));
+                setSelectedObjects([updatedFile]);
+            } else {
+                showAlert(response.message, 'error');
+            }
+        } catch (error) {
+            console.error('Error removing password: ' + error);
+            showAlert(response.message, 'error');
+        }
+    }
+
 
     return (
         <span className='fixed z-50 inset-0 flex justify-center items-start bg-black/50 px-4 py-2'>
@@ -41,7 +94,12 @@ function PasswordPopup({ selectedObject, setFolders, setFiles, setSelectedObject
                             </p>
                         </div>
 
-                        <button className='text-sm text-red-500 hover:text-red-600 whitespace-nowrap'>Poista käytöstä</button>
+                        <button 
+                            onClick={selectedObject.docType === 'folder' ? removePasswordFromFolder : removePasswordFromFile} 
+                            className='text-sm text-red-500 hover:text-red-600 whitespace-nowrap'
+                        >
+                            Poista käytöstä
+                        </button>
                     </div>
 
                     

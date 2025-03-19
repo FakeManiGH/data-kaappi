@@ -21,7 +21,7 @@ function Hero() {
                 <div className="flex flex-col items-center gap-3 w-full">
                     <a
                         className="flex gap-1 items-center justify-center border border-primary w-72 px-5 py-3
-                            text-lg text-foreground shadow-md shadow-black/25 hover:shadow-sm hover:bg-primary 
+                            text-lg text-foreground hover:bg-primary hover:text-white
                             transition-all"
                         href="/sign-in"
                     >   

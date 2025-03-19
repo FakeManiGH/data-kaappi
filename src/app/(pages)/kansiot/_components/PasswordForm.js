@@ -2,14 +2,13 @@ import { Eye, EyeOff, Save, X } from 'lucide-react'
 import React, { useState } from 'react'
 import { useAlert } from '@/app/contexts/AlertContext'
 import { useUser } from '@clerk/nextjs'
-import { updateFilePassword } from '@/app/file-requests/api'
+import { updateFilePassword } from '@/app/file-requests/files'
 import { passwordRegex } from '@/utils/Regex'
 import { updateFolderPassword } from '@/app/file-requests/folders'
 
 
 function PasswordForm({ selectedObject, setFolders, setFiles, setSelectedObjects, setPasswordPopup }) {
     const [showPassword, setShowPassword] = useState(false)
-    const [pwdPrtocted, setPwdProtected] = useState(selectedObject.passwordProtected)
     const [passwordError, setPasswordError] = useState('')
     const { showAlert } = useAlert()
     const { user } = useUser()
@@ -57,16 +56,38 @@ function PasswordForm({ selectedObject, setFolders, setFiles, setSelectedObjects
     // Save file password
     const saveFilePassword = async (e) => {
         e.preventDefault()
-           
-    }
-
-    // Remove password
-    const removePassword = async () => {
+        const newPassword = e.target.password.value;
         
-    }
+        if (!newPassword || newPassword.lenght === 0) {
+            setPasswordError('Salasana ei voi olla tyhjä.');
+            return;
+        }
 
-    const handlePasswordProtection = async (e) => {
-        setPwdProtected(e.target.checked)
+        if (!passwordRegex.test(newPassword)) {
+            setPasswordError('Salasana ei voi sisältää <, >, /, \\ -merkkejä.');
+            return;
+        }
+
+        try {
+            const response = await updateFilePassword(user.id, selectedObject.id, newPassword);
+            if (response.success) {
+                const updatedFile = {
+                    ...selectedObject,
+                    passwordProtected: true
+                }
+                setFiles(prevFiles => prevFiles.map(file => 
+                    file.id === updatedFile.id ? updatedFile : file
+                ));
+                setPasswordPopup(false);
+                setSelectedObjects([]);
+                showAlert(response.message, 'success');
+            } else {
+                showAlert(response.message, 'error');
+            }
+        } catch (error) {
+            console.error('Error setting file password: ' + error);
+            showAlert(response.message, 'error');
+        }
     }
 
     const changeVisibility = () => setShowPassword(!showPassword)
@@ -79,7 +100,10 @@ function PasswordForm({ selectedObject, setFolders, setFiles, setSelectedObjects
 
         <div className="relative mt-2">
             <form className="flex flex-col text-sm" onSubmit={selectedObject.docType === 'folder' ? saveFolderPassword : saveFilePassword}> 
-                <label htmlFor="password" className="block mt-2 text-sm font-medium text-gray-700 dark:text-gray-300">Aseta salasana</label>
+                <label htmlFor="password" className="block mt-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                    {selectedObject.passwordProtected ? 'Vaihda ' : 'Aseta '} 
+                    salasana
+                </label>
                 <div className='relative'>
                     <input
                         id="password"
