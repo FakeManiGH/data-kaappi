@@ -1,6 +1,6 @@
 "use server"
 import { getStorage, ref, deleteObject } from "firebase/storage";
-import { doc, setDoc, deleteDoc, getDoc, updateDoc, orderBy, collection, query, where, getDocs, limit, increment, Timestamp } from "firebase/firestore";
+import { doc, setDoc, deleteDoc, getDoc, updateDoc, orderBy, collection, query, where, getDocs, limit, increment, Timestamp, runTransaction } from "firebase/firestore";
 import { db } from '@/../firebaseConfig';
 import bcrypt from 'bcrypt';
 import { folderNameRegex, passwordRegex } from "@/utils/Regex";
@@ -185,11 +185,97 @@ export const removeFolderPassword = async (userID, folderID) => {
 }
 
 
-
-
 // DELETE
 // Delete Folder
+export const deleteFolder = async (userID, folderID) => {
+    try {
+        // Verify folder and check access control
+        const folderRef = doc(db, "folders", folderID);
+        const folderSnap = await getDoc(folderRef);
+        if (!folderSnap.exists()) throw new Error(`Kansiota ${folderID} ei löytynyt.`);
 
+        const folder = folderSnap.data();
+        if (userID !== folder.userID) throw new Error(`Ei oikeuksia kansioon ${folderID}.`);
+
+        // Delete files in the folder
+        const fileDeletionResult = await deleteFilesInFolder(userID, folderID);
+        if (!fileDeletionResult.success) {
+            throw new Error(fileDeletionResult.message);
+        }
+
+        // Delete the folder itself
+        await runTransaction(db, async (transaction) => {
+            const folderSnap = await transaction.get(folderRef);
+            if (!folderSnap.exists()) throw new Error(`Kansiota ${folderID} ei löytynyt.`);
+
+            transaction.delete(folderRef);
+        });
+
+        console.log(`Folder ${folderID} deleted successfully.`);
+        return { success: true, message: "Kansio poistettu onnistuneesti." };
+    } catch (error) {
+        console.error("Error deleting folder: ", error);
+        return { success: false, message: error.message };
+    }
+};
+
+// Delete file in folder
+export const deleteFilesInFolder = async (userID, folderID) => {
+    try {
+        const storage = getStorage();
+
+        // Query files in the folder
+        const filesQuery = query(collection(db, "files"), where("folderID", "==", folderID));
+        const querySnapshot = await getDocs(filesQuery);
+
+        if (querySnapshot.empty) {
+            console.log(`No files found in folder ${folderID}.`);
+            return { success: true, message: "Kansio ei sisällä poistettavia tiedostoja." };
+        }
+
+        // Calculate total file size
+        let totalFileSize = 0;
+        querySnapshot.forEach((docSnap) => {
+            const fileData = docSnap.data();
+            totalFileSize += fileData.fileSize || 0; // Ensure fileSize is accounted for
+        });
+
+        // Firestore transaction to delete file documents and update user storage
+        await runTransaction(db, async (transaction) => {
+            // Update user's usedSpace
+            const userRef = doc(db, "users", userID);
+            const userSnap = await transaction.get(userRef);
+            const userDoc = userSnap.data();
+
+            if (userDoc.usedSpace < totalFileSize) {
+                throw new Error("Käyttäjän tallennustila ei voi olla negatiivinen.");
+            }
+            transaction.update(userRef, { usedSpace: increment(-totalFileSize) });
+
+            // Delete file documents
+            querySnapshot.forEach((docSnap) => {
+                const fileRef = doc(db, "files", docSnap.id);
+                transaction.delete(fileRef);
+            });
+        });
+
+        // Delete files from Firebase Storage
+        const deletePromises = querySnapshot.docs.map(async (docSnap) => {
+            const fileData = docSnap.data();
+            const fileStorageRef = ref(storage, `file-base/${fileData.fileID}`);
+            await deleteObject(fileStorageRef);
+        });
+
+        // Wait for all storage deletions to complete
+        await Promise.all(deletePromises);
+
+        console.log(`All files in folder ${folderID} have been deleted.`);
+        return { success: true, message: "Kaikki tiedostot poistettu onnistuneesti." };
+    } catch (error) {
+        console.error("Error deleting files in folder: ", error);
+        return { success: false, message: "Kansion tiedostojen poistaminen epäonnistui, yritä uudelleen." };
+    }
+};
 
 
 

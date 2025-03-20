@@ -1,7 +1,7 @@
 "use client"
 import React, { useEffect, useState } from 'react';
 import { useNavigation } from '@/app/contexts/NavigationContext';
-import FolderView from './_components/FolderView';
+import FolderContainer from './_components/FolderContainer';
 import BreadGrumps from './_components/BreadGrumps';
 import CreateFolder from './_components/CreateFolder';
 import { FilePlus, FolderPlus } from 'lucide-react';
@@ -14,6 +14,8 @@ import { getUserFolders } from '@/app/file-requests/folders';
 import Link from 'next/link';
 import RenamePopup from './_components/RenamePopup';
 import PasswordPopup from './_components/PasswordPopup';
+import FolderNavigation from './_components/FolderNavigation';
+import DeletePopup from './_components/DeletePopup';
 
 
 function Page() {
@@ -24,6 +26,7 @@ function Page() {
     const [createFolder, setCreateFolder] = useState(false);
     const [renamePopup, setRenamePopup] = useState(false);
     const [passwordPopup, setPasswordPopup] = useState(false)
+    const [deletePopup, setDeletePopup] = useState(false);
     const [loading, setLoading] = useState(true);
     const [pageError, setPageError] = useState(null);
     const { user, isLoaded } = useUser();
@@ -44,6 +47,7 @@ function Page() {
                     setLoading(false);
                 }
             } else if (isLoaded && !user) {
+                setLoading(false);
                 navigatePage('/sign-in');
             }
         };
@@ -76,7 +80,23 @@ function Page() {
                     Uusi kansio
                 </button>
             </div>
-            <FolderView 
+
+            {selectedObjects.length > 0 && 
+                <FolderNavigation 
+                    folders={folders}
+                    files={files}
+                    setFolders={setFolders} 
+                    setFiles={setFiles}
+                    setCreateFolder={setCreateFolder}
+                    selectedObjects={selectedObjects}
+                    setSelectedObjects={setSelectedObjects}
+                    setRenamePopup={setRenamePopup}
+                    setPasswordPopup={setPasswordPopup}
+                    setDeletePopup={setDeletePopup}
+                />
+            }
+
+            <FolderContainer 
                 folders={folders}
                 files={files}
                 setFolders={setFolders} 
@@ -84,12 +104,12 @@ function Page() {
                 setCreateFolder={setCreateFolder}
                 selectedObjects={selectedObjects}
                 setSelectedObjects={setSelectedObjects}
-                setRenamePopup={setRenamePopup}
-                setPasswordPopup={setPasswordPopup}
             />
+
             {createFolder && <CreateFolder folders={folders} setFolders={setFolders} setCreateFolder={setCreateFolder} />}
             {renamePopup && <RenamePopup selectedObject={selectedObjects[0]} setFolders={setFolders} setFiles={setFiles} setSelectedObjects={setSelectedObjects} setRenamePopup={setRenamePopup} />}
             {passwordPopup && <PasswordPopup selectedObject={selectedObjects[0]} setFolders={setFolders} setFiles={setFiles} setSelectedObjects={setSelectedObjects} setPasswordPopup={setPasswordPopup} />}
+            {deletePopup && <DeletePopup selectedObjects={selectedObjects} setSelectedObjects={setSelectedObjects} setFolders={setFolders} setFiles={setFiles} setDeletePopup={setDeletePopup} />}
         </main>
     );
 }

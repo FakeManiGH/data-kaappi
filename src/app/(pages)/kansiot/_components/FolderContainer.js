@@ -9,29 +9,14 @@ import { moveFileToFolder } from '@/app/file-requests/files';
 import { useUser } from '@clerk/nextjs';
 
 
-function FolderView({ folders, files, setFolders, setFiles, setCreateFolder, selectedObjects, setSelectedObjects, setRenamePopup, setPasswordPopup }) {
+function FolderContainer({ folders, files, setFolders, setFiles, setCreateFolder, selectedObjects, setSelectedObjects }) {
     const [draggedFile, setDraggedFile] = useState(null);
     const [isDragging, setIsDragging] = useState(false)
-    const [dropMenu, setDropMenu] = useState(false)
     const [dragOverFolder, setDragOverFolder] = useState(null);
     const [touchStartTime, setTouchStartTime] = useState(null);
     const { showAlert } = useAlert();
     const { user } = useUser();
-    const dropRef = useRef(null);
 
-    useEffect(() => {
-        if (dropRef) {
-            const handleClickOutside = (event) => {
-                if (dropRef.current && !dropRef.current.contains(event.target)) {
-                    setDropMenu(false);
-                }
-            };
-            document.addEventListener('mousedown', handleClickOutside);
-            return () => {
-                document.removeEventListener('mousedown', handleClickOutside);
-            };
-        }
-    }), [dropMenu]
 
     const handleDragStart = (file) => {
         setDraggedFile(file);
@@ -62,7 +47,7 @@ function FolderView({ folders, files, setFolders, setFiles, setCreateFolder, sel
                 }  
             } catch (error) {
                 console.error('Error moving file to folder: ', error);
-                showAlert('Tiedoston siirtäminen epäonnistui', 'error');
+                showAlert(response.message, 'error');
             } finally {
                 setDraggedFile(null);
                 setDragOverFolder(null); 
@@ -124,110 +109,6 @@ function FolderView({ folders, files, setFolders, setFiles, setCreateFolder, sel
     }
 
     return (
-        <>
-        {selectedObjects.length > 0 && (
-            <div className='flex w-full items-center justify-between gap-1 flex-wrap'>
-                <div ref={dropRef} className='relative flex flex-wrap items-center'>
-                    <button 
-                        className={`flex items-center w-fit gap-2 px-2 py-[7px] border text-sm bg-primary text-white hover:bg-primary/75 transition-colors
-                            ${dropMenu ? 'border-foreground' : 'border-transparent'}`} 
-                        role="button"
-                        onClick={() => setDropMenu(!dropMenu)}
-                    >
-                        <Settings size={20} />
-                        Toiminnot
-                    </button>
-
-                    {dropMenu && (
-                        <div
-                            className="absolute z-10 left-0 top-full mt-2 rogue-dropmenu sm:max-w-64 divide-y divide-contrast overflow-hidden border border-contrast bg-background shadow-lg"
-                            role="menu"
-                        >
-                            <div className='bg-background shadow-lg shadow-black/50'>
-                                <strong className="block p-2 text-xs font-medium uppercase text-gray-500">
-                                    Yleiset
-                                </strong>
-
-                                {selectedObjects.length === 1 &&
-                                <>
-                                    <button 
-                                        className='flex w-full items-center gap-2 px-4 py-2 text-sm text-navlink hover:text-primary' 
-                                        role="menuitem"
-                                        onClick={() => { setRenamePopup(true), setDropMenu(false) }}
-                                    >
-                                        <Pen size={16} />
-                                        Nimeä uudelleen
-                                    </button>
-                                    <button 
-                                        className='flex w-full items-center gap-2 px-4 py-2 text-sm text-navlink hover:text-primary' 
-                                        role="menuitem"
-                                        onClick={() => {setPasswordPopup(true), setDropMenu(false)}}
-                                    >
-                                        <LockKeyhole size={16} />
-                                        Salasana
-                                    </button>
-                                </>
-                                }
-
-                                <button 
-                                    className='flex w-full items-center gap-2 px-4 py-2 text-sm text-navlink hover:text-primary' 
-                                    role="menuitem"
-                                >
-                                    <ArrowRightLeft size={16} />
-                                    Siirrä
-                                </button>
-
-                                <button 
-                                    className='flex w-full items-center gap-2 px-4 py-2 text-sm text-navlink hover:text-primary' 
-                                    role="menuitem"
-                                >
-                                    <Share2 size={16} />
-                                    Jaa
-                                </button>
-
-                                
-                            </div>
-
-                            <div className='bg-background pb-2'>
-                                <strong className="block p-2 text-xs font-medium uppercase text-red-400">
-                                    Vaaravyöhyke
-                                </strong>
-
-                                <button
-                                type="submit"
-                                className="flex w-full items-center gap-2 px-4 py-2 text-sm text-red-500 hover:text-red-700"
-                                role="menuitem"
-                                >
-                                    <Trash2 size={16} />
-                                    Poista
-                                </button>                            
-                            </div>
-                        </div>
-                    )}
-                </div>   
-
-                <div className='flex items-center gap-1'>
-                    <button
-                        onClick={() => setSelectedObjects([])}
-                        className='flex items-center w-fit gap-1 px-2 py-[7.2px] border border-contrast text-sm bg-background text-foreground hover:border-primary transition-colors'
-                    >
-                        <X size={20} />
-                        {selectedObjects.length} valittu
-                    </button>
-                    <button
-                        onClick={() => {
-                            setFolders(folders.filter(folder => !selectedObjects.includes(folder)));
-                            setSelectedObjects([]);
-                        }}
-                        className='flex items-center w-fit gap-1 p-2 text-sm bg-red-500 text-white hover:bg-red-600 transition-colors'
-                    >
-                        <Trash2 size={20} />
-                        Poista
-                    </button>
-                </div>
-            </div>
-        )}
-
         <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-8 gap-2">
             {folders.map(folder => (
                 <div 
@@ -257,7 +138,7 @@ function FolderView({ folders, files, setFolders, setFiles, setCreateFolder, sel
                         checked={selectedObjects.includes(folder)}
                     />
                     <Link style={{ touchAction: 'none' }} href={`/kansiot/${folder.id}`} className='flex flex-col items-center max-w-full overflow-hidden text-foreground hover:text-primary'>
-                        <img src={folder.shared ? "/icons/folder_share.png" : "/icons/folder.png"} alt="folder" className="w-16 h-16" />
+                        <img src={folder.fileCount > 0 ? "/icons/folder_file.png" : "/icons/folder.png"} alt="folder" className="w-16 h-16" />
                         <h2 className="text-sm font-semibold transition-colors ">{folder.name}</h2>
                         <p className="text-sm text-navlink truncate">{folder.fileCount} tiedostoa</p>
                     </Link>
@@ -311,8 +192,7 @@ function FolderView({ folders, files, setFolders, setFiles, setCreateFolder, sel
                 </div>
             ))}
         </div>
-        </>
     );
 }
 
-export default FolderView;
+export default FolderContainer;

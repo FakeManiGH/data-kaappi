@@ -234,12 +234,12 @@ export const moveFileToFolder = async (userID, fileID, folderID) => {
             if (!fileSnap.exists()) throw new Error("Tiedostoa ei löytynyt.");
 
             const file = fileSnap.data();
-            if (userID !== file.userID) throw new Error("Ei oikeutta kyseiseen tiedostoon.");
+            if (userID !== file.userID) throw new Error(`Ei oikeutta tiedostoon ${file.fileName}.`);
 
-            // Target folder
+            // Fetch the target folder
             const toFolderRef = doc(db, "folders", folderID);
             const toFolderSnap = await transaction.get(toFolderRef);
-            if (!toFolderSnap.exists()) throw new Error("Tulevaa kansiota ei löytynyt.");
+            if (!toFolderSnap.exists()) throw new Error(`Tulevaa kansiota (${folderID}) ei löytynyt.`);
 
             const toFolder = toFolderSnap.data();
             if (userID !== toFolder.userID) throw new Error("Ei oikeutta tulevaan kansioon.");
@@ -249,10 +249,16 @@ export const moveFileToFolder = async (userID, fileID, folderID) => {
             if (fromFolderID) {
                 const fromFolderRef = doc(db, "folders", fromFolderID);
                 const fromFolderSnap = await transaction.get(fromFolderRef);
-                if (!fromFolderSnap.exists()) throw new Error("Entistä kansiota ei löytynyt.");
+                if (!fromFolderSnap.exists()) throw new Error(`Entistä kansiota (${fromFolderID}) ei löytynyt.`);
 
                 const fromFolder = fromFolderSnap.data();
                 if (userID !== fromFolder.userID) throw new Error("Ei oikeutta entiseen kansioon.");
+
+                // Prevent same folder transfer
+                if (toFolder.folderID === fromFolder.folderID) throw new Error("Tiedosto on jo kansiossa.");
+
+                // Prevent negative fileCount
+                if (fromFolder.fileCount <= 0) throw new Error("Kansion tiedostomäärä ei voi olla negatiivinen.");
 
                 // Decrement file count in the "from folder"
                 transaction.update(fromFolderRef, { fileCount: increment(-1) });
@@ -264,6 +270,9 @@ export const moveFileToFolder = async (userID, fileID, folderID) => {
             // Increment file count in the "to folder"
             transaction.update(toFolderRef, { fileCount: increment(1) });
         });
+
+        // Log the successful operation
+        console.log(`File ${fileID} moved to folder ${folderID} by user ${userID}.`);
 
         return { success: true, message: "Tiedosto siirretty onnistuneesti." };
     } catch (error) {
