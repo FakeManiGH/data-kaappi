@@ -91,15 +91,15 @@ function FolderContainer({ folders, files, setFolders, setFiles, setCreateFolder
 
     if (!folders.length && !files.length) {
         return (
-            <div className="flex flex-col h-72 items-center justify-center gap-4 text-navlink">
-                <h2 className="text-xl sm:text-2xl">Ei kansioita tai tiedostoja...</h2>
+            <div className="flex flex-col h-72 items-center justify-center text-sm gap-4">
+                <h2 className="text-xl text-contrast">Ei kansioita tai tiedostoja...</h2>
                 <div className="flex gap-2">
-                    <button onClick={() => setCreateFolder(true)} className='flex gap-1 items-center text-foreground hover:text-primary transition-colors'>
+                    <button onClick={() => setCreateFolder(true)} className='flex gap-1 items-center text-primary hover:text-primary/75 transition-colors'>
                         <FolderPlus size={20} className='text-primary' />
                         Luo kansio
                     </button>
                     <p>tai</p>
-                    <Link href='/tallenna' className='flex gap-1 items-center text-foreground hover:text-primary transition-colors'>
+                    <Link href='/tallenna' className='flex gap-1 items-center text-primary hover:text-primary/75 transition-colors'>
                         <FilePlus size={20} className='text-primary' />
                         Lisää tiedosto
                     </Link>
@@ -179,8 +179,8 @@ function FolderContainer({ folders, files, setFolders, setFiles, setCreateFolder
                         className='flex flex-col items-center justify-between text-foreground overflow-hidden 
                             hover:text-primary group'>
                         <img 
-                            src={file.url} 
-                            alt="file" 
+                            src={file.type.includes('image') ? file.url : getFileIcon(file.type)} 
+                            alt={file.name} 
                             className={`w-16 h-16 object-cover mb-1 group-hover:brightness-100
                                 ${selectedObjects.includes(file) ? 'brightness-100' : 'brightness-75'}`} 
                         />

@@ -13,16 +13,24 @@ function TopHeader() {
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-        if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-            setDropdown(false)
-        }
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setDropdown(false)
+      }
+    }
+
+    // Prevent scrolling when dropdown is active
+    if (dropdown) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = '' // Restore default scrolling
     }
 
     document.addEventListener('mousedown', handleClickOutside)
     return () => {
-        document.removeEventListener('mousedown', handleClickOutside)
+      document.body.style.overflow = '' // Clean up on unmount
+      document.removeEventListener('mousedown', handleClickOutside)
     }
-  }, [dropdownRef])
+  }, [dropdown])
 
   return (
     <header className='flex md:justify-end items-center justify-between gap-2 p-4 z-50 bg-background'>

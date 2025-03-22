@@ -13,13 +13,13 @@ export default {
         linear: "var(--linear)",
         contrast: "var(--contrast)",
         navlink: "var(--navlink)",
-        primary: "#0084ff",
+        primary: "#006ecf",
         secondary: "var(--secondary)",
         success: "#399c39",
 
       },
       backgroundColor: {
-        primary: "#0084ff",
+        primary: "#006ecf",
         linear: "linear-gradient(90deg, var(--background) 0%, var(--foreground) 100%)",
       },
       fontFamily: {

@@ -66,6 +66,9 @@ function Page() {
     return (
         <main>
             <h1 className="text-3xl"><strong>Kansiot</strong></h1>
+            <p className='text-sm'>
+                Hallitse kansioita ja tiedostojasi.
+            </p>
 
             <div className='flex items-center justify-end gap-2'>
                 <Link href='/tallenna' className='flex flex-1 sm:flex-none items-center justify-center w-fit gap-2 p-3 text-sm bg-primary text-white hover:bg-primary/75 transition-colors'>

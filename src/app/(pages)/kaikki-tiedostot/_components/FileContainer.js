@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, use } from 'react';
 import { getFileIcon } from '@/utils/GetFileIcon';
-import { Grid, List, LockKeyhole, Share2 } from 'lucide-react';
+import { FilePlus, Grid, List, LockKeyhole, Share2 } from 'lucide-react';
 import Link from 'next/link';
 import { getCardPreview } from '@/utils/FilePreview';
 import { useAlert } from '@/app/contexts/AlertContext';
@@ -24,8 +24,12 @@ function FileContainer({ fileState, setFileState }) {
         <>
         {/* No files */}
         {!fileState.files.length && (
-          <div className='flex items-center justify-center h-96'>
-            <p className='text-lg text-navlink'>Ei tiedostoja</p>
+          <div className='flex flex-col gap-4 items-center justify-center h-96'>
+            <p className='text-xl text-contrast'>Ei tiedostoja...</p>
+            <Link href='/tallenna' className='flex items-center gap-1 text-sm text-primary hover:text-primary/75'>
+                <FilePlus size={20} /> 
+                Lisää tiedostoja
+            </Link>
           </div>
         )}
 

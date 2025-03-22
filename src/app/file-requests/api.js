@@ -3,6 +3,7 @@ import { getStorage, ref, deleteObject } from "firebase/storage";
 import { doc, setDoc, deleteDoc, getDoc, updateDoc, orderBy, collection, query, where, getDocs, limit, increment } from "firebase/firestore";
 import { db } from '@/../firebaseConfig';
 import bcrypt from 'bcrypt';
+import { transformFileDataPublic, transformFolderDataPublic } from "@/utils/DataTranslation";
 
 
 // Config
@@ -47,4 +48,59 @@ export const updateUserDocumentValue = async (userID, key, value) => {
         console.error("Error updating user: ", error)
     }
 }
+
+
+// GET SHARED CONTENT
+// Get shared file or folder
+export const getSharedContent = async (id) => {
+    try {
+        // Check ID for file
+        const fileRef = doc(db, "files", id);
+        const fileSnap = await getDoc(fileRef);
+
+        if (fileSnap.exists()) {
+            const file = transformFileDataPublic(fileSnap.data());
+
+            if (!file.shared) {
+                return { success: false, message: "Sisältö ei ole saatavilla."}
+            }
+
+            return { success: true, type: "file", data: file };
+        }
+
+        // If no file, check for folder
+        const folderRef = doc(db, "folders", id);
+        const folderSnap = await getDoc(folderRef);
+
+        if (!folderSnap.exists()) {
+            // If neither
+            return { success: false, message: "Jaettua kohdetta ei löytynyt." };
+        }
+
+        const folder = transformFolderDataPublic(folderSnap.data());
+
+        if (!folder.shared) {
+            return { success: false, message: "Sisältö ei ole saatavilla."}
+        }
+
+        // Query files inside the folder
+        const q = query(
+            collection(db, "files"),
+            where("folderID", "==", folder.folderID),
+            orderBy("uploadedAt", "asc")
+        );
+
+        const querySnapshot = await getDocs(q);
+
+        // Collect files in the folder
+        const files = querySnapshot.docs.map(doc => doc.data());
+        const publicFiles = files.map(file => transformFileDataPublic(file));
+
+        // Return the folder data along with its files
+        return { success: true, type: "folder", data: { folder, publicFiles } };
+    } catch (error) {
+        console.error("Error while getting content: " + error);
+        return { success: false, message: "Sisällön hakemisessa tapahtui virhe, yritä uudelleen." };
+    }
+};
 

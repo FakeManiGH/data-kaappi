@@ -157,17 +157,17 @@ function FileNav({ fileState, setFileState }) {
             <nav className='flex items-center gap-1'>
                 <button 
                     title='Ruudukko' 
-                    className={`p-3 hover:bg-primary/75
+                    className={`p-2 hover:bg-primary/75
                         ${fileState.view === 'grid' ? 'bg-primary text-white' : 'text-foreground bg-transparent hover:border-primary hover:text-white'}` } 
                     onClick={() => setFileState(prevState => ({ ...prevState, view: 'grid' }))}>
-                        <Grid size={20} />
+                        <Grid />
                 </button>
                 <button 
                     title='Lista' 
-                    className={`p-3 hover:bg-primary/75
+                    className={`p-2 hover:bg-primary/75
                         ${fileState.view === 'list' ? 'bg-primary text-white' : 'text-foreground bg-transparent hover:border-primary hover:text-white'}` } 
                     onClick={() => setFileState(prevState => ({ ...prevState, view: 'list' }))}>
-                        <List size={20} />
+                        <List />
                 </button>
             </nav>
 

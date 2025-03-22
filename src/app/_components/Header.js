@@ -55,8 +55,8 @@ function Header() {
                 <div className="flex items-center gap-4">
                     {isLoaded && user ? (
                         <Link
-                            className="flex gap-1 items-center px-3 py-2.5 text-sm shadow-md bg-primary text-white
-                                hover:shadow-lg hover:bg-primary/75 transition-all"
+                            className="flex gap-1 items-center px-3 py-2.5 text-sm bg-primary text-white
+                                hover:bg-primary/75 transition-all"
                             href="/kojelauta"
                         >   
                             <CircleGauge size={20} />
@@ -64,7 +64,7 @@ function Header() {
                         </Link>
                     ) : (
                         <Link
-                            className="flex gap-1 items-center px-3 py-2.5 text-sm shadow-md bg-primary text-white
+                            className="flex gap-1 items-center px-3 py-2.5 text-sm bg-primary text-white
                                 hover:shadow-lg hover:bg-primary/75 transition-all"
                             href="/sign-in"
                         >   

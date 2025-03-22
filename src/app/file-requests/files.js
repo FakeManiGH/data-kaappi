@@ -3,8 +3,8 @@ import { getStorage, ref, deleteObject } from "firebase/storage";
 import { doc, setDoc, deleteDoc, getDoc, updateDoc, orderBy, collection, query, where, getDocs, limit, increment, runTransaction } from "firebase/firestore";
 import { db } from '@/../firebaseConfig';
 import bcrypt from 'bcrypt';
-import { getFolderInfo, updateFolderFileCount } from "./folders";
 import { fileNameRegex, passwordRegex } from "@/utils/Regex";
+import { transformFileDataPrivate, transformFileDataPublic } from "@/utils/DataTranslation";
 
 // Config
 const storage = getStorage();
@@ -280,54 +280,3 @@ export const moveFileToFolder = async (userID, fileID, folderID) => {
         return { success: false, message: "Tiedoston siirtäminen epäonnistui. Yritä uudelleen." };
     }
 };
-
-
-// SUPPORT FUNCTIONS
-// transform file data to public file data
-const transformFileDataPublic = (file) => {
-    return {
-        id: file.fileID,
-        docType: file.docType,
-        name: file.fileName,
-        size: file.fileSize,
-        type: file.fileType,
-        url: file.fileUrl,
-        shortUrl: file.shortUrl,
-        folder: file.folderID,
-        shared: file.shared,
-        sharedWith: file.sharedWith,
-        passwordProtected: file.pwdProtected,
-        password: '',
-        uploadedBy: file.uploadedBy,
-        user: {
-            id: file.userID,
-            name: file.uploadedBy,
-            email: file.userEmail
-        },
-        uploadedAt: new Date(file.uploadedAt.seconds * 1000),
-        modifiedAt: new Date(file.modifiedAt.seconds * 1000)
-    };
-}
-
-// transform file data to private file data
-const transformFileDataPrivate = (file) => {
-    return {
-        fileID: file.id,
-        docType: file.docType,
-        fileName: file.name,
-        fileSize: file.size,
-        fileType: file.type,
-        fileUrl: file.url,
-        shortUrl: file.shortUrl,
-        folderID: file.folder,
-        shared: file.shared,
-        sharedWith: file.sharedWith,
-        pwdProtected: file.passwordProtected,
-        pwd: file.password,
-        uploadedBy: file.user.name,
-        userEmail: file.user.email,
-        userID: file.user.id,
-        uploadedAt: file.uploadedAt instanceof Date ? file.uploadedAt : new Date(file.uploadedAt.seconds * 1000),
-        modifiedAt: file.modifiedAt instanceof Date ? file.modifiedAt : new Date(file.modifiedAt.seconds * 1000)
-    };
-}

@@ -4,6 +4,7 @@ import { doc, setDoc, deleteDoc, getDoc, updateDoc, orderBy, collection, query, 
 import { db } from '@/../firebaseConfig';
 import bcrypt from 'bcrypt';
 import { folderNameRegex, passwordRegex } from "@/utils/Regex";
+import { transformFolderDataPrivate, transformFolderDataPublic } from "@/utils/DataTranslation";
 
 // FOLDER API FUNCTIONS
 // CREATE
@@ -276,48 +277,3 @@ export const deleteFilesInFolder = async (userID, folderID) => {
         return { success: false, message: "Kansion tiedostojen poistaminen epäonnistui, yritä uudelleen." };
     }
 };
-
-
-
-// SUPPORT FUNCTIONS
-// Transform folder data for public use
-const transformFolderDataPublic = (folder) => {
-    return {
-        docType: folder.docType,
-        id: folder.folderID,
-        name: folder.folderName,
-        parent: folder.parentID,
-        fileCount: folder.fileCount,
-        user: {
-            id: folder.userID,
-            name: folder.userName,
-            email: folder.userEmail
-        },
-        created: new Date(folder.createdAt.seconds * 1000),
-        modified: new Date(folder.modifiedAt.seconds * 1000),
-        passwordProtected: folder.pwdProtected,
-        password: '',
-        shared: folder.shared,
-        sharedWith: folder.sharedWith
-    }
-}
-
-// Transform folder data for private use
-const transformFolderDataPrivate = (folder) => {
-    return {
-        docType: 'folder',
-        folderID: folder.id,
-        folderName: folder.name,
-        parentID: folder.parent,
-        fileCount: folder.fileCount,
-        userID: folder.user.id,
-        userName: folder.user.name,
-        userEmail: folder.user.email,
-        createdAt: folder.created instanceof Date ? folder.created : new Date(folder.created.seconds * 1000),
-        modifiedAt: folder.modified instanceof Date ? folder.modified : new Date(folder.modified.seconds * 1000),
-        pwdProtected: folder.passwordProtected,
-        pwd: folder.password,
-        shared: folder.shared,
-        sharedWith: folder.sharedWith
-    }
-}

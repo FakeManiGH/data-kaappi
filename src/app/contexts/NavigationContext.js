@@ -67,12 +67,6 @@ export const NavigationProvider = ({ children }) => {
             path: '/'
         },
         {
-            id: 2,
-            name: 'Tuki',
-            icon: MessageCircleQuestion,
-            path: '/tuki'
-        },
-        {
             id: 3,
             name: 'Tietoa palvelusta',
             icon: BookMarked,
