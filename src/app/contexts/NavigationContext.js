@@ -55,7 +55,7 @@ export const NavigationProvider = ({ children }) => {
             id: 7,
             name: 'Anna palautetta',
             icon: MailPlus,
-            path: '/kaikki-tiedostot'
+            path: '/palaute'
         },
     ];
 

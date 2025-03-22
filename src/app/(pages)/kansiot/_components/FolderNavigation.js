@@ -98,7 +98,7 @@ function FolderNavigation({ folders, files, setFolders, setFiles, selectedObject
                                 type="submit"
                                 className="flex w-full items-center gap-2 px-4 py-2 text-sm text-red-500 hover:text-red-700"
                                 role="menuitem"
-                                onClick={() => setDeletePopup(true)}
+                                onClick={() => {setDeletePopup(true), setDropMenu(false)}}
                             >
                                 <Trash2 size={16} />
                                 Poista

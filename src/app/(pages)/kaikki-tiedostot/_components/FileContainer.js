@@ -67,7 +67,7 @@ function FileContainer({ fileState, setFileState }) {
             {displayFiles.map((file) => (
                 <div 
                     key={file.id} 
-                    className='relative grid grid-cols-1 md:grid-cols-2 gap-2 py-2 border-b border-navlink transition-colors'
+                    className='relative grid grid-cols-1 md:grid-cols-2 gap-2 py-2 border-b border-contrast transition-colors'
                 >   
                     <div className='flex items-center gap-4 overflow-hidden'>
                         <img src={getFileIcon(file.type)} alt={file.name} className="w-7 h-auto" />

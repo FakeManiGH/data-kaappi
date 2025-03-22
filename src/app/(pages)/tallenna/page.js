@@ -14,6 +14,8 @@ import { updateFolderFileCount } from '@/app/file-requests/folders';
 import { getUserFolders } from '@/app/file-requests/folders';
 import PageLoading from '@/app/_components/_common/PageLoading';
 import ErrorView from '../_components/ErrorView';
+import CreateFolder from './_components/CreateFolder';
+
 
 function Page() {
   const { user } = useUser();
@@ -106,9 +108,13 @@ function Page() {
 
   return (
     <main>
-      <h1 className='text-2xl md:text-3xl'><strong>Tallenna tiedostoja</strong></h1>
+      <h1 className='text-2xl md:text-3xl'><strong>Tallenna</strong></h1>
+      <p className='text-sm'>
+        Talleta tiedostoja kaappiisi. Voit tallentaa useita tiedostoja kerralla ja luoda kansioita, jotta tiedostot pysyvät kätevästi järjestyksessä.
+      </p>
       <SpaceMeterBar usedSpace={userDoc?.usedSpace} totalSpace={userDoc?.totalSpace} />
       <br />
+
       <UploadForm 
         uploadFile={uploadFile} 
         files={files} 
@@ -118,6 +124,7 @@ function Page() {
         setUploadProgress={setUploadProgress}
         setUserDoc={setUserDoc}
       />
+
       <FilePreview 
         files={files}
         folders={folders}

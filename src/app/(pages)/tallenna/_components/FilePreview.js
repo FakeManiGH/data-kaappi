@@ -18,7 +18,7 @@ function FilePreview({ files, folders, setNewFolder, removeFile, uploadProgress,
   return (
     <div className='grid grid-cols-1 lg:grid-cols-2 w-full gap-4'>
       {files?.map((file, index) => (
-        <div key={index} className='flex flex-1 items-center gap-3 p-2 bg-gradient-to-br from-secondary to-contrast shadow-md hover:shadow-lg'>
+        <div key={index} className='flex flex-1 items-center gap-3 p-2 bg-secondary shadow-md hover:shadow-lg'>
           <Image 
             src={getFileIcon(file?.type)} 
             alt='file' 
@@ -35,7 +35,7 @@ function FilePreview({ files, folders, setNewFolder, removeFile, uploadProgress,
             <div className='flex items-center gap-1'>
               <select
                 id='folder'
-                className='px-3 py-2.5 bg-background text-sm border-contrast focus:border-primary w-full focus:ring-primary focus:ring-1
+                className='px-3 py-2.5 bg-background text-sm border border-contrast focus:border-primary w-full focus:ring-primary focus:ring-1
                   first:text-navlink'
                 onChange={(e) => handleFolderChange(e, index)}
                 value={file.folderID || ''}

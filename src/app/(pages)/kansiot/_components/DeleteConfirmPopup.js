@@ -61,23 +61,24 @@ function DeleteConfirmPopup({ selectedObjects, setSelectedObjects, setFolders, s
             <div className='relative flex flex-col w-full max-w-xl mt-2 top-52 p-4 z-50 text-sm bg-gradient-to-br from-background to-contrast 
                 shadow-md max-h-full overflow-y-auto border border-contrast'
             >
-                <button 
-                    onClick={() => setDeleteConfirm(false)} 
-                    className='absolute top-2 right-2 p-1 text-lg text-white bg-red-500 hover:bg-red-600 transition-colors'
-                >
-                    <X />
-                </button>
-
                 <h2 className="text-2xl md:text-3xl mb-6 text-center font-bold">Vahvista poistaminen</h2>
-                <p className='text-center text-base'>Haluatko varmasti poistaa valitut kohteet?</p>
-                <p className='text-center text-base'>Poistettuja kohteita ei voi palauttaa.</p>
+                <p className='text-center text-sm'>Haluatko varmasti poistaa valitut kohteet?</p>
+                <p className='text-center text-sm'>Poistettuja kohteita ei voi palauttaa.</p>
 
-                <button 
-                    onClick={handleDeletingObjects} 
-                    className='text-white bg-red-500 mt-4 py-2.5 px-3 hover:bg-red-600'
-                >
-                    Kyllä, poista
-                </button>
+                <div className='flex items-center justify-center gap-2 mt-4'>
+                    <button 
+                        onClick={handleDeletingObjects} 
+                        className='text-white bg-red-500 py-2.5 px-3 hover:bg-red-600'
+                    >
+                        Kyllä, poista
+                    </button>
+                    <button 
+                        className='text-foreground bg-contrast py-2.5 px-3'
+                        onClick={() => setDeleteConfirm(false)}
+                    >
+                        Peruuta
+                    </button>
+                </div>
             </div>
         </div>
     );

@@ -48,7 +48,7 @@ function Page() {
       <h1 className='text-2xl md:text-3xl'><strong>Hei, {user?.firstName}</strong></h1>
       
       <div className='grid grid-cols-1 lg:grid-cols-2 gap-4 min-h-72'>
-        <div className='flex gap-2 flex-wrap items-center justify-center bg-gradient-to-b from-background via-contrast to-background px-4 py-6'>
+        <div className='flex gap-2 flex-wrap items-center justify-center bg-gradient-to-br from-secondary to-contrast px-4 py-6'>
           <SpaceMeterCircle usedSpace={userDoc?.usedSpace} totalSpace={userDoc?.totalSpace} />
           <div className='flex flex-col gap-2'>
             <h3 className='text-xl font-bold'>Tallennustilan käyttö</h3>
@@ -59,29 +59,15 @@ function Page() {
             </Link>
           </div>
         </div>
-
-        <div className='flex items-center justify-center gap-2 px-4 py-6'>
-          <div className='flex flex-col gap-2'>
-            <h3 className='text-xl font-bold'>Loppuiko kaapistasi tila?</h3>
-            <p className='text-sm'> 
-              Tilaa isompi ja parempi <strong>Jykevä-Kaappi</strong> -palvelu.
-            </p>
-
-            <button className='flex items-center text-sm gap-2 px-3 mt-2 py-2.5 w-fit bg-navlink cursor-not-allowed text-white transition-colors'>
-                <BadgeCheck /> Tilaa Jykevä-Kaappi
-            </button>
-            <p className='flex items-center gap-2 py-2 px-3 text-sm w-fit rounded-full'><CircleAlert size={20} /> Tulossa pian...</p>
-          </div>
-        </div>
       </div>
 
-      <div className='grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-8 gap-3 mt-2'>
+      <div className='grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-8 gap-3'>
           {filteredList.map((item) => (
           <Link 
               href={item.path}
               key={item.id}
               className="flex flex-1 flex-col items-center justify-center p-4 text-sm cursor-pointer 
-                border border-primary hover:bg-primary hover:text-white transition-colors"
+                bg-primary hover:bg-primary/75 text-white transition-colors"
               >
                 <item.icon className='mb-2' />
                 <p className="whitespace-nowrap">{item.name}</p>

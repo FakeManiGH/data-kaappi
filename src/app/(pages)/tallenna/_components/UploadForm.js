@@ -8,24 +8,30 @@ import { useUser } from '@clerk/nextjs';
 
 function UploadForm({ uploadFile, files, setFiles, fileErrors, setFileErrors, setUploadProgress, setUserDoc }) {
   const [isDragging, setIsDragging] = useState(false);
+  const dragCounter = React.useRef(0);
   const { showAlert } = useAlert();
   const { user } = useUser();
 
   // Handle drag enter
   const handleDragEnter = (event) => {
     event.preventDefault();
+    dragCounter.current += 1; // Increment drag counter
     setIsDragging(true);
   };
 
   // Handle drag leave
   const handleDragLeave = (event) => {
     event.preventDefault();
-    setIsDragging(false);
+    dragCounter.current -= 1; // Decrement drag counter
+    if (dragCounter.current === 0) {
+      setIsDragging(false); // Only reset if no more drag events
+    }
   }; 
   
   // Handle file drop
   const handleFileDrop = (event) => {
     event.preventDefault();
+    dragCounter.current = 0; // Reset drag counter
     setIsDragging(false);
     processFiles(event.dataTransfer.files);
   };
@@ -93,43 +99,55 @@ function UploadForm({ uploadFile, files, setFiles, fileErrors, setFileErrors, se
 
   return (
     <div className="flex flex-col items-center justify-center w-full">
-      <form onSubmit={handleSubmit} className="w-full mb-1 text-center">
-        <div 
-          className={`flex items-center justify-center w-full ${isDragging ? 'border-primary' : ''}`}
-          onDragOver={(e) => e.preventDefault()}
-          onDrop={handleFileDrop}
+      <form className="w-full mb-1 text-center" onSubmit={handleSubmit}>
+        <div
+          className={`relative flex items-center justify-center w-full ${isDragging ? 'border-primary' : ''}`}
           onDragEnter={handleDragEnter}
           onDragLeave={handleDragLeave}
+          onDragOver={(e) => e.preventDefault()} // Prevent default behavior
+          onDrop={handleFileDrop}
         >
-          <label htmlFor="dropzone-file" className={`flex flex-col items-center w-full max-w-full justify-center h-72 
-            cursor-pointer bg-background border border-dashed hover:border-primary transition-colors
-            ${isDragging ? 'border-primary' : 'border-contrast'}`}>
+          {isDragging && (
+            <span
+              className="absolute w-full top-0 left-0 h-full z-10"
+              onDragOver={(e) => e.preventDefault()} // Prevent default behavior
+              onDrop={handleFileDrop} // Handle file drop
+            ></span>
+          )}
+
+          <label
+            htmlFor="dropzone-file"
+            className={`flex flex-col items-center w-full max-w-full justify-center h-72 
+              cursor-pointer border border-dashed hover:border-primary transition-colors
+              ${isDragging ? 'border-primary bg-primary/10' : 'border-foreground bg-background'}`}
+
+          >
             <div className="flex flex-col max-w-full items-center justify-center p-4 text-center pt-5 pb-6">
-              {isDragging ?   
+              {isDragging ? (
                 <p className="flex items-center flex-wrap gap-2 mb-2 text-xl text-foreground">
                   <Music2 size={24} className="text-primary" />
                   "<strong className='text-primary'>Let it go</strong>, let it go..."
-                </p> :
+                </p>
+              ) : (
                 <p className="flex items-center flex-wrap gap-2 mb-2 text-xl text-foreground">
                   <FilePlus2 size={24} className="text-primary" />
                   <strong className="text-primary">Klikkaa</strong> tai <strong className="text-primary">Tiputa</strong>
                 </p>
-              }
+              )}
               <p className="text-sm text-navlink">Kuva, Video ja Dokumetti -tiedostot (max. 5Mt / tiedosto)</p>
             </div>
-            <input id="dropzone-file" type="file" accept='media_type' className="hidden" multiple onChange={handleFileChange} />
+            <input id="dropzone-file" type="file" accept="media_type" className="hidden" multiple onChange={handleFileChange} />
           </label>
         </div>
+
         <button 
           type="submit"
+          className='w-full px-3 py-2.5 mt-2 bg-primary hover:bg-primary/75 text-white disabled:bg-secondary disabled:text-contrast'
           {...(files.length === 0 && { disabled: true })}
-          className="mt-4 px-4 py-3 w-full disabled:bg-contrast disabled:text-gray-500 
-            text-white bg-primary hover:bg-primary/75 transition-colors"
-        >Tallenna</button>
+        >
+          Tallenna
+        </button>
       </form>
-      {fileErrors?.length > 0 && fileErrors.map((error, index) => (
-        <AlertMsg msg={error} success={false} key={index} />
-      ))}
     </div>
   );
 }

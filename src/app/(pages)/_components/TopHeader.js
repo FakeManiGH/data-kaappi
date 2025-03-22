@@ -1,5 +1,5 @@
 "use client"
-import { AlignJustify } from 'lucide-react'
+import { AlignJustify, X } from 'lucide-react'
 import Image from 'next/image'
 import { UserButton } from '@clerk/nextjs';
 import React, { useState, useEffect, useRef } from 'react'
@@ -25,36 +25,41 @@ function TopHeader() {
   }, [dropdownRef])
 
   return (
-    <header className='relative flex md:justify-end items-center justify-between gap-2 p-4 z-50 bg-background'>
-      <div className='md:hidden' ref={dropdownRef}>
+    <header className='flex md:justify-end items-center justify-between gap-2 p-4 z-50 bg-background'>
+      <div className='md:hidden relative' ref={dropdownRef}>
         <button
           id='dropdownBtn'
-          className={`py-2 cursor-pointer transition hover:text-primary ${dropdown ? 'text-primary' : 'text-foreground'}`}
-          onClick={() => setDropdown(!dropdown)}
+          className='py-2 cursor-pointer transition hover:text-primary'
+          onClick={() => setDropdown(true)}
         >
-          <AlignJustify size={30} />
+          <AlignJustify size={32} />
         </button>
 
         {/* Dropdown */}
-        {dropdown && (
           <div
-            id='dropdownMenu'
-            className="absolute z-50 rogue-dropmenu sm:max-w-64 bg-background border border-contrast shadow-xl shadow-black/25 overflow-hidden"
+            className={`fixed inset-0 z-50 origin-top-left bg-background flex justify-center
+              transition-transform ease-in overflow-y-auto
+              ${dropdown ? 'scale-1' : 'scale-0'}`}
             role="menu"
-          >
-            {navList && navList.map((item) => (
-              <Link
-                href={item.path}
-                key={item.id}
-                className={`flex items-center text-sm w-full gap-2 px-4 p-3 group ${currentIndex === item.path ? 'text-foreground' : 'text-navlink'}`}
-                onClick={() => setDropdown(false)}
-              >
-                <item.icon size='20' className={`group-hover:text-primary ${currentIndex === item.path && 'text-primary'}`} />
-                <p className='group-hover:text-foreground'>{item.name}</p>
-              </Link>
-            ))}
+          > 
+            <button className='fixed right-0 top-0 p-4 hover:text-primary' onClick={() => setDropdown(false)}>
+              <X size={32} />
+            </button>
+
+            <nav className='flex flex-col py-6 gap-2 mt-12 sm:mt-0'>
+              {navList && navList.map((item) => (
+                <Link
+                  href={item.path}
+                  key={item.id}
+                  className={`flex items-center w-full gap-6 p-3 last:pb-6 group ${currentIndex === item.path ? 'text-foreground' : 'text-navlink'}`}
+                  onClick={() => setDropdown(false)}
+                >
+                  <item.icon className={`group-hover:text-primary ${currentIndex === item.path && 'text-primary'}`} />
+                  <p className='group-hover:text-foreground'>{item.name}</p>
+                </Link>
+              ))}
+            </nav>
           </div>
-        )}
       </div>
 
       <Link 

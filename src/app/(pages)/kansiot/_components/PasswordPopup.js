@@ -75,7 +75,7 @@ function PasswordPopup({ selectedObject, setFolders, setFiles, setSelectedObject
             <div className='relative flex flex-col w-full max-w-2xl top-52 p-4 z-50 bg-gradient-to-br from-background to-contrast 
                 shadow-md max-h-full overflow-y-auto border border-contrast'>
                 <button
-                    className="absolute top-2 right-2 p-2 text-white bg-red-500 hover:bg-red-600"
+                    className="absolute top-2 right-2 p-2 text-white bg-red-500 hover:bg-red-600 transition-colors"
                     onClick={() => setPasswordPopup(false)}
                 >
                     <X size={20} />
