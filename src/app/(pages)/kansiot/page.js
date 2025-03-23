@@ -70,14 +70,19 @@ function Page() {
                 Hallitse kansioita ja tiedostojasi.
             </p>
 
-            <div className='flex items-center justify-end gap-2'>
-                <Link href='/tallenna' className='flex flex-1 sm:flex-none items-center justify-center w-fit gap-2 p-3 text-sm bg-primary text-white hover:bg-primary/75 transition-colors'>
+            <div className='flex items-center justify-end gap-1'>
+                <Link 
+                    href='/tallenna' 
+                    className='flex flex-1 sm:flex-none items-center justify-center w-fit gap-2 px-3 py-2.5 rounded-full text-sm bg-gradient-to-br 
+                        from-primary to-blue-800 text-white hover:to-primary transition-colors'
+                >
                     <FilePlus />
                     Lisää tiedosto
                 </Link>
                 <button 
                     onClick={() => setCreateFolder(true)} 
-                    className='flex flex-1 sm:flex-none items-center justify-center w-fit gap-2 p-3 text-sm bg-primary text-white hover:bg-primary/75 transition-colors'
+                    className='flex flex-1 sm:flex-none items-center justify-center w-fit gap-2 px-3 py-2.5 rounded-full text-sm bg-gradient-to-br 
+                        from-primary to-blue-800 text-white hover:to-primary transition-colors'
                 >
                     <FolderPlus />
                     Uusi kansio

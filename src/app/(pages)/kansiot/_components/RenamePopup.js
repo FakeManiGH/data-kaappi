@@ -114,16 +114,18 @@ function RenamePopup({ selectedObject, setFolders, setFiles, setSelectedObjects,
 
   return (
     <span className='fixed z-50 inset-0 flex justify-center items-start bg-black/50 px-4 py-2'>
-      <div className='relative flex flex-col w-full max-w-2xl top-52 p-4 z-50 bg-gradient-to-br from-background to-contrast 
-        shadow-md max-h-full overflow-y-auto border border-contrast'>
+      <div className='relative flex flex-col w-full max-w-2xl rounded-lg top-52 p-4 z-50 bg-gradient-to-br from-background to-contrast 
+          shadow-md max-h-full overflow-y-auto'
+      >
         <button 
           onClick={() => setRenamePopup(false)} 
-          className='absolute top-2 right-2 p-1 text-lg text-white bg-red-500 hover:bg-red-600 transition-colors'
+          className='absolute top-2 right-2 p-1 rounded-full text-white bg-red-500 hover:bg-red-600 transition-colors'
         >
           <X />
         </button>
         <h2 className="text-2xl md:text-3xl mb-6 text-center font-bold">Nimeä uudelleen</h2>
-        <form className="flex flex-col" onSubmit={selectedObject.docType === 'folder' ? handleFolderNameChange : handleFileNameChange}>
+        <p className='text-sm'>Nimeä kohde uudelleen. Merkit &lt;, &gt;, \ ja / on kielletty.</p>
+        <form className="flex flex-col mt-4" onSubmit={selectedObject.docType === 'folder' ? handleFolderNameChange : handleFileNameChange}>
           <div>
             <label htmlFor="objectName" className="block text-sm font-semibold">{selectedObject.docType === 'file' ? 'Tiedoston nimi' : 'Kansion nimi'}</label>
             <div className='flex items-center gap-1'>
@@ -134,7 +136,7 @@ function RenamePopup({ selectedObject, setFolders, setFiles, setSelectedObjects,
                 value={objectName}
                 onChange={handleNameChange}
                 placeholder={selectedObject.docType === 'file' ? 'Tiedoston nimi' : 'Kansion nimi'}
-                className="w-full py-2.5 px-3 bg-background text-sm border border-transparent outline-none focus:border-primary focus:ring-1"
+                className="w-full py-2 px-3 text-sm bg-transparent border-b border-contrast outline-none focus:border-primary"
                 autoFocus
               />
               
@@ -143,13 +145,14 @@ function RenamePopup({ selectedObject, setFolders, setFiles, setSelectedObjects,
           </div>
 
           {nameError && 
-            <div className='flex items-center justify-between gap-4 px-3 py-2.5 mt-2 text-white text-sm bg-red-500'>
+            <div className='flex items-center justify-between gap-4 px-3 py-2.5 mt-2 rounded-lg text-white text-sm bg-red-500'>
               <p>{nameError}</p>
               <button onClick={() => setNameError('')}><X size={20} /></button>
             </div>
           }
 
-          <button type="submit" className="w-full mt-4 py-2.5 px-3 bg-primary text-white text-sm hover:bg-primary/90 transition-colors">Tallenna</button>
+          <button type="submit" className="w-full mt-4 py-2.5 px-3 rounded-full bg-gradient-to-br from-primary to-blue-800 text-white 
+          text-sm hover:to-primary shadow-md shadow-black/25 transition-colors">Tallenna</button>
         </form>
       </div>
     </span>

@@ -157,15 +157,15 @@ function FileNav({ fileState, setFileState }) {
             <nav className='flex items-center gap-1'>
                 <button 
                     title='Ruudukko' 
-                    className={`p-2 hover:bg-primary/75
-                        ${fileState.view === 'grid' ? 'bg-primary text-white' : 'text-foreground bg-transparent hover:border-primary hover:text-white'}` } 
+                    className={`p-2 rounded-full bg-gradient-to-br hover:from-primary hover:to-blue-800 hover:text-white shadow-md shadow-black/25
+                        ${fileState.view === 'grid' ? 'from-primary to-blue-800 text-white' : 'text-foreground bg-transparent'}` } 
                     onClick={() => setFileState(prevState => ({ ...prevState, view: 'grid' }))}>
                         <Grid />
                 </button>
                 <button 
                     title='Lista' 
-                    className={`p-2 hover:bg-primary/75
-                        ${fileState.view === 'list' ? 'bg-primary text-white' : 'text-foreground bg-transparent hover:border-primary hover:text-white'}` } 
+                    className={`p-2 rounded-full bg-gradient-to-br hover:from-primary hover:to-blue-800 hover:text-white shadow-md shadow-black/25
+                        ${fileState.view === 'list' ? 'from-primary to-blue-800 text-white' : 'text-foreground bg-transparent'}` } 
                     onClick={() => setFileState(prevState => ({ ...prevState, view: 'list' }))}>
                         <List />
                 </button>
@@ -174,8 +174,8 @@ function FileNav({ fileState, setFileState }) {
             <div ref={dropDowns} className='flex items-center gap-1'>
                 <div>
                     <button 
-                        className={`flex items-center w-fit gap-2 p-2 border text-sm bg-primary text-white hover:bg-primary/75 transition-colors 
-                            ${fileState.filter !== 'all' ? 'border-foreground' : 'border-transparent'}`} 
+                        className='flex items-center w-fit gap-1 px-3 py-2 rounded-full text-sm bg-gradient-to-br from-primary to-blue-800 text-white
+                            shadow-md shadow-black/25 transition-colors hover:to-primary' 
                         role="button"
                         onClick={() => {setDropMenu(!dropMenu); setDropMenu2(false);}}
                     >   
@@ -185,7 +185,7 @@ function FileNav({ fileState, setFileState }) {
 
                     {dropMenu && (
                         <div
-                            className="absolute z-20 mt-2 end-0 sm:max-w-64 w-full pb-2 divide-y divide-contrast overflow-hidden border border-contrast bg-background shadow-lg shadow-black/25"
+                            className="absolute z-20 mt-2 rounded-lg end-0 sm:max-w-64 w-full pb-2 divide-y divide-contrast overflow-hidden border border-contrast bg-background shadow-lg shadow-black/25"
                             role="menu"
                         >
                             <div className='bg-background'>
@@ -246,8 +246,8 @@ function FileNav({ fileState, setFileState }) {
                 </div>
                 <div>
                     <button 
-                        className={`flex items-center w-fit gap-2 p-2 border text-sm bg-primary text-white hover:bg-primary/75 transition-colors
-                            ${(fileState.sortedBy !== 'date-desc' || fileState.sortedBy === '') ? 'border-foreground' : 'border-transparent'}`}
+                        className='flex items-center w-fit gap-1 px-3 py-2 rounded-full text-sm bg-gradient-to-br from-primary to-blue-800 text-white
+                            shadow-md shadow-black/25 transition-colors hover:to-primary'
                         role="button"
                         onClick={() => {setDropMenu2(!dropMenu2); setDropMenu(false);}}
                     >
@@ -256,7 +256,7 @@ function FileNav({ fileState, setFileState }) {
                     </button>
                     {dropMenu2 && (
                         <div
-                            className="absolute z-20 mt-2 end-0 sm:max-w-64 w-full pb-2 divide-y divide-contrast overflow-hidden border border-contrast bg-background shadow-lg shadow-black/25"
+                            className="absolute z-20 mt-2 rounded-lg end-0 sm:max-w-64 w-full pb-2 divide-y divide-contrast overflow-hidden border border-contrast bg-background shadow-lg shadow-black/25"
                             role="menu"
                         >
                             <div className='bg-background'>

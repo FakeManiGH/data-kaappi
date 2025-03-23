@@ -18,7 +18,7 @@ function FilePreview({ files, folders, setNewFolder, removeFile, uploadProgress,
   return (
     <div className='grid grid-cols-1 lg:grid-cols-2 w-full gap-4'>
       {files?.map((file, index) => (
-        <div key={index} className='flex flex-1 items-center gap-3 p-2 bg-secondary shadow-md hover:shadow-lg'>
+        <div key={index} className='flex flex-1 items-center gap-3 p-2 bg-secondary shadow-md shadow-black/25 rounded-xl'>
           <Image 
             src={getFileIcon(file?.type)} 
             alt='file' 
@@ -35,7 +35,7 @@ function FilePreview({ files, folders, setNewFolder, removeFile, uploadProgress,
             <div className='flex items-center gap-1'>
               <select
                 id='folder'
-                className='px-3 py-2.5 bg-background text-sm border border-contrast focus:border-primary w-full focus:ring-primary focus:ring-1
+                className='px-3 py-2.5 rounded-lg bg-background text-sm border border-contrast focus:border-primary w-full focus:ring-primary focus:ring-1
                   first:text-navlink'
                 onChange={(e) => handleFolderChange(e, index)}
                 value={file.folderID || ''}
@@ -48,7 +48,7 @@ function FilePreview({ files, folders, setNewFolder, removeFile, uploadProgress,
               <label htmlFor='folder' className='sr-only'>Valitse kansio</label>
               <button 
                 title='Luo uusi kansio' 
-                className='p-[9px] bg-primary text-white text-sm hover:bg-primary/75'
+                className='p-2.5 rounded-full bg-primary text-white text-sm hover:bg-primary/75'
                 onClick={() => setNewFolder(true)}
               >
                   <FolderPlus size={20} />
@@ -58,7 +58,7 @@ function FilePreview({ files, folders, setNewFolder, removeFile, uploadProgress,
             {uploadProgress[index] > 0 ? <ProgressBar progress={uploadProgress[index]} /> : null}
           </div>
 
-          <button className='p-2' onClick={() => removeFile(file)}>
+          <button title='Poista tiedosto' onClick={() => removeFile(file)}>
             <X className='cursor-pointer text-red-500 dark:text-red-400 hover:text-red-600 dark:hover:text-red-500' />
           </button>
         </div>

@@ -117,9 +117,9 @@ function UploadForm({ uploadFile, files, setFiles, fileErrors, setFileErrors, se
 
           <label
             htmlFor="dropzone-file"
-            className={`flex flex-col items-center w-full max-w-full justify-center h-72 
-              cursor-pointer border border-dashed hover:border-primary transition-colors
-              ${isDragging ? 'border-primary bg-primary/10' : 'border-foreground bg-background'}`}
+            className={`flex flex-col items-center w-full max-w-full justify-center h-72 rounded-xl
+              cursor-pointer border-4 border-dashed hover:border-primary transition-colors
+              ${isDragging ? 'border-primary bg-primary/10' : 'border-contrast bg-background'}`}
 
           >
             <div className="flex flex-col max-w-full items-center justify-center p-4 text-center pt-5 pb-6">
@@ -142,7 +142,8 @@ function UploadForm({ uploadFile, files, setFiles, fileErrors, setFileErrors, se
 
         <button 
           type="submit"
-          className='w-full px-3 py-2.5 mt-2 bg-primary hover:bg-primary/75 text-white disabled:bg-secondary disabled:text-contrast'
+          className='w-full px-3 py-2.5 mt-2 rounded-full bg-gradient-to-br from-primary to-blue-800 shadow-black/25 shadow-md 
+            text-white transition-all disabled:from-secondary disabled:to-contrast disabled:text-contrast disabled:shadow-none hover:to-primary'
           {...(files.length === 0 && { disabled: true })}
         >
           Tallenna

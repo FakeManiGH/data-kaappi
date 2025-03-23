@@ -48,12 +48,14 @@ function Page() {
       <h1 className='text-2xl md:text-3xl'><strong>Hei, {user?.firstName}</strong></h1>
       
       <div className='grid grid-cols-1 lg:grid-cols-2 gap-4 min-h-72'>
-        <div className='flex gap-2 flex-wrap items-center justify-center bg-gradient-to-br from-secondary to-contrast px-4 py-6'>
+        <div className='flex gap-2 flex-wrap items-center justify-center bg-gradient-to-br from-secondary rounded-xl shadow-black/25 shadow-md to-contrast px-4 py-6'>
           <SpaceMeterCircle usedSpace={userDoc?.usedSpace} totalSpace={userDoc?.totalSpace} />
           <div className='flex flex-col gap-2'>
             <h3 className='text-xl font-bold'>Tallennustilan käyttö</h3>
             <p className='text-sm'>Voit tarvittaessa tilata lisää tallennustilaa (<strong>tulossa</strong>).</p>
-            <Link className='flex items-center w-fit gap-2 px-3 py-2.5 mt-2 text-sm bg-navlink cursor-not-allowed text-white transition-colors' href="#">
+            <Link className='flex items-center w-fit gap-2 px-3 py-2 mt-2 rounded-lg text-sm bg-navlink shadow-black/25 shadow-md 
+                cursor-not-allowed text-white transition-colors' href="#"
+            >
               <Settings2 />
               Hallitse tilausta
             </Link>
@@ -61,15 +63,15 @@ function Page() {
         </div>
       </div>
 
-      <div className='grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-8 gap-3'>
+      <div className='grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-8 gap-2'>
           {filteredList.map((item) => (
           <Link 
               href={item.path}
               key={item.id}
-              className="flex flex-1 flex-col items-center justify-center p-4 text-sm cursor-pointer 
-                bg-primary hover:bg-primary/75 text-white transition-colors"
+              className="flex items-center justify-center gap-1 p-4 rounded-lg text-sm 
+                bg-gradient-to-br from-primary to-blue-800 shadow-black/25 shadow-md text-white hover:to-primary transition-colors"
               >
-                <item.icon className='mb-2' />
+                <item.icon />
                 <p className="whitespace-nowrap">{item.name}</p>
           </Link>
           ))}

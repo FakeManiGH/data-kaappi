@@ -30,7 +30,8 @@ function FolderNavigation({ folders, files, setFolders, setFiles, selectedObject
         <div className='flex w-full items-center justify-between gap-1 flex-wrap'>
             <div ref={dropRef} className='relative flex flex-wrap items-center'>
                 <button 
-                    className={`flex items-center w-fit gap-2 px-2 py-[7px] border text-sm bg-primary text-white hover:bg-primary/75 transition-colors
+                    className={`flex items-center w-fit gap-2 px-3 py-2 rounded-full border text-sm bg-gradient-to-br from-primary to-blue-800 
+                        text-white transition-colors
                         ${dropMenu ? 'border-foreground' : 'border-transparent'}`} 
                     role="button"
                     onClick={() => setDropMenu(!dropMenu)}
@@ -41,10 +42,10 @@ function FolderNavigation({ folders, files, setFolders, setFiles, selectedObject
 
                 {dropMenu && (
                     <div
-                        className="absolute z-10 left-0 top-full mt-2 rogue-dropmenu sm:max-w-64 divide-y divide-contrast overflow-hidden border border-contrast bg-background shadow-lg"
+                        className="absolute z-10 left-0 top-full mt-2 rounded-lg rogue-dropmenu sm:max-w-64 divide-y divide-contrast overflow-hidden border border-contrast bg-background shadow-lg"
                         role="menu"
                     >
-                        <div className='bg-background shadow-lg shadow-black/50'>
+                        <div className='bg-background shadow-md shadow-black/25'>
                             <strong className="block p-2 text-xs font-medium uppercase text-gray-500">
                                 Yleiset
                             </strong>
@@ -111,14 +112,15 @@ function FolderNavigation({ folders, files, setFolders, setFiles, selectedObject
             <div className='flex items-center gap-1'>
                 <button
                     onClick={() => setSelectedObjects([])}
-                    className='flex items-center w-fit gap-1 px-2 py-[7.2px] border border-contrast text-sm bg-background text-foreground hover:border-primary transition-colors'
+                    className='flex items-center w-fit gap-1 px-3 py-2 rounded-full border border-contrast text-sm text-foreground 
+                        hover:border-foreground transition-colors'
                 >
                     <X size={20} />
                     {selectedObjects.length} valittu
                 </button>
                 <button
                     onClick={() => setDeletePopup(true)}
-                    className='flex items-center w-fit gap-1 p-2 text-sm bg-red-500 text-white hover:bg-red-600 transition-colors'
+                    className='flex items-center w-fit gap-1 px-3 py-2 rounded-full text-sm bg-red-500 text-white hover:bg-red-600 transition-colors'
                 >
                     <Trash2 size={20} />
                     Poista

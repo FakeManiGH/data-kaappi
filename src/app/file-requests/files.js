@@ -22,17 +22,23 @@ export const getFileInfo = async (fileID) => {
     }
 }
 
-// Get file info (-> public)
-export const getPublicFileInfo = async (fileID) => {
+// Get filepage info
+export const getFilePageInfo = async (userID, fileID) => {
     try {
         const docRef = doc(db, 'files', fileID)
         const docSnap = await getDoc(docRef)
-        if (!docSnap.exists()) throw new Error("No file found.")
-        const data = docSnap.data()
-        const file = transformFileDataPublic(data)
-        return file;
+        if (!docSnap.exists()) {
+            return { success: false, message: `Tiedostoa ${file.fileID} ei löytynyt.` }
+        } 
+        const data = docSnap.data();
+        if (!data.shared && userID !== data.userID) {
+            return { success: false, message: 'Sisältö ei ole saatavilla tai sitä ei ole jaettu.'}
+        }
+        const file = transformFileDataPublic(data);
+        return { success: true, data: file };
     } catch (error) {
-        console.error("Error fetching file: ", error)
+        console.error("Error fetching file: ", error);
+        return { success: false, message: "Tiedoston hakemisessa tapahtui virhe, yritä uudelleen."}
     }
 }
 

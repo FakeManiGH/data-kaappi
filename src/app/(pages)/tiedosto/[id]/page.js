@@ -2,7 +2,7 @@
 import React, { useEffect, useState, use } from 'react'
 import Link from 'next/link'
 import { ArrowLeftSquare, ScanEye, User2, Share2, LockKeyholeOpen, ArrowLeftCircle, Eye, UserCircle, UserRoundCheck, Home, CircleGauge } from 'lucide-react'
-import FileContainer from './_components/FileContainer'
+import FileInfo from './_components/FileInfo'
 import FileNav from './_components/FileNav'
 import PageLoading from '@/app/_components/_common/PageLoading'
 import { useNavigation } from '@/app/contexts/NavigationContext'
@@ -11,18 +11,18 @@ import { useUser } from '@clerk/nextjs'
 import PasswordPrompt from './_components/PasswordPrompt'
 import FileLivePreview from './_components/FileLivePreview';
 import DownloadBtn from './_components/DownloadBtn';
-import ErrorView from '../../_components/ErrorView'
-import { getPublicFileInfo } from '@/app/file-requests/files'
+import ContentNotFound from '@/app/_components/_common/ContentNotFound'
+import { getFilePageInfo } from '@/app/file-requests/files'
 import { getPublicFolderInfo } from '@/app/file-requests/folders'
+import FilePagePreview from '@/app/_components/_common/FilePagePreview'
 
 function Page({ params }) {
     const { id } = use(params)
     const { setCurrentIndex, navigatePage } = useNavigation()
     const [file, setFile] = useState(null)
-    const [noFile, setNoFile] = useState(false)
     const [folder, setFolder] = useState(null)
     const [deleted, setDeleted] = useState(false)
-    const [pageError, setPageError] = useState(null)
+    const [error, setError] = useState(null)
     const [loading, setLoading] = useState(true)
     const { user, isLoaded } = useUser()
     const { showAlert } = useAlert()
@@ -30,36 +30,31 @@ function Page({ params }) {
     const [livePreview, setLivePreview] = useState(false)
 
     useEffect(() => {
-        const getFile = async (id) => {
+        const getFile = async () => {
             try {
-                const fileInfo = await getPublicFileInfo(id);
-                if (!fileInfo) {
-                    setNoFile(true);
+                const response = await getFilePageInfo(user.id, id);
+                if (response.success) {
+                    setFile(response.data);
                 } else {
-                    setFile(fileInfo);
-                    if (fileInfo.folder !== '') {
-                        const fileFolder = await getPublicFolderInfo(fileInfo.folder);
-                        setFolder(fileFolder)
-                    }
+                    setError(response.message);
                 }
             } catch (error) {
-                setPageError('Tietojen haussa tapahtui virhe! Yritä uudelleen.')
-                showAlert('Tietojen hakeminen epäonnistui.', 'error')
+                setError("Sisäinen virhe - " + error.message)
+                console.error("Error fetching file: " + error);
             } finally {
-                setLoading(false)
+                setLoading(false);
             }
         }
 
-        if (isLoaded) {
-            if (!user) {
-                navigatePage('/sign-in')
-            } else if (deleted) {
-                navigatePage('/kaikki-tiedostot')
-            } else {
-                setCurrentIndex(`/tiedosto/${id}`)
-                id && getFile(id)
-            }
+        if (isLoaded && !user) {
+            navigatePage('/sign-in');
+        } else if (deleted) {
+            navigatePage('/kojelauta');
+        } else {
+            setCurrentIndex('/tiedosto/' + id);
+            getFile(id);
         }
+
     }, [id, isLoaded, user, setCurrentIndex, navigatePage, deleted])
 
     // Validate password
@@ -97,18 +92,8 @@ function Page({ params }) {
     
     {/* PAGE CONTENT */}
     if (loading) return <PageLoading />
-    if (pageError) return <ErrorView message={pageError} />
+    if (error) return <ContentNotFound message={error} />
     if (!user) return <ErrorView message="Kirjaudu sisään nähdäksesi tämän sivun." />
-
-    if (noFile) return (
-        <main>
-            <div className='flex flex-col items-center justify-center gap-2 w-full mt-8'>
-                <h1 className="text-7xl font-black text-foreground">404</h1>
-                <p className='text-xl md:text-2xl'>Tiedostoa <strong className='text-primary text-2x md:3xl'>{id}</strong> ei löytynyt...</p>
-                <Link href='/kojelauta' className='text-center text-primary hover:text-primary/75'>Vie minut pois!</Link>
-            </div>
-        </main>
-    )
 
     if (file.passwordProtected && file.user.id !== user.id) return (
         <main>
@@ -124,7 +109,7 @@ function Page({ params }) {
     
     return (
         <main>
-            <div className='flex flex-wrap items-baseline justify-between gap-1 mb-2 w-full overflow-hidden'>
+            <div className='flex flex-col overflow-hidden'>
                 <h1 className='text-2xl md:text-3xl truncate'><strong>{file.name}</strong></h1>
                 <p className='flex items-center gap-1 text-md'><UserRoundCheck size={20} /> {file.user.name}</p>
             </div>
@@ -133,7 +118,8 @@ function Page({ params }) {
                 <FileNav file={file} setFile={setFile} setDeleted={setDeleted} />
             }
 
-            <FileContainer file={file} folder={folder} setFile={setFile} setLivePreview={setLivePreview} />
+            <FilePagePreview file={file} />
+            <FileInfo file={file} folder={folder} setFile={setFile} setLivePreview={setLivePreview} />
             <DownloadBtn url={file.url} fileName={file.name} buttonStyle="w-full py-3" />
 
             {livePreview && <FileLivePreview file={file} setLivePreview={setLivePreview} />}

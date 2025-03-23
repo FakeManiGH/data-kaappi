@@ -20,14 +20,14 @@ function DeletePopup({ selectedObjects, setSelectedObjects, setFolders, setFiles
 
     return (
         <div className='fixed z-50 inset-0 flex justify-center items-start bg-black/50 px-4 py-2'>
-            <div className='relative flex flex-col w-full max-w-2xl top-52 p-4 z-50 bg-gradient-to-br from-background to-contrast 
-                shadow-md max-h-full overflow-y-auto border border-contrast'
+            <div className='relative flex flex-col w-full max-w-2xl top-52 p-4 rounded-lg z-50 bg-gradient-to-br from-background to-contrast 
+                shadow-md shadow-black/25 max-h-full overflow-y-auto'
             >
                 <button 
                     onClick={() => setDeletePopup(false)} 
-                    className='absolute top-2 right-2 p-2 text-white bg-red-500 hover:bg-red-600 transition-colors'
+                    className='absolute top-2 right-2 p-1 rounded-full text-white bg-red-500 hover:bg-red-600 transition-colors'
                 >
-                    <X size={20} />
+                    <X />
                 </button>
 
                 <h2 className="text-2xl md:text-3xl mb-6 text-center font-bold">Poista kohteet</h2>
@@ -49,7 +49,7 @@ function DeletePopup({ selectedObjects, setSelectedObjects, setFolders, setFiles
 
                             <button 
                                 title='Poista valinta' 
-                                className='text-primary hover:text-primary/75'
+                                className='text-navlink hover:text-foreground'
                                 onClick={() => removeObjectSelection(object)}
                             >
                                 <CircleMinus size={20} />
@@ -58,7 +58,7 @@ function DeletePopup({ selectedObjects, setSelectedObjects, setFolders, setFiles
                     ))}
                 </ul>
 
-                <button onClick={() => setDeleteConfirm(true)} className='text-white text-sm bg-red-500 mt-4 py-2.5 px-3 hover:bg-red-600'>
+                <button onClick={() => setDeleteConfirm(true)} className='text-white text-sm bg-red-500 mt-4 py-2.5 px-3 rounded-full hover:bg-red-600'>
                     Poista
                 </button>
             </div>

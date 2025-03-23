@@ -38,11 +38,11 @@ function FileNav({ file, setFile, setDeleted }) {
     }
 
     return (
-        <div className='relative flex flex-wrap items-center justify-end w-full mb-2'>
+        <div className='relative flex flex-wrap items-center justify-end w-full'>
             <div>
                 <button 
-                    className={`flex items-center w-fit gap-2 px-3 py-2 border text-sm bg-primary text-white hover:bg-primary/75 transition-colors
-                        ${dropMenu ? 'border-foreground' : 'border-transparent'}`} 
+                    className='flex items-center w-fit gap-1 px-3 py-2 rounded-full text-sm bg-gradient-to-br from-primary to-blue-800 text-white 
+                        hover:to-primary transition-colors'
                     role="button"
                     onClick={() => setDropMenu(!dropMenu)}
                 >
@@ -52,7 +52,7 @@ function FileNav({ file, setFile, setDeleted }) {
 
                 {dropMenu && (
                     <div
-                        className="absolute z-10 right-0 mt-2 w-full sm:max-w-64 divide-y divide-contrast overflow-hidden border border-contrast bg-background shadow-lg"
+                        className="absolute z-10 right-0 rounded-lg mt-2 w-full sm:max-w-64 divide-y divide-contrast overflow-hidden border border-contrast bg-background shadow-lg"
                         role="menu"
                     >
                         <div className='bg-background shadow-lg shadow-black/50'>

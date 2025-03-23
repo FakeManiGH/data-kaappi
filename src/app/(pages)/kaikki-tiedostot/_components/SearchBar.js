@@ -47,12 +47,13 @@ function SearchBar({ fileState, setFileState }) {
                 <label htmlFor="search" 
                     className='p-2.5 text-foreground cursor-pointer group-hover:text-primary transition-colors'
                 >
-                    <Search size={20} />
+                    <Search />
                 </label>
                 <input 
                     type="text"
                     id="search"
-                    className='px-4 py-2.5 w-full outline-none text-sm text-foreground bg-background border border-contrast focus:border-primary ring-primary focus:ring-1 group-hover:border-primary transition-colors' 
+                    className='px-3 py-2.5 w-full outline-none text-sm text-foreground bg-background border-b border-contrast 
+                        focus:border-primary ring-primary group-hover:border-primary transition-colors' 
                     placeholder="Hae tiedostoa..." 
                     onChange={handleSearch}
                 />

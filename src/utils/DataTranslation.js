@@ -10,6 +10,20 @@ export const translateFileSize = (bytes) => {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 };
 
+export const returnGeneralFiletype = (type) => {
+    if (type.includes('image')) {
+        return 'image';
+    } else if (type.includes('video')) {
+        return 'video';
+    } else if (type.includes('audio')) {
+        return 'audio';
+    } else if (type.includes('pdf')) {
+        return 'pdf';
+    } else {
+        return 'document';
+    }
+}
+
 export const cleanDataType = (type) => {
     if (type.includes('word')) return 'WordDoc';
     if (type.includes('presentationml')) return 'PowerPoint';
@@ -28,34 +42,20 @@ export const simplifyFileType = (type) => {
     }
 }
 
-// Translate date to database format
-export const DateDB = (date) => { 
-    const dateDB = date.toLocaleString('fi-FI', {
-        day: 'numeric',
-        month: 'long',
-        year: 'numeric',
-        hour: 'numeric',
-        minute: 'numeric',
-        second: 'numeric',
-        timeZoneName: 'short'
-    })
-    return dateDB
-}
+// Convert date to simple form: d.m.yyyy klo. hh:mm
+export const convertDate = (date) => {
+    if (!(date instanceof Date)) {
+        throw new Error("Invalid date object");
+    }
 
-// Translate date to public format
-export const datePublic = (date) => {
-    let dateDate = Date(date)
-    const datePublic = dateDate.toLocaleString('fi-FI', {
-        day: 'numeric',
-        month: 'long',
-        year: 'numeric',
-        hour: 'numeric',
-        minute: 'numeric',
-        second: 'none',
-        timeZoneName: 'none'
-    })
-    return datePublic;
-}
+    const day = date.getDate().toString().padStart(2, '0'); 
+    const month = (date.getMonth() + 1).toString().padStart(2, '0'); 
+    const year = date.getFullYear(); 
+    const hours = date.getHours().toString().padStart(2, '0'); 
+    const minutes = date.getMinutes().toString().padStart(2, '0'); 
+
+    return `${day}.${month}.${year} klo. ${hours}:${minutes}`;
+};
 
 
 // CONVERT FOLDERS

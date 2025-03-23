@@ -20,9 +20,8 @@ function Hero() {
 
                 <div className="flex flex-col items-center gap-3 w-full">
                     <a
-                        className="flex gap-1 items-center justify-center border border-primary w-72 px-5 py-3
-                            text-lg text-foreground hover:bg-primary hover:text-white
-                            transition-all"
+                        className="flex gap-3 items-center justify-center bg-gradient-to-br from-primary to-blue-800 w-72 px-5 py-3 rounded-full
+                            text-lg text-white hover:text-yellow-300 hover:gap-1 shadow-md shadow-black/25 transition-all"
                         href="/sign-in"
                     >   
                         <ChevronsRight />

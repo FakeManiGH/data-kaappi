@@ -115,7 +115,7 @@ function FolderContainer({ folders, files, setFolders, setFiles, setCreateFolder
                     key={folder.id} 
                     onTouchStart={() => handleTouchStart(folder)}
                     onTouchEnd={() => handleTouchEnd(folder)}
-                    className={`relative flex items-center justify-center p-4 transition-colors border group overflow-hidden
+                    className={`relative flex items-center justify-center p-4 rounded-lg transition-colors border group overflow-hidden
                         ${selectedObjects.includes(folder) ? 'border-primary' : 'border-transparent'}
                         ${dragOverFolder === folder.id ? 'bg-primary' : 'bg-gray-500/10'}`}
                     style={{ touchAction: 'none' }}
@@ -156,7 +156,7 @@ function FolderContainer({ folders, files, setFolders, setFiles, setCreateFolder
                     draggable
                     onDragStart={() => handleDragStart(file)}
                     onDragEnd={() => handleDragEnd(file)}
-                    className={`relative flex items-center justify-center p-4 bg-gray-500/10 transition-colors group border overflow-hidden
+                    className={`relative flex items-center justify-center p-4 rounded-lg bg-gray-500/10 transition-colors group border overflow-hidden
                         ${selectedObjects.includes(file) ? 'border-primary' : 'border-transparent'}`}
                     style={{ touchAction: 'none' }}
                 >   
@@ -181,8 +181,7 @@ function FolderContainer({ folders, files, setFolders, setFiles, setCreateFolder
                         <img 
                             src={file.type.includes('image') ? file.url : getFileIcon(file.type)} 
                             alt={file.name} 
-                            className={`w-16 h-16 object-cover mb-1 group-hover:brightness-100
-                                ${selectedObjects.includes(file) ? 'brightness-100' : 'brightness-75'}`} 
+                            className='w-16 h-16 object-cover mb-1' 
                         />
                         <h2 className=" text-sm max-w-full font-semibold truncate">{file.name}</h2>
                         <p className="text-sm text-navlink">{translateFileSize(file.size)}</p>
