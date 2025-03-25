@@ -52,22 +52,39 @@ export const updateUserDocumentValue = async (userID, key, value) => {
 
 // GET SHARED CONTENT
 // Get shared file or folder
-export const getSharedContent = async (id) => {
+export const getSharedFile = async (id) => {
     try {
         // Check ID for file
         const fileRef = doc(db, "files", id);
         const fileSnap = await getDoc(fileRef);
 
-        if (fileSnap.exists()) {
-            const file = transformFileDataPublic(fileSnap.data());
-
-            if (!file.shared) {
-                return { success: false, message: "Sisältö ei ole saatavilla."}
-            }
-
-            return { success: true, type: "file", data: file };
+        if (!fileSnap.exists()) {
+            return { success: false, message: 'Sisältöä ei löytynyt.'}
         }
 
+        const fileTemp = fileSnap.data();
+
+        if (!fileTemp.shared) {
+            return { success: false, message: "Sisältö ei ole saatavilla."}
+        }
+
+        if (fileTemp.pwdProtected) {
+            return { success: true, protected: true }
+        }
+
+        const file = transformFileDataPublic(fileTemp);
+        return { success: true, data: file };
+    } catch (error) {
+        console.error("Error while getting content: " + error);
+        return { success: false, message: "Sisällön hakemisessa tapahtui virhe, yritä uudelleen." };
+    }
+};
+
+
+// TODO
+// Get shared folder
+export const getSharedFolder = async (id) => {
+    try {
         // If no file, check for folder
         const folderRef = doc(db, "folders", id);
         const folderSnap = await getDoc(folderRef);
@@ -99,8 +116,7 @@ export const getSharedContent = async (id) => {
         // Return the folder data along with its files
         return { success: true, type: "folder", data: { folder, publicFiles } };
     } catch (error) {
-        console.error("Error while getting content: " + error);
-        return { success: false, message: "Sisällön hakemisessa tapahtui virhe, yritä uudelleen." };
+
     }
-};
+}
 

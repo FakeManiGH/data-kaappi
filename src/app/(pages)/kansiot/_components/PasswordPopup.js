@@ -10,19 +10,6 @@ function PasswordPopup({ selectedObject, setFolders, setFiles, setSelectedObject
     const { user } = useUser();
     const { showAlert } = useAlert();
 
-    useEffect(() => {
-        // close popup when clicked outside
-        const handleClick = (e) => {
-            let overlay = document.getElementById('overlay');
-            if (e.target === overlay) {
-                setPasswordPopup(false);
-            }
-        }
-
-        document.addEventListener('click', handleClick)
-        return () => document.removeEventListener('click', handleClick)
-    }, [])
-
     // Remove folder password
     const removePasswordFromFolder = async () => {
         try {
@@ -42,7 +29,7 @@ function PasswordPopup({ selectedObject, setFolders, setFiles, setSelectedObject
             }
         } catch (error) {
             console.error('Error removing password: ' + error);
-            showAlert(response.message, 'error');
+            showAlert('Virhe kansion salasanan poistamisessa käytöstä, yritä uudelleen.', 'error');
         }
     }
 
@@ -65,7 +52,7 @@ function PasswordPopup({ selectedObject, setFolders, setFiles, setSelectedObject
             }
         } catch (error) {
             console.error('Error removing password: ' + error);
-            showAlert(response.message, 'error');
+            showAlert('Virhe tiedoston salasanan poistamisessa käytöstä, yritä uudelleen.', 'error');
         }
     }
 
@@ -84,28 +71,24 @@ function PasswordPopup({ selectedObject, setFolders, setFiles, setSelectedObject
 
                 <h2 className="text-2xl md:text-3xl mb-2 text-center font-bold">Salasana</h2>
 
-                {selectedObject.passwordProtected ? (
-                    <>
+                {selectedObject.passwordProtected &&
                     <div className="flex items-center justify-between gap-2 py-2 mb-2 border-b border-dashed border-contrast">
-                        <div className='flex items-center gap-2 w-full '>
-                            <LockKeyhole className='text-success' size={20} />
-                            <p className="text-sm">
-                                {selectedObject.docType === 'folder' ? 'Kansio ' : 'Tiedosto'} 
-                                on suojattu salasanalla.
-                            </p>
+                        <div className="flex items-center justify-between gap-2 p-2 mb-4 border-b border-dashed border-navlink">
+                            <div className='flex items-center gap-2 w-full '>
+                                <LockKeyhole className='text-success' size={20} />
+                                <p className="text-sm font-bold">Kohde on suojattu salasanalla.</p>
+                            </div>
+    
+                            <button 
+                                onClick={selectedObject.docType === 'folder' ? removePasswordFromFolder : removePasswordFromFile} 
+                                className='text-sm font-semibold text-red-500 hover:text-red-600 whitespace-nowrap'
+                                title='Poista salasana käytöstä'
+                            >
+                                Poista
+                            </button>
                         </div>
-
-                        <button 
-                            onClick={selectedObject.docType === 'folder' ? removePasswordFromFolder : removePasswordFromFile} 
-                            className='text-sm text-red-500 hover:text-red-600 whitespace-nowrap'
-                        >
-                            Poista käytöstä
-                        </button>
                     </div>
-
-                    
-                    </>
-                ) : null}
+                }
 
                 <ul className='flex flex-col gap-1 list-disc list-inside text-sm'>
                     <li>

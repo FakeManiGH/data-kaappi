@@ -69,7 +69,7 @@ function Page() {
     try {
       await uploadTask;
       const downloadURL = await getDownloadURL(storageRef);
-      const shareURL = process.env.NEXT_PUBLIC_BASE_URL + 'jaettu/' + fileID;
+      const shareURL = process.env.NEXT_PUBLIC_BASE_URL + 'jaettu-tiedosto/' + fileID;
       const fileData = {
         docType: 'file', // String
         fileID: fileID, // String

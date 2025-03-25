@@ -10,8 +10,10 @@ export default function Page() {
                     <h1 className="text-xl md:text-3xl text-center">Kirjaudu sisään <span className='text-primary'>Datakaappiin</span></h1>
                 </div>
                 <SignIn />
-                <Link href='/' className='flex items-center gap-1 mt-4 px-4 py-3 border-contrast border hover:text-foreground rounded-full text-navlink hover:border-primary'>
-                    <Home size={20} className='text-primary' />
+                <Link href='/' className='flex items-center gap-1 mt-4 px-3 py-2 rounded-full bg-gradient-to-br text-white from-primary to-blue-800
+                    hover:to-primary shadow-md shadow-black/25'
+                >
+                    <Home />
                     Palaa etusivulle
                 </Link>
             </div>

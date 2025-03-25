@@ -31,8 +31,18 @@ export const getFilePageInfo = async (userID, fileID) => {
             return { success: false, message: `Tiedostoa ${file.fileID} ei löytynyt.` }
         } 
         const data = docSnap.data();
+
+        // Shared?
         if (!data.shared && userID !== data.userID) {
             return { success: false, message: 'Sisältö ei ole saatavilla tai sitä ei ole jaettu.'}
+        }
+
+        // Shared in Group
+        // TO DO!
+
+        // Password protection?
+        if (data.pwdProtected && userID !== data.userID) {
+            return { success: true, password: true }
         }
         const file = transformFileDataPublic(data);
         return { success: true, data: file };
@@ -79,6 +89,34 @@ export const getUserFilesByFolder = async (userID, folderID) => {
 }
 
 
+// PASSWORD VERIFICATION
+// Verify file pwd and return file.
+export const verifyFilePassword = async (fileID, password) => {
+    try {
+        const fileRef = doc(db, "files", fileID);
+        const fileSnap = await getDoc(fileRef);
+
+        if (!fileSnap.exists()) {
+            return { success: false, message: 'Tiedostoa ei löytynyt.' }
+        }
+
+        const fileTemp = fileSnap.data();
+        const valid = await bcrypt.compare(password, fileTemp.pwd);
+
+        if (valid) {
+            const file = transformFileDataPublic(fileTemp)
+            return { success: true, data: file }
+        } else { 
+            return { success: false, message: 'Voi ei! Virheellinen salasana.'}
+        }
+
+    } catch (error) {
+        console.error("Error verifying password: " + error);
+        return { success: false, message: 'Salasanan vahvistuksessa tapahtui virhe, yritä uudelleen.'}
+    }
+}
+
+
 // UPDATE FILE FUNCTIONS
 // Update file name
 export const updateFileName = async (userID, fileID, newName) => {
@@ -120,19 +158,19 @@ export const updateFilePassword = async (userID, fileID, password) => {
         const docSnap = await getDoc(fileRef);
 
         if (!docSnap.exists()) {
-            throw new Error("Tiedostoa ei löytynyt.");
+            return { success: false, message: 'Tiedostoa ei löytynyt.' }
         }
 
-        const originalFile = docSnap.data();
+        const file = docSnap.data();
 
         // Authorization
-        if (userID !== originalFile.userID) {
-            throw new Error("Luvaton muutospyyntö.");
+        if (userID !== file.userID) {
+            return { success: false, message: 'Luvaton muutospyyntö.' }
         }
 
         // Data validation
         if (!passwordRegex.test(password)) {
-            throw new Error("Salasana ei voi sisältää <, >, /, \\ -merkkejä.");
+            return { success: false, message: 'Salasana ei voi sisältää <, >, /, \\ -merkkejä.' }
         }
 
         // Password hash
@@ -141,10 +179,10 @@ export const updateFilePassword = async (userID, fileID, password) => {
 
         // Update password in db
         await updateDoc(fileRef, { pwd: hashPass, pwdProtected: true });
-        return { success: true, message: "Tiedoston salasana asetettu." };
+        return { success: true, message: "Salasana tallennettu." };
     } catch (error) {
         console.error("Error updating file password: ", error);
-        return { success: false, message: error.message };
+        return { success: false, message: 'Virhe salasanaa asettaessa, yritä uudelleen.' };
     }
 }
 
@@ -156,14 +194,14 @@ export const removeFilePassword = async (userID, fileID) => {
         const docSnap = await getDoc(fileRef);
 
         if (!docSnap.exists()) {
-            throw new Error("Tiedostoa ei löytynyt.");
+            return { success: false, message: 'Tiedostoa ei löytynyt.' }
         }
 
         const originalFile = docSnap.data();
 
         // Authorization
         if (userID !== originalFile.userID) {
-            throw new Error("Luvaton muutospyyntö.");
+            return { success: false, message: 'Luvaton muutospyyntö.' }
         }
 
         // Update
@@ -172,7 +210,7 @@ export const removeFilePassword = async (userID, fileID) => {
 
     } catch (error) {
         console.error("Error removing file password: ", error);
-        return { success: false, message: error.message };
+        return { success: false, message: 'Virhe salasanaa poistaessa, yritä uudelleen.' };
     }
 }
 
@@ -183,22 +221,33 @@ export const deleteFile = async (userID, fileID) => {
     try {
         // Firestore transaction
         await runTransaction(db, async (transaction) => {
-            // Fetch the file
             const fileRef = doc(db, "files", fileID);
             const fileSnap = await transaction.get(fileRef);
-            if (!fileSnap.exists()) throw new Error("Tiedostoa ei löytynyt.");
 
+            if (!fileSnap.exists()) {
+                return { success: false, message: 'Poistettavaa tiedostoa ei löytynyt.'}
+            }
+                
             const file = fileSnap.data();
-            if (userID !== file.userID) throw new Error(`Ei oikeutta tiedostoon ${file.fileName}.`);
+            if (userID !== file.userID) {
+                return { success: false, message: 'Luvaton poistamispyyntö.'}
+            }
 
             // Handle possible folder fileCount
             if (file.folderID) {
                 const folderRef = doc(db, "folders", file.folderID);
                 const folderSnap = await transaction.get(folderRef);
-                if (!folderSnap.exists()) throw new Error("Tiedoston kansiota ei löytynyt.");
+
+                if (!folderSnap.exists()) {
+                    return { success: false, message: 'Tiedoston kansioita ei löytynyt. Yritä uudelleen.'}
+                }
 
                 const folder = folderSnap.data();
-                if (folder.fileCount <= 0) throw new Error("Kansion tiedostomäärä ei voi olla negatiivinen.");
+
+                if (folder.fileCount <= 0) {
+                    return { success: false, message: `Kansion ${folder.folderName} tiedostomäärä ei voi olla negatiivine.`}
+                }
+
                 transaction.update(folderRef, { fileCount: increment(-1) });
             }
 
@@ -207,7 +256,7 @@ export const deleteFile = async (userID, fileID) => {
             const userSnap = await transaction.get(userRef);
             const userDoc = userSnap.data();
             if (userDoc.usedSpace < file.fileSize) {
-                throw new Error("Käyttäjän tallennustila ei voi olla negatiivinen.");
+                return { success: false, message: 'Käyttäjän tallennustilan käyttö ei voi olla negatiivinen.'}
             }
             transaction.update(userRef, { usedSpace: increment(-file.fileSize) });
 
@@ -232,39 +281,59 @@ export const deleteFile = async (userID, fileID) => {
 // MOVING FILES
 export const moveFileToFolder = async (userID, fileID, folderID) => {
     try {
-        // Firestore transaction
         await runTransaction(db, async (transaction) => {
-            // Fetch the file
             const fileRef = doc(db, "files", fileID);
             const fileSnap = await transaction.get(fileRef);
-            if (!fileSnap.exists()) throw new Error("Tiedostoa ei löytynyt.");
+
+            if (!fileSnap.exists()) {
+                return { success: false, message: 'Siirrettävää tiedostoa ei löydy.' }
+            }
 
             const file = fileSnap.data();
-            if (userID !== file.userID) throw new Error(`Ei oikeutta tiedostoon ${file.fileName}.`);
 
-            // Fetch the target folder
+            if (userID !== file.userID) {
+                return { success: false, message: `Ei siirto-oikeutta tiedostoon ${file.fileName}.` }
+            }
+
+            // Handle target folder
             const toFolderRef = doc(db, "folders", folderID);
             const toFolderSnap = await transaction.get(toFolderRef);
-            if (!toFolderSnap.exists()) throw new Error(`Tulevaa kansiota (${folderID}) ei löytynyt.`);
+
+            if (!toFolderSnap.exists()) {
+                return { success: false, message: `Kansiota ${folderID} ei löydy.` }
+            }
 
             const toFolder = toFolderSnap.data();
-            if (userID !== toFolder.userID) throw new Error("Ei oikeutta tulevaan kansioon.");
 
-            // Handle the "from folder" (if applicable)
+            if (userID !== toFolder.userID) {
+                return { success: false, message: `Ei oikeuksia kansioon ${toFolder.folderName}.` }
+            }
+
+            // Handle from folder (if applicable)
             const fromFolderID = file.folderID;
             if (fromFolderID) {
                 const fromFolderRef = doc(db, "folders", fromFolderID);
                 const fromFolderSnap = await transaction.get(fromFolderRef);
-                if (!fromFolderSnap.exists()) throw new Error(`Entistä kansiota (${fromFolderID}) ei löytynyt.`);
+
+                if (!fromFolderSnap.exists()) {
+                    return { success: false, message: `Kansiota ${fromFolderID} ei löydy.` }
+                }
 
                 const fromFolder = fromFolderSnap.data();
-                if (userID !== fromFolder.userID) throw new Error("Ei oikeutta entiseen kansioon.");
+
+                if (userID !== fromFolder.userID) {
+                    return { success: false, message: `Ei oikeuksia kansioon ${fromFolder.folderName}.` }
+                }
 
                 // Prevent same folder transfer
-                if (toFolder.folderID === fromFolder.folderID) throw new Error("Tiedosto on jo kansiossa.");
+                if (toFolder.folderID === fromFolder.folderID) {
+                    return { success: false, message: `Tiedosto on jo kansiossa ${toFolder.folderName}.` }
+                };
 
                 // Prevent negative fileCount
-                if (fromFolder.fileCount <= 0) throw new Error("Kansion tiedostomäärä ei voi olla negatiivinen.");
+                if (fromFolder.fileCount <= 0) {
+                    return { success: false, message: `Kansion ${fromFolder.folderName} tiedostomäärä ei voi olla negatiivinen.` }
+                }
 
                 // Decrement file count in the "from folder"
                 transaction.update(fromFolderRef, { fileCount: increment(-1) });
@@ -286,3 +355,30 @@ export const moveFileToFolder = async (userID, fileID, folderID) => {
         return { success: false, message: "Tiedoston siirtäminen epäonnistui. Yritä uudelleen." };
     }
 };
+
+
+// SHARING FILES
+// Changing file link sharing
+export const setFileLinkSharing = async (userID, fileID, shareValue) => {
+    try {
+        const fileRef = doc(db, "files", fileID);
+        const fileSnap = await getDoc(fileRef);
+
+        if (!fileSnap.exists()) {
+            return { success: false, message: `Tiedostoa ${fileID} ei löytynyt.` }
+        }
+
+        const file = fileSnap.data();
+
+        if (userID !== file.userID) {
+            return { success: false, message: 'Luvaton muutospyyntö.' }
+        }
+
+        await updateDoc(fileRef, { shared: shareValue });
+
+        return { success: true }
+    } catch (error) {
+        console.error("Error changing file link sharing: " + error);
+        return { success: false, message: 'Tiedoston jako-asetusten muuttaminen epäonnistui, yritä uudelleen.'}
+    }
+} 

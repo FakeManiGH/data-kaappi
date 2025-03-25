@@ -141,7 +141,7 @@ function UploadForm({ uploadFile, files, setFiles, fileErrors, setFileErrors, se
 
         <button 
           type="submit"
-          className='w-full px-3 py-2.5 mt-2 rounded-full bg-gradient-to-br from-primary to-blue-800 shadow-black/25 shadow-md 
+          className='w-full px-3 py-2.5 mt-4 rounded-full bg-gradient-to-br from-primary to-blue-800 shadow-black/25 shadow-md 
             text-white transition-all disabled:from-secondary disabled:to-contrast disabled:text-contrast disabled:shadow-none hover:to-primary'
           {...(files.length === 0 && { disabled: true })}
         >

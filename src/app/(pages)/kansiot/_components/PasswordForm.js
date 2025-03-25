@@ -9,7 +9,7 @@ import { updateFolderPassword } from '@/app/file-requests/folders'
 
 function PasswordForm({ selectedObject, setFolders, setFiles, setSelectedObjects, setPasswordPopup }) {
     const [showPassword, setShowPassword] = useState(false)
-    const [passwordError, setPasswordError] = useState('')
+    const [passwordErr, setPasswordErr] = useState(null);
     const { showAlert } = useAlert()
     const { user } = useUser()
 
@@ -19,12 +19,12 @@ function PasswordForm({ selectedObject, setFolders, setFiles, setSelectedObjects
         const newPassword = e.target.password.value;
 
         if (!newPassword || newPassword.lenght === 0) {
-            setPasswordError('Salasana ei voi olla tyhjä.');
+            setPasswordErr('Anna ensin kelvollinen salasana.');
             return;
         }
 
         if (!passwordRegex.test(newPassword)) {
-            setPasswordError('Salasana ei voi sisältää <, >, /, \\ -merkkejä.');
+            setPasswordErr('Salasana ei voi sisältää <, >, /, \\ -merkkejä.');
             return;
         }
 
@@ -45,11 +45,11 @@ function PasswordForm({ selectedObject, setFolders, setFiles, setSelectedObjects
                 setSelectedObjects([]);
                 showAlert(response.message, 'success');
             } else {
-                showAlert(response.message, 'error');
+                setPasswordErr(response.message);
             }
         } catch (error) {
             console.error('Error setting folder password: ' + error);
-            showAlert(response.message, 'error');
+            showAlert('Virhe asettaessa kansion salasanaa, yritä uudelleen.', 'error');
         }
     }
 
@@ -59,12 +59,12 @@ function PasswordForm({ selectedObject, setFolders, setFiles, setSelectedObjects
         const newPassword = e.target.password.value;
         
         if (!newPassword || newPassword.lenght === 0) {
-            setPasswordError('Salasana ei voi olla tyhjä.');
+            setPasswordErr('Salasana ei voi olla tyhjä.');
             return;
         }
 
         if (!passwordRegex.test(newPassword)) {
-            setPasswordError('Salasana ei voi sisältää <, >, /, \\ -merkkejä.');
+            setPasswordErr('Salasana ei voi sisältää <, >, /, \\ -merkkejä.');
             return;
         }
 
@@ -82,16 +82,15 @@ function PasswordForm({ selectedObject, setFolders, setFiles, setSelectedObjects
                 setSelectedObjects([]);
                 showAlert(response.message, 'success');
             } else {
-                showAlert(response.message, 'error');
+                setPasswordErr(response.message);
             }
         } catch (error) {
             console.error('Error setting file password: ' + error);
-            showAlert(response.message, 'error');
+            showAlert('Virhe asettaessa tiedoston salasanaa, yritä uudelleen.', 'error');
         }
     }
 
     const changeVisibility = () => setShowPassword(!showPassword)
-
 
 
     return (
@@ -124,20 +123,20 @@ function PasswordForm({ selectedObject, setFolders, setFiles, setSelectedObjects
                     </span>
                 </div>
 
-                {passwordError && 
+                {passwordErr && 
                     <div className='flex items-center justify-between gap-4 px-3 py-2.5 mt-2 text-white text-sm bg-red-500'>
-                        <p>{passwordError}</p>
-                        <button onClick={() => setPasswordError('')}><X size={20} /></button>
+                        <p>{passwordErr}</p>
+                        <button onClick={() => setPasswordErr(null)}><X size={20} /></button>
                     </div>
                 }
 
-<button 
-            type="submit" 
-            className="w-full mt-4 py-2.5 px-3 rounded-full bg-gradient-to-br from-primary to-blue-800 text-white 
-                text-sm hover:to-primary shadow-md shadow-black/25 transition-colors"
-            >
-                Tallenna
-            </button>
+                <button 
+                    type="submit" 
+                    className="w-full mt-4 py-2.5 px-3 rounded-full bg-gradient-to-br from-primary to-blue-800 text-white 
+                        text-sm hover:to-primary shadow-md shadow-black/25 transition-colors"
+                >
+                    Tallenna
+                </button>
             </form>
         </div>
     </>

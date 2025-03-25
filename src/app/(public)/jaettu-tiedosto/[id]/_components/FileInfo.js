@@ -3,7 +3,7 @@ import { translateFileSize, cleanDataType, convertDate } from '@/utils/DataTrans
 import { LockKeyhole, Share2 } from 'lucide-react';
 import Link from 'next/link';
 
-function FileInfo({ file, folder }) {
+function FileInfo({ file }) {
   if (!file) return null;
 
   // Define the file info fields
@@ -17,38 +17,8 @@ function FileInfo({ file, folder }) {
       value: convertDate(file.uploadedAt),
     },
     {
-      label: 'Kansio:',
-      value: folder ? (
-        <Link href={`/kansio/${folder.id}`} className="text-primary hover:text-primary/75">
-          {folder.name}
-        </Link>
-      ) : (
-        <Link href="/kansiot" className="text-primary hover:text-primary/75">
-          Ei kansiota
-        </Link>
-      ),
-    },
-    {
       label: 'Tyyppi:',
       value: cleanDataType(file.type),
-    },
-    {
-      label: 'Näkyvyys:',
-      value: (
-        <span className="flex gap-1 items-center">
-          {file.shared && <span title="Jaettu" className="text-xs text-success"><Share2 size={18} /></span>}
-          {file.shared ? 'Jaettu' : 'Yksityinen'}
-        </span>
-      ),
-    },
-    {
-      label: 'Salasana suojattu:',
-      value: (
-        <span className="flex gap-1 items-center">
-          {file.passwordProtected && <span title="Salasana suojattu" className="text-xs text-success"><LockKeyhole size={18} /></span>}
-          {file.passwordProtected ? 'Kyllä' : 'Ei'}
-        </span>
-      ),
     },
   ];
 

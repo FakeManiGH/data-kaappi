@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { LockKeyhole, Pen, Settings, Share2, Trash } from 'lucide-react'
 import SharePopup from './SharePopup'
 import PasswordPopup from './PasswordPopup'
-import DeleteConfirmPopup from './DeleteConfirmPopup'
+import DeletePopup from './DeletePopup'
 import { useUser } from '@clerk/nextjs'
 import RenamePopup from './RenamePopup'
 
@@ -97,7 +97,7 @@ function FileNav({ file, setFile, setDeleted }) {
                         </div>
 
                         <div className='bg-background pb-2'>
-                            <strong className="block p-2 text-xs font-medium uppercase text-red-400">
+                            <strong className="block p-2 text-xs font-medium uppercase text-gray-500">
                                 Vaaravyöhyke
                             </strong>
 
@@ -117,7 +117,7 @@ function FileNav({ file, setFile, setDeleted }) {
             {/* Popups */}
             {sharePopup && <SharePopup file={file} setFile={setFile} setSharePopup={setSharePopup} />}
             {passwordPopup && <PasswordPopup file={file} setFile={setFile} setPasswordPopup={setPasswordPopup} />}
-            {deletePopup && <DeleteConfirmPopup file={file} setDeletePopup={setDeletePopup} setDeleted={setDeleted} />}
+            {deletePopup && <DeletePopup file={file} setDeletePopup={setDeletePopup} setDeleted={setDeleted} />}
             {renamePopup && <RenamePopup file={file} setFile={setFile} setRenamePopup={setRenamePopup} />}
         </div>
     )

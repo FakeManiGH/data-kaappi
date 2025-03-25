@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 import { useAlert } from '@/app/contexts/AlertContext';
 import CopyClipboard from '@/app/_components/_common/CopyClipboard';
+import { useUser } from '@clerk/nextjs';
+import { setFileLinkSharing } from '@/app/file-requests/files';
 
 const exampleGroups = [
     { id: 1, name: 'Group 1' },
@@ -15,8 +17,8 @@ function SharePopup({ file, setFile, setSharePopup }) {
     const [shareGroup, setShareGroup] = useState(false);
     const [selectedGroups, setSelectedGroups] = useState([]);
     const [availableGroups, setAvailableGroups] = useState(exampleGroups);
-    const fileID = file.id;
     const { showAlert } = useAlert();
+    const { user } = useUser();
 
     useEffect(() => {
         const handleClick = (e) => {
@@ -31,7 +33,21 @@ function SharePopup({ file, setFile, setSharePopup }) {
     }, []);
 
     const handleLinkSharing = async (e) => {
-        setShareLink(e.target.checked);
+        try {
+            const newShareValue = e.target.checked;
+            const response = await setFileLinkSharing(user.id, file.id, newShareValue);
+    
+            if (response.success) {
+                showAlert('Tiedoston linkillä jakamista muutettu.', 'info');
+                setShareLink(newShareValue); 
+                setFile({ ...file, shared: newShareValue }); 
+            } else {
+                showAlert(response.message, 'error');
+            }
+        } catch (error) {
+            console.error("Error changing file sharing: " + error);
+            showAlert('Tiedoston jakamisasetusten muuttamisessa tapahtui virhe, yritä uudelleen.', 'error');
+        }
     };
 
     const handleGroupSharing = async (e) => {
@@ -88,7 +104,7 @@ function SharePopup({ file, setFile, setSharePopup }) {
 
                     {shareLink && (
                     <>
-                        <CopyClipboard content={file.shortUrl} />
+                        <CopyClipboard content={file.shareUrl} />
 
                         <p className='text-sm p-2 rounded-lg border border-red-500'>
                             Huomaa, että osoite on julkinen ja kaikki osoitteen tietävät pääsevät näkemään tiedoston. 
