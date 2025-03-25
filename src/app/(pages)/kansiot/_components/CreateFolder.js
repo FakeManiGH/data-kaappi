@@ -58,25 +58,34 @@ function CreateFolder({ folders, setFolders, setCreateFolder }) {
 
   return (
     <span className='fixed z-50 inset-0 flex justify-center items-center bg-black/50 p-4'>
-      <div className='relative flex flex-col gap-4 w-full max-w-2xl p-4 z-50 bg-gradient-to-br from-background to-contrast shadow-lg shadow-black/25'>
+      <div className='relative flex flex-col w-full max-w-2xl rounded-xl p-4 z-50 bg-gradient-to-br from-contrast to-secondary 
+          shadow-lg shadow-black/25 max-h-full border border-contrast overflow-y-auto'
+      >
         <button 
           onClick={() => setCreateFolder(false)} 
-          className='absolute top-2 right-2 p-1 text-white bg-red-500 hover:bg-red-600 transition-colors'
+          className='absolute top-2 right-2 p-1 rounded-full text-white bg-red-500 hover:bg-red-600 transition-colors'
         >
           <X />
         </button>
-        <h2 className="text-2xl md:text-3xl"><strong>Luo uusi kansio</strong></h2>
-        <form className="flex flex-col" onSubmit={handleCreateFolder}>
-          <label htmlFor="folderName" className="block text-sm font-semibold">Kansion nimi</label>
+        <h2 className="text-2xl md:text-3xl mb-6 text-center font-bold">Luo uusi kansio</h2>
+        <p className='text-sm'>Luo uusi kansio kaappiisi. Merkit &lt;, &gt;, \ ja / on kielletty.</p>
+        <form className="flex flex-col mt-4" onSubmit={handleCreateFolder}>
+          <label htmlFor="folderName" className="block text-sm font-bold">Kansion nimi</label>
           <input 
             type="text" 
             id="folderName" 
             placeholder='Anna kansiolle nimi...' 
             name="folderName" 
-            className="outline-none py-2.5 px-3 bg-background text-sm border border-transparent focus:border-primary focus:ring-1"
+            className="relative w-full py-2.5 px-3 bg-background text-sm border border-transparent outline-none focus:border-primary focus:ring-1"
             autoFocus
           />
-          <button type="submit" className="w-full py-2.5 px-3 mt-2 bg-primary text-white text-sm hover:bg-primary/75 transition-colors">Luo kansio</button>
+          <button 
+            type="submit" 
+            className="w-full mt-2 py-2.5 px-3 rounded-full bg-gradient-to-br from-primary to-blue-800 text-white 
+              text-sm hover:to-primary shadow-md shadow-black/25 transition-colors"
+          >
+              Luo kansio
+          </button>
         </form>
       </div>
     </span>

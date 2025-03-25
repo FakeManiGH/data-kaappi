@@ -12,11 +12,11 @@ function FilePreview({ files, folders, setNewFolder, removeFile, uploadProgress,
     const updatedFiles = [...files]
     updatedFiles[fileIndex].folderID = selectedFolderID
     setFiles(updatedFiles)
-    console.log(files)
+    console.log(updatedFiles)
   }
 
   return (
-    <div className='grid grid-cols-1 lg:grid-cols-2 w-full gap-4'>
+    <div className='grid grid-cols-1 lg:grid-cols-2 w-full gap-2'>
       {files?.map((file, index) => (
         <div key={index} className='flex flex-1 items-center gap-3 p-2 bg-secondary shadow-md shadow-black/25 rounded-xl'>
           <Image 
@@ -35,10 +35,10 @@ function FilePreview({ files, folders, setNewFolder, removeFile, uploadProgress,
             <div className='flex items-center gap-1'>
               <select
                 id='folder'
-                className='px-3 py-2.5 rounded-lg bg-background text-sm border border-contrast focus:border-primary w-full focus:ring-primary focus:ring-1
+                className='px-3 py-2.5 bg-background text-sm border border-contrast focus:border-primary w-full focus:ring-primary focus:ring-1
                   first:text-navlink'
                 onChange={(e) => handleFolderChange(e, index)}
-                value={file.folderID || ''}
+                value={file.folderID || ''} // Prioritize preferredFolder
               >
                 <option value='' className='option-lighter'>Valitse kansio</option>
                 {folders.map((folder) => (

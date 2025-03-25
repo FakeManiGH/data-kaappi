@@ -45,7 +45,6 @@ function UploadForm({ uploadFile, files, setFiles, fileErrors, setFileErrors, se
   const processFiles = (fileList) => {
     setFileErrors([]);
     let filesArray = [...files];
-    let fileErrors = [];
 
     for (let i = 0; i < fileList.length; i++) {
       const file = fileList[i];
@@ -118,7 +117,7 @@ function UploadForm({ uploadFile, files, setFiles, fileErrors, setFileErrors, se
           <label
             htmlFor="dropzone-file"
             className={`flex flex-col items-center w-full max-w-full justify-center h-72 rounded-xl
-              cursor-pointer border-4 border-dashed hover:border-primary transition-colors
+              cursor-pointer border-2 border-dashed hover:border-primary transition-colors
               ${isDragging ? 'border-primary bg-primary/10' : 'border-contrast bg-background'}`}
 
           >

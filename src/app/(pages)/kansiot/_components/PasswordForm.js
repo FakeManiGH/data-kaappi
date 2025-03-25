@@ -131,7 +131,13 @@ function PasswordForm({ selectedObject, setFolders, setFiles, setSelectedObjects
                     </div>
                 }
 
-                <button type="submit" className="w-full py-2.5 px-3 mt-2 bg-primary text-white text-sm hover:bg-primary/90 transition-colors">Tallenna</button>
+<button 
+            type="submit" 
+            className="w-full mt-4 py-2.5 px-3 rounded-full bg-gradient-to-br from-primary to-blue-800 text-white 
+                text-sm hover:to-primary shadow-md shadow-black/25 transition-colors"
+            >
+                Tallenna
+            </button>
             </form>
         </div>
     </>

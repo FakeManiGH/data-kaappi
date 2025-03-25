@@ -34,13 +34,12 @@ function TopHeader() {
 
   return (
     <header 
-      className='flex md:justify-end items-center justify-between gap-2 p-4 z-50 bg-gradient-to-tl from-primary to-blue-800 dark:from-blue-800 dark:to-blue-950
-        md:from-background md:to-background dark:md:from-background dark:md:to-background'
+      className='flex md:justify-end items-center justify-between gap-2 p-4 z-50'
     >
       <div className='md:hidden relative' ref={dropdownRef}>
         <button
           id='dropdownBtn'
-          className='py-2 cursor-pointer transition text-white hover:text-yellow-400'
+          className='py-2 cursor-pointer transition text-foreground hover:text-primary'
           onClick={() => setDropdown(true)}
         >
           <AlignJustify size={32} />
@@ -48,12 +47,11 @@ function TopHeader() {
 
         {/* Dropdown */}
           <div
-            className={`fixed inset-0 z-50 origin-left bg-background flex justify-center bg-gradient-to-tl from-primary to-blue-800 dark:from-blue-800 dark:to-blue-950
-              transition-transform ease-in overflow-y-auto
+            className={`fixed inset-0 z-50 origin-left bg-background flex justify-center transition-transform ease-in overflow-y-auto
               ${dropdown ? 'scale-x-1' : 'scale-x-0'}`}
             role="menu"
           > 
-            <button className='fixed right-0 top-0 p-4 text-white hover:text-yellow-300' onClick={() => setDropdown(false)}>
+            <button className='fixed right-0 top-0 p-4 text-foreground hover:text-primary' onClick={() => setDropdown(false)}>
               <X size={32} />
             </button>
 
@@ -62,10 +60,11 @@ function TopHeader() {
                 <Link
                   href={item.path}
                   key={item.id}
-                  className={`flex items-center w-full gap-6 p-3 last:pb-6 group ${currentIndex === item.path ? 'text-yellow-300' : 'text-white'}`}
+                  className={`flex items-center w-full gap-6 p-3 last:pb-6 group hover:text-foreground
+                    ${currentIndex === item.path ? 'text-foreground' : 'text-navlink'}`}
                   onClick={() => setDropdown(false)}
                 >
-                  <item.icon className={`group-hover:text-yellow-300 ${currentIndex === item.path && 'text-yellow-300'}`} />
+                  <item.icon className={`group-hover:text-primary ${currentIndex === item.path && 'text-primary'}`} />
                   <p className='text-sm'>{item.name}</p>
                 </Link>
               ))}
@@ -75,7 +74,7 @@ function TopHeader() {
 
       <Link 
         href='/' 
-        className='flex items-center gap-2 md:hidden font-bold text-white hover:text-yellow-400'
+        className='flex items-center gap-2 md:hidden font-bold text-foreground hover:text-primary'
       >
           <Image src='/logo.svg' alt="Logo" width={40} height={40} />
           Datakaappi

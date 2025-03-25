@@ -120,9 +120,10 @@ function Page({ params }) {
 
             <FilePagePreview file={file} />
             <FileInfo file={file} folder={folder} setFile={setFile} setLivePreview={setLivePreview} />
-            <DownloadBtn url={file.url} fileName={file.name} buttonStyle="w-full py-3" />
+            <DownloadBtn url={file.url} fileName={file.name} buttonStyle="mt-2 py-3 md:max-w-[50%]" />
 
             {livePreview && <FileLivePreview file={file} setLivePreview={setLivePreview} />}
+            {}
         </main>
     )
 }

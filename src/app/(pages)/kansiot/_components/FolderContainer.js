@@ -117,7 +117,7 @@ function FolderContainer({ folders, files, setFolders, setFiles, setCreateFolder
                     onTouchEnd={() => handleTouchEnd(folder)}
                     className={`relative flex items-center justify-center p-4 rounded-lg transition-colors border group overflow-hidden
                         ${selectedObjects.includes(folder) ? 'border-primary' : 'border-transparent'}
-                        ${dragOverFolder === folder.id ? 'bg-primary' : 'bg-gray-500/10'}`}
+                        ${dragOverFolder === folder.id ? 'bg-primary' : 'bg-secondary'}`}
                     style={{ touchAction: 'none' }}
                 >   
                     {isDragging && 
@@ -132,7 +132,7 @@ function FolderContainer({ folders, files, setFolders, setFiles, setCreateFolder
                     <input 
                         type="checkbox" 
                         className={`absolute top-2 right-2 p-2 bg-background group-hover:block appearance-none rounded-full border 
-                            border-contrast hover:border-primary checked:border-primary checked:bg-primary checked:hover:border-contrast transition-all
+                            border-navlink hover:border-primary checked:border-primary checked:bg-primary checked:hover:border-navlink transition-all
                             ${selectedObjects.includes(folder) ? 'block' : 'block md:hidden'}`}
                         onChange={() => handleObjectSelect(folder)}
                         checked={selectedObjects.includes(folder)}
@@ -156,20 +156,20 @@ function FolderContainer({ folders, files, setFolders, setFiles, setCreateFolder
                     draggable
                     onDragStart={() => handleDragStart(file)}
                     onDragEnd={() => handleDragEnd(file)}
-                    className={`relative flex items-center justify-center p-4 rounded-lg bg-gray-500/10 transition-colors group border overflow-hidden
+                    className={`relative flex items-center justify-center p-4 rounded-lg bg-secondary transition-colors group border overflow-hidden
                         ${selectedObjects.includes(file) ? 'border-primary' : 'border-transparent'}`}
                     style={{ touchAction: 'none' }}
                 >   
                     <input 
                         type="checkbox" 
                         className={`absolute top-2 right-2 p-2 bg-background group-hover:block appearance-none rounded-full border 
-                            border-contrast hover:border-primary checked:border-primary checked:bg-primary checked:hover:border-contrast transition-all
+                            border-navlink hover:border-primary checked:border-primary checked:bg-primary checked:hover:border-navlink transition-all
                             ${selectedObjects.includes(file) ? 'block' : 'block md:hidden'}`}
                         onChange={() => handleObjectSelect(file)}
                         checked={selectedObjects.includes(file)}
                     />
 
-                    <button className='absolute py-2 right-1 cursor-grab text-contrast hover:text-foreground'>
+                    <button className='absolute py-2 right-1 cursor-grab text-navlink hover:text-foreground'>
                         <GripVertical />
                     </button>
                     

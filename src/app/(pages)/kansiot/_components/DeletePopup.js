@@ -19,9 +19,9 @@ function DeletePopup({ selectedObjects, setSelectedObjects, setFolders, setFiles
     };
 
     return (
-        <div className='fixed z-50 inset-0 flex justify-center items-start bg-black/50 px-4 py-2'>
-            <div className='relative flex flex-col w-full max-w-2xl top-52 p-4 rounded-lg z-50 bg-gradient-to-br from-background to-contrast 
-                shadow-md shadow-black/25 max-h-full overflow-y-auto'
+        <div className='fixed z-50 inset-0 flex justify-center items-center bg-black/50 px-4 py-2'>
+            <div className='relative flex flex-col w-full max-w-2xl rounded-xl p-4 z-50 bg-gradient-to-br from-contrast to-secondary 
+                shadow-lg shadow-black/25 max-h-full border border-contrast overflow-y-auto'
             >
                 <button 
                     onClick={() => setDeletePopup(false)} 
@@ -58,7 +58,10 @@ function DeletePopup({ selectedObjects, setSelectedObjects, setFolders, setFiles
                     ))}
                 </ul>
 
-                <button onClick={() => setDeleteConfirm(true)} className='text-white text-sm bg-red-500 mt-4 py-2.5 px-3 rounded-full hover:bg-red-600'>
+                <button 
+                    onClick={() => setDeleteConfirm(true)} 
+                    className='text-white text-sm bg-red-500 mt-4 py-2.5 px-3 rounded-full hover:bg-red-600 shadow-md shadow-black/25'
+                >
                     Poista
                 </button>
             </div>

@@ -4,12 +4,14 @@ import SharePopup from './SharePopup'
 import PasswordPopup from './PasswordPopup'
 import DeleteConfirmPopup from './DeleteConfirmPopup'
 import { useUser } from '@clerk/nextjs'
+import RenamePopup from './RenamePopup'
 
 function FileNav({ file, setFile, setDeleted }) {
-    const [dropMenu, setDropMenu] = useState(false)
-    const [sharePopup, setSharePopup] = useState(false)
-    const [passwordPopup, setPasswordPopup] = useState(false)
-    const [deletePopup, setDeletePopup] = useState(false)
+    const [dropMenu, setDropMenu] = useState(false);
+    const [sharePopup, setSharePopup] = useState(false);
+    const [passwordPopup, setPasswordPopup] = useState(false);
+    const [deletePopup, setDeletePopup] = useState(false);
+    const [renamePopup, setRenamePopup] = useState(false);
 
     useEffect(() => {
         const handleClick = (e) => {
@@ -21,6 +23,11 @@ function FileNav({ file, setFile, setDeleted }) {
         document.addEventListener('click', handleClick)
         return () => document.removeEventListener('click', handleClick)
     }, [])
+
+    const handleRenamePopup = () => {
+        setDropMenu(false);
+        setRenamePopup(true);
+    }
 
     const handleSharePopup = () => {
         setDropMenu(false)
@@ -42,7 +49,7 @@ function FileNav({ file, setFile, setDeleted }) {
             <div>
                 <button 
                     className='flex items-center w-fit gap-1 px-3 py-2 rounded-full text-sm bg-gradient-to-br from-primary to-blue-800 text-white 
-                        hover:to-primary transition-colors'
+                        hover:to-primary shadow-md shadow-black/25 transition-colors'
                     role="button"
                     onClick={() => setDropMenu(!dropMenu)}
                 >
@@ -52,7 +59,8 @@ function FileNav({ file, setFile, setDeleted }) {
 
                 {dropMenu && (
                     <div
-                        className="absolute z-10 right-0 rounded-lg mt-2 w-full sm:max-w-64 divide-y divide-contrast overflow-hidden border border-contrast bg-background shadow-lg"
+                        className="absolute z-10 right-0 rounded-lg mt-2 w-full sm:max-w-64 divide-y divide-contrast overflow-hidden 
+                            border border-contrast bg-background shadow-lg shadow-black/25"
                         role="menu"
                     >
                         <div className='bg-background shadow-lg shadow-black/50'>
@@ -63,10 +71,10 @@ function FileNav({ file, setFile, setDeleted }) {
                             <button 
                                 className='flex w-full items-center gap-2 px-4 py-2 text-sm text-navlink hover:text-primary' 
                                 role="menuitem"
-                                onClick={handleSharePopup}
+                                onClick={handleRenamePopup}
                             >
                                 <Pen size={16} />
-                                Muokkaa
+                                Nimeä uudelleen
                             </button>
 
                             <button 
@@ -110,6 +118,7 @@ function FileNav({ file, setFile, setDeleted }) {
             {sharePopup && <SharePopup file={file} setFile={setFile} setSharePopup={setSharePopup} />}
             {passwordPopup && <PasswordPopup file={file} setFile={setFile} setPasswordPopup={setPasswordPopup} />}
             {deletePopup && <DeleteConfirmPopup file={file} setDeletePopup={setDeletePopup} setDeleted={setDeleted} />}
+            {renamePopup && <RenamePopup file={file} setFile={setFile} setRenamePopup={setRenamePopup} />}
         </div>
     )
 }

@@ -73,7 +73,7 @@ function Page() {
             <div className='flex items-center justify-end gap-1'>
                 <Link 
                     href='/tallenna' 
-                    className='flex flex-1 sm:flex-none items-center justify-center w-fit gap-2 px-3 py-2.5 rounded-full text-sm bg-gradient-to-br 
+                    className='flex flex-1 sm:flex-none items-center justify-center w-fit gap-2 p-3 rounded-full text-sm bg-gradient-to-br 
                         from-primary to-blue-800 text-white hover:to-primary transition-colors'
                 >
                     <FilePlus />
@@ -81,7 +81,7 @@ function Page() {
                 </Link>
                 <button 
                     onClick={() => setCreateFolder(true)} 
-                    className='flex flex-1 sm:flex-none items-center justify-center w-fit gap-2 px-3 py-2.5 rounded-full text-sm bg-gradient-to-br 
+                    className='flex flex-1 sm:flex-none items-center justify-center w-fit gap-2 p-3 rounded-full text-sm bg-gradient-to-br 
                         from-primary to-blue-800 text-white hover:to-primary transition-colors'
                 >
                     <FolderPlus />

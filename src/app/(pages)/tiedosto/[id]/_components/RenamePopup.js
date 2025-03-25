@@ -6,76 +6,32 @@ import { useAlert } from '@/app/contexts/AlertContext';
 import { X } from 'lucide-react';
 import { useUser } from '@clerk/nextjs';
 
-function RenamePopup({ selectedObject, setFolders, setFiles, setSelectedObjects, setRenamePopup }) {
-  const [objectName, setObjectName] = useState('');
+function RenamePopup({ file, setFile, setRenamePopup }) {
+  const [fileName, setFileName] = useState('');
   const [fileExtension, setFileExtension] = useState('');
   const [nameError, setNameError] = useState('')
   const { showAlert } = useAlert();
   const { user } = useUser();
 
   useEffect(() => {
-    if (selectedObject) {
-      if (selectedObject.docType === 'file') {
-        const nameParts = selectedObject.name.split('.');
-        const nameWithoutExtension = nameParts.slice(0, -1).join('.');
-        const extension = nameParts.slice(-1)[0];
-        setObjectName(nameWithoutExtension);
-        setFileExtension(extension);
-      } else {
-        setObjectName(selectedObject.name);
-      }
+    if (file) {
+      const nameParts = file.name.split('.');
+      const nameWithoutExtension = nameParts.slice(0, -1).join('.');
+      const extension = nameParts.slice(-1)[0];
+      setFileName(nameWithoutExtension);
+      setFileExtension(extension);
+    } else {
+      setRenamePopup(false);
     }
-  }, [selectedObject]);
-
+  }, [file]);
 
   const handleNameChange = (e) => {
-    setObjectName(e.target.value);
+    setFileName(e.target.value);
   };
-
-
-  const handleFolderNameChange = async (e) => {
-    e.preventDefault();
-    const newFolderName = objectName;
-
-    if (!newFolderName || newFolderName === selectedObject.name) {
-      setNameError('Anna ensin uusi nimi.', 'info');
-      return;
-    }
-
-    if (!folderNameRegex.test(newFolderName)) {
-      setNameError('Nimi ei saa sisältää merkkejä <, >, /, \\ ja sen on oltava 2-50 merkkiä pitkä.');
-      return;
-    }
-
-    try {
-      const response = await updateFolderName(user.id, selectedObject.id, newFolderName);
-
-      if (response.success) {
-        const updatedFolder = {
-          ...selectedObject,
-          name: newFolderName
-        };
-
-        setFolders(prevFolders => prevFolders.map(folder => 
-          folder.id === updatedFolder.id ? updatedFolder : folder
-        ));
-
-        setRenamePopup(false); // Close the options popup
-        setSelectedObjects([]); // Empty selected objects array
-        showAlert(response.message, 'success');
-      } else {
-        showAlert(response.message, 'error');
-      }
-    } catch (error) {
-      console.error("Error updating folder: ", error);
-      showAlert('Virhe kansion päivittämisessä.', 'error');
-    }
-  };
-
 
   const handleFileNameChange = async (e) => {
     e.preventDefault();
-    const fullName = `${objectName}.${fileExtension}`;
+    const fullName = `${fileName}.${fileExtension}`;
 
     if (!fullName || fullName === objectName) {
       setNameError('Anna ensin uusi nimi.', 'info');
@@ -88,20 +44,16 @@ function RenamePopup({ selectedObject, setFolders, setFiles, setSelectedObjects,
     }
 
     try {
-      const response = await updateFileName(user.id, selectedObject.id, fullName);
+      const response = await updateFileName(user.id, file.id, fullName);
 
       if (response.success) {
         const updatedFile = {
-          ...selectedObject,
+          ...file,
           name: fullName
         };
 
-        setFiles(prevFiles => prevFiles.map(file => 
-          file.id === updatedFile.id ? updatedFile : file
-        ));
-
-        setRenamePopup(false); // Close the options popup
-        setSelectedObjects([]); // Empty selected objects array
+        setFile(updatedFile);
+        setRenamePopup(false); 
         showAlert(response.message, 'success');
       } else {
         showAlert(response.message, 'error');
@@ -124,18 +76,18 @@ function RenamePopup({ selectedObject, setFolders, setFiles, setSelectedObjects,
           <X />
         </button>
         <h2 className="text-2xl md:text-3xl mb-6 text-center font-bold">Nimeä uudelleen</h2>
-        <p className='text-sm'>Nimeä kohde uudelleen. Merkit &lt;, &gt;, \ ja / on kielletty.</p>
-        <form className="flex flex-col mt-4" onSubmit={selectedObject.docType === 'folder' ? handleFolderNameChange : handleFileNameChange}>
+        <p className='text-sm'>Nimeä tiedosto uudelleen. Merkit &lt;, &gt;, \ ja / on kielletty.</p>
+        <form className="flex flex-col mt-4" onSubmit={handleFileNameChange}>
           <div>
-            <label htmlFor="objectName" className="block text-sm font-bold">{selectedObject.docType === 'file' ? 'Tiedoston nimi' : 'Kansion nimi'}</label>
+            <label htmlFor="objectName" className="block text-sm font-bold">Tiedoston nimi</label>
             <div className='flex items-center gap-1'>
               <input 
                 type="text" 
                 id="objectName" 
                 name="objectName"
-                value={objectName}
+                value={fileName}
                 onChange={handleNameChange}
-                placeholder={selectedObject.docType === 'file' ? 'Tiedoston nimi' : 'Kansion nimi'}
+                placeholder='Anna tiedostolle nimi...'
                 className="relative w-full py-2.5 px-3 bg-background text-sm border border-transparent outline-none focus:border-primary focus:ring-1"
                 autoFocus
               />

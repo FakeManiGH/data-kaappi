@@ -69,7 +69,7 @@ function Page() {
     try {
       await uploadTask;
       const downloadURL = await getDownloadURL(storageRef);
-      const shortURL = process.env.NEXT_PUBLIC_BASE_URL + 'tiedosto/' + fileID;
+      const shareURL = process.env.NEXT_PUBLIC_BASE_URL + 'jaettu/' + fileID;
       const fileData = {
         docType: 'file', // String
         fileID: fileID, // String
@@ -77,10 +77,10 @@ function Page() {
         fileSize: parseInt(file.size), // Number
         fileType: file.type, // String
         fileUrl: downloadURL, // String
-        shortUrl: shortURL, // String
         folderID: file.folderID ? file.folderID : '', // String
         shared: false, // Boolean
-        sharedWith: [],  // Array
+        shareUrl: shareURL, // String
+        shareGroups: [],  // Array
         pwdProtected: false, // Boolean
         pwd: '', // String
         uploadedBy: user.fullName, // String
@@ -133,7 +133,7 @@ function Page() {
         uploadProgress={uploadProgress}
         setFiles={setFiles}
       />
-      {newFolder && <CreateFolder setNewFolder={setNewFolder} folders={folders} setFolders={setFolders} />}
+      {newFolder && <CreateFolder setNewFolder={setNewFolder} folders={folders} setFolders={setFolders} files={files} setFiles={setFiles} />}
     </main>
   );
 }

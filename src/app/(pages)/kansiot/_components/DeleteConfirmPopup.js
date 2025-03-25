@@ -57,23 +57,23 @@ function DeleteConfirmPopup({ selectedObjects, setSelectedObjects, setFolders, s
     };
 
     return (
-        <div className='fixed z-50 inset-0 flex justify-center items-start bg-black/50 px-4 py-2'>
-            <div className='relative flex flex-col w-full max-w-xl mt-2 rounded-lg top-52 p-4 z-50 text-sm bg-gradient-to-br from-background to-contrast 
-                shadow-md max-h-full overflow-y-auto'
+        <div className='fixed z-50 inset-0 flex justify-center items-center bg-black/50 px-4 py-2'>
+            <div className='relative flex flex-col w-full max-w-xl rounded-xl p-4 mt-2 z-50 bg-gradient-to-br from-contrast to-secondary 
+                shadow-lg shadow-black/25 max-h-full border border-contrast overflow-y-auto'
             >
                 <h2 className="text-2xl md:text-3xl mb-6 text-center font-bold">Vahvista poistaminen</h2>
                 <p className='text-center text-sm'>Haluatko varmasti poistaa valitut kohteet?</p>
                 <p className='text-center text-sm'>Poistettuja kohteita ei voi palauttaa.</p>
 
-                <div className='flex items-center justify-center gap-1 mt-4'>
+                <div className='flex items-center justify-center gap-1 mt-4 text-sm'>
                     <button 
                         onClick={handleDeletingObjects} 
-                        className='text-white bg-red-500 py-2.5 px-3 rounded-full hover:bg-red-600'
+                        className='text-white bg-red-500 py-2.5 px-3 rounded-full hover:bg-red-600 shadow-md shadow-black/25'
                     >
                         Kyllä, poista
                     </button>
                     <button 
-                        className='text-foreground bg-contrast py-2.5 px-3 rounded-full'
+                        className='text-foreground bg-contrast py-2.5 px-3 rounded-full shadow-md shadow-black/25'
                         onClick={() => setDeleteConfirm(false)}
                     >
                         Peruuta
