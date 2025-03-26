@@ -1,6 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { ArrowRightLeft, FilePlus, FolderPlus, FolderX, GripVertical, LockKeyhole, Pen, Pencil, Settings, Share2, Trash2, X } from 'lucide-react';
-import DownloadBtn from './DownloadBtn';
+import React, { useState } from 'react';
+import { FilePlus, FolderPlus, GripVertical, LockKeyhole, Share2 } from 'lucide-react';
 import Link from 'next/link';
 import { translateFileSize } from '@/utils/DataTranslation';
 import { getFileIcon } from '@/utils/GetFileIcon';
@@ -159,13 +158,13 @@ function FolderContainer({ folders, files, setFolders, setFiles, setCreateFolder
                     draggable
                     onDragStart={() => handleDragStart(file)}
                     onDragEnd={() => handleDragEnd(file)}
-                    className={`relative flex items-center justify-center p-4 rounded-lg bg-secondary transition-colors group border overflow-hidden
+                    className={`relative flex items-center justify-center p-2 rounded-lg bg-secondary transition-colors group border overflow-hidden
                         ${selectedObjects.includes(file) ? 'border-primary' : 'border-transparent'}`}
                     style={{ touchAction: 'none' }}
                 >   
                     <input 
                         type="checkbox" 
-                        className={`absolute top-2 right-2 p-2 bg-background group-hover:block appearance-none rounded-full border 
+                        className={`absolute top-1 right-1 p-2 bg-background group-hover:block appearance-none rounded-full border 
                             border-navlink hover:border-primary checked:border-primary checked:bg-primary checked:hover:border-navlink transition-all
                             ${selectedObjects.includes(file) ? 'block' : 'block md:hidden'}`}
                         onChange={() => handleObjectSelect(file)}
@@ -189,7 +188,7 @@ function FolderContainer({ folders, files, setFolders, setFiles, setCreateFolder
                         <h2 className=" text-sm max-w-full font-semibold truncate">{file.name}</h2>
                         <p className="text-sm text-navlink">{translateFileSize(file.size)}</p>
                     </Link>
-
+                    
                     <div className='absolute top-1 left-1 flex flex-col gap-1 text-success'>
                         {file.passwordProtected && <LockKeyhole size={16} />}
                         {file.shared && <Share2 size={16} />}

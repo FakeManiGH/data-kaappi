@@ -13,7 +13,7 @@ export default {
         linear: "var(--linear)",
         contrast: "var(--contrast)",
         navlink: "var(--navlink)",
-        primary: "#006ecf",
+        primary: "#0088ff",
         secondary: "var(--secondary)",
         success: "#399c39",
 

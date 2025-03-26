@@ -1,6 +1,6 @@
 import React, {useState } from 'react'
 import { Eye, EyeOff, X } from 'lucide-react'
-import { verifyFilePassword } from '@/app/file-requests/files';
+import { verifyFilePassword } from '@/app/file-requests/files'
 
 function PasswordPrompt({ fileID, setFile, setPwdVerified }) {
     const [showPassword, setShowPassword] = useState(false);

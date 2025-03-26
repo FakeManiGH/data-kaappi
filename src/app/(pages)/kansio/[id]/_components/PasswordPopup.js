@@ -73,8 +73,8 @@ function PasswordPopup({ selectedObject, setFolders, setFiles, setSelectedObject
 
                 {selectedObject.passwordProtected ? (
                     <div className="flex items-center justify-between gap-2 p-2 mb-4 border-b border-dashed border-navlink">
-                        <div className='flex items-center gap-2 w-full '>
-                            <LockKeyhole className='text-success' size={20} />
+                        <div className='flex items-center gap-1 w-full '>
+                            <LockKeyhole className='text-success' size={18} />
                             <p className="text-sm font-bold">Kohde on suojattu salasanalla.</p>
                         </div>
 
@@ -87,8 +87,8 @@ function PasswordPopup({ selectedObject, setFolders, setFiles, setSelectedObject
                         </button>
                     </div>
                 ) : (
-                    <p className='text-sm p-2 mb-4 border-b border-dashed border-navlink'>
-                        Suojaa kohde <strong className='text-base'>{selectedObject.name}</strong> salasanalla.
+                    <p className='text-sm p-2 mb-4 border-b border-dashed border-navlink font-semibold'>
+                        Suojaa kohde <span className='text-primary text-base font-bold'>{selectedObject.name}</span> salasanalla.
                     </p>
                 )}
 

@@ -1,73 +1,80 @@
 "use client"
-import React, { useEffect, useState } from 'react';
-import { useNavigation } from '@/app/contexts/NavigationContext';
-import FolderContainer from './_components/FolderContainer';
-import CreateFolder from './_components/CreateFolder';
-import { FilePlus, FolderPlus } from 'lucide-react';
+import React, { useEffect, useState, use } from 'react';
 import { useUser } from '@clerk/nextjs';
-import { useAlert } from '@/app/contexts/AlertContext';
+import ErrorView from '@/app/(pages)/_components/ErrorView';
+import ContentNotFound from '@/app/_components/_common/ContentNotFound';
 import PageLoading from '@/app/_components/_common/PageLoading';
-import ErrorView from '../_components/ErrorView';
-import { getUserFilesByFolder } from '@/app/file-requests/files';
-import { getUserFolders } from '@/app/file-requests/folders';
-import Link from 'next/link';
+import { useNavigation } from '@/app/contexts/NavigationContext';
+import { getFolderContent } from '@/app/file-requests/folders';
+import Breadcrumbs from './_components/BreadGrumps';
+import FolderContainer from './_components/FolderContainer';
+import FolderNavigation from './_components/FolderNavigation';
+import CreateFolder from './_components/CreateFolder';
 import RenamePopup from './_components/RenamePopup';
 import PasswordPopup from './_components/PasswordPopup';
-import FolderNavigation from './_components/FolderNavigation';
 import DeletePopup from './_components/DeletePopup';
+import { FilePlus, Folder, FolderPlus } from 'lucide-react';
+import Link from 'next/link';
 
 
-function Page() {
+function Page({ params }) {
+    const { id } = use(params);
+    const { user, isLoaded } = useUser();
     const { setCurrentIndex, navigatePage } = useNavigation();
-    const [folders, setFolders] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [pwdVerified, setPwdVerified] = useState(true);
+    const [folder, setFolder] = useState(null);
+    const [folders, setFolders] = useState(null);
     const [files, setFiles] = useState([]);
     const [selectedObjects, setSelectedObjects] = useState([]);
     const [createFolder, setCreateFolder] = useState(false);
     const [renamePopup, setRenamePopup] = useState(false);
     const [passwordPopup, setPasswordPopup] = useState(false)
     const [deletePopup, setDeletePopup] = useState(false);
-    const [loading, setLoading] = useState(true);
-    const [pageError, setPageError] = useState(null);
-    const { user, isLoaded } = useUser();
-    const { showAlert } = useAlert();
+    const [serverError, setServerError] = useState(null);
+    const [dataError, setDataError] = useState(null);
 
     useEffect(() => {
-        const fetchFolders = async () => {
-            if (isLoaded && user) {
-                try {
-                    const folders = await getUserFolders(user.id, '');
-                    const files = await getUserFilesByFolder(user.id, '');
-                    setFiles(files);
-                    setFolders(folders);
-                } catch (error) {
-                    setPageError('Palvelinvirhe! Yritä uudelleen.');
-                    showAlert('Palvelinvirhe! Yritä uudelleen.', 'error');
-                } finally {
-                    setLoading(false);
+        const getFolder = async () => {
+            try {
+                const response = await getFolderContent(user.id, id);
+
+                if (response.success) {
+                    if (response.protected) {
+                        setPwdVerified(false);
+                        return;
+                    }
+                    setFolder(response.folder);
+                    setFolders(response.folders);
+                    setFiles(response.files);
+                } else {
+                    setDataError(response.message);
                 }
-            } else if (isLoaded && !user) {
+            } catch (error) {
+                console.error("Error fetching folder data: " + error);
+                setServerError('Tietojen hakemisessa tapahti virhe: ' + error);
+            } finally {
                 setLoading(false);
-                navigatePage('/sign-in');
             }
         };
 
-        setCurrentIndex('/kansiot');
-        fetchFolders();
-
-        return () => {
-            setCurrentIndex('');
-        };
-    }, [isLoaded, user, setCurrentIndex, navigatePage ]);
+        if (isLoaded && user) {
+            setCurrentIndex('/kansio');
+            getFolder();
+        } else {
+            navigatePage('/sign-in');
+        }
+    }, [isLoaded, user, id, setCurrentIndex, navigatePage]);
 
     if (loading) return <PageLoading />;
-    if (pageError) return <ErrorView message={pageError} />;
+    if (serverError) return <ErrorView message={serverError} />;
+    if (dataError) return <ContentNotFound message={dataError} />;
+    if (!pwdVerified) return <div>Folder is password-protected. Please enter the password.</div>;
 
     return (
         <main>
-            <h1 className="text-3xl"><strong>Kansiot</strong></h1>
-            <p className='text-sm'>
-                Hallitse kansioita ja tiedostojasi.
-            </p>
+            <Breadcrumbs folder={folder} />
+            <h1 className='font-bold text-2xl md:text-3xl'>{folder.name}</h1>
 
             <div className='flex items-center gap-1'>
                 <Link 
@@ -113,7 +120,7 @@ function Page() {
                 setSelectedObjects={setSelectedObjects}
             />
 
-            {createFolder && <CreateFolder folders={folders} setFolders={setFolders} setCreateFolder={setCreateFolder} />}
+            {createFolder && <CreateFolder folder={folder} folders={folders} setFolders={setFolders} setCreateFolder={setCreateFolder} />}
             {renamePopup && <RenamePopup selectedObject={selectedObjects[0]} setFolders={setFolders} setFiles={setFiles} setSelectedObjects={setSelectedObjects} setRenamePopup={setRenamePopup} />}
             {passwordPopup && <PasswordPopup selectedObject={selectedObjects[0]} setFolders={setFolders} setFiles={setFiles} setSelectedObjects={setSelectedObjects} setPasswordPopup={setPasswordPopup} />}
             {deletePopup && <DeletePopup selectedObjects={selectedObjects} setSelectedObjects={setSelectedObjects} setFolders={setFolders} setFiles={setFiles} setDeletePopup={setDeletePopup} />}

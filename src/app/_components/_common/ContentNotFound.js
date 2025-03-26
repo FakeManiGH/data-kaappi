@@ -23,7 +23,7 @@ function ContentNotFound({ message }) {
                     Yritä uudelleen
                 </button>
 
-                <Link href='/' className='flex items-center gap-1 px-3 py-2 rounded-full bg-gradient-to-br from-primary to-blue-800 hover:to-primary transition-colors'>
+                <Link href='/' className='flex items-center gap-1 px-3 py-2 rounded-full text-white bg-gradient-to-br from-primary to-blue-800 hover:to-primary transition-colors'>
                     <Home />
                     Etusivulle
                 </Link>

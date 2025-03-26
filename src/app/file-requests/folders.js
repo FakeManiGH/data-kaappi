@@ -4,7 +4,7 @@ import { doc, setDoc, deleteDoc, getDoc, updateDoc, orderBy, collection, query, 
 import { db } from '@/../firebaseConfig';
 import bcrypt from 'bcrypt';
 import { folderNameRegex, passwordRegex } from "@/utils/Regex";
-import { transformFolderDataPrivate, transformFolderDataPublic } from "@/utils/DataTranslation";
+import { transformFileDataPublic, transformFolderDataPrivate, transformFolderDataPublic } from "@/utils/DataTranslation";
 
 // FOLDER API FUNCTIONS
 // CREATE
@@ -50,18 +50,72 @@ export const getUserFolders = async (userID, parentID) => {
     }
 }
 
-// Get FolderInfo (folderID)
-export const getFolderInfo = async (folderID) => {
+// Get Folder and content
+export const getFolderContent = async (userID, folderID) => {
     try {
-        const folderRef = doc(db, 'folders', folderID);
-        const docSnap = await getDoc(folderRef);
-        const data = docSnap.data();
-        return data;
+        // Check folder existence
+        const folderRef = doc(db, "folders", folderID);
+        const folderSnap = await getDoc(folderRef);
+
+        if (!folderSnap.exists()) {
+            return { success: false, message: `Kansiota ${folderID} ei löytynyt.` };
+        }
+
+        const folderTemp = folderSnap.data();
+
+        // Verify access rights
+        const isUnauthorized = !folderTemp.shared && folderTemp.sharedWith.length === 0 && userID !== folderTemp.userID;
+        if (isUnauthorized) {
+            return { success: false, message: 'Sinulla ei ole oikeutta tähän sisältöön.' };
+        }
+
+        // Handle password protection
+        if (folderTemp.pwdProtected && userID !== folderTemp.userID) {
+            return { success: true, protected: true };
+        }
+
+        // Fetch subfolders (if exists)
+        let foldersTemp = [];
+        try {
+            const q = query(
+                collection(db, "folders"),
+                where("parentID", "==", folderID),
+                orderBy("folderName", "asc")
+            );
+            const querySnap = await getDocs(q);
+            foldersTemp = querySnap.docs.map(doc => doc.data());
+        } catch (error) {
+            console.error("Error fetching subfolders: ", error);
+            return { success: false, message: 'Alikansioiden hakemisessa tapahtui virhe.' };
+        }
+
+        // Fetch folder files
+        let filesTemp = [];
+        try {
+            const q = query(
+                collection(db, "files"),
+                where("folderID", "==", folderID),
+                orderBy("fileName", "asc")
+            );
+            const querySnap = await getDocs(q);
+            filesTemp = querySnap.docs.map(doc => doc.data());
+        } catch (error) {
+            console.error("Error fetching folder files: ", error);
+            return { success: false, message: 'Tiedostojen hakemisessa tapahtui virhe.' };
+        }
+
+        // Transform data
+        const folder = transformFolderDataPublic(folderTemp);
+        const folders = foldersTemp.map(folder => transformFolderDataPublic(folder));
+        const files = filesTemp.map(file => transformFileDataPublic(file));
+
+        return { success: true, folder, folders, files };
     } catch (error) {
-        console.error("Error fetching folder data: ", error);
-        throw error;
+        console.error("Error fetching folder content: ", error);
+        return { success: false, message: 'Kansion sisällön hakemisessa tapahtui virhe, yritä uudelleen.' };
     }
-}
+};
+
 
 // Get Public FolderInfo (folderID)
 export const getPublicFolderInfo = async (folderID) => {
