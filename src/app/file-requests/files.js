@@ -66,25 +66,27 @@ export const getUserFiles = async (userID) => {
     }
 }
 
-// Get files by folder
-export const getUserFilesByFolder = async (userID, folderID) => {
+// Get user base files
+export const getUserBaseFiles = async (userID) => {
     try {
+        if (!userID) {
+            return { success: false, message: 'Käyttäjätietoja ei löytynyt.'}
+        }
+
         const q = query(
             collection(db, "files"),
-            where("folderID", "==", folderID),
+            where("folderID", "==", null),
             where("userID", "==", userID),
             orderBy("uploadedAt", "asc")
         );
+
         const querySnapshot = await getDocs(q);
-        if (querySnapshot.empty) {
-            console.log("No matching documents.");
-            return [];
-        }
         const files = querySnapshot.docs.map(doc => doc.data());
         const publicFiles = files.map(file => transformFileDataPublic(file));
-        return publicFiles;
+        return { success: true, files: publicFiles }
     } catch (error) {
-        console.error("Error fetching folderless files: ", error);
+        console.error("Error fetching files: ", error);
+        return { success: false, message: 'Tiedostojen hakemisessa tapahtui virhe, yritä uudelleen.' }
     }
 }
 

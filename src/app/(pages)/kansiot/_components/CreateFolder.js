@@ -1,60 +1,63 @@
 import { X } from 'lucide-react'
-import React from 'react'
-import { generateRandomString } from '@/utils/GenerateRandomString'
+import React, { useState } from 'react'
 import { createFolder } from '@/app/file-requests/folders'
 import { useAlert } from '@/app/contexts/AlertContext'
 import { useUser } from '@clerk/nextjs'
-import { transformFolderDataPublic } from '@/utils/DataTranslation'
+import { folderNameRegex } from '@/utils/Regex'
+import PopupLoader from '@/app/_components/_common/PopupLoader'
 
 function CreateFolder({ folders, setFolders, setCreateFolder }) {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null)
   const { showAlert } = useAlert()
   const { user } = useUser()
 
   const handleCreateFolder = async (e) => {
-    e.preventDefault()
+    e.preventDefault();
+    setLoading(true);
 
-    const folderName = e.target.folderName.value
+    const folderName = e.target.folderName.value.trim();
 
     if (!folderName) {
-      showAlert('Anna kansiolle nimi.', 'error')
+      setError('Anna kansiolle nimi.');
+      setLoading(false);
+      return
+    }
+
+    if (!folderNameRegex.test(folderName)) {
+      setError('Kansion nimen tulee olla 2-50 merkkiä pitkä, eikä se saa sisältää <, >, /, \\ -merkkejä.');
+      setLoading(false);
       return
     }
 
     try {
-      const folderID = generateRandomString(11)
-      
-      const folderData = {
-        docType: 'folder', // String
-        folderID: folderID, // String
-        folderName: folderName, // String
-        parentFolderName: '', // String
-        parentID: '', // String
-        fileCount: 0, // Number
-        userID: user.id, // String
-        userName: user.fullName, // String
-        userEmail: user.primaryEmailAddress.emailAddress, // String
-        createdAt: new Date(), // Date
-        modifiedAt: new Date(), // Date
-        pwdProtected: false, // Boolean
-        pwd: '', // String
-        shared: false, // Boolean
-        sharedWith: [], // Array
+      const folderUser = {
+        id: user.id,
+        name: user.fullName,
+        email: user.primaryEmailAddress.emailAddress,
       }
 
-      // Database call
-      await createFolder(folderID, folderData)
+      const response = await createFolder(folderUser, folderName)
+      if (response.success) {
+        setFolders((prevFolders) => [...prevFolders, response.folder]);
+        showAlert(response.message || 'Kansio luotu onnistuneesti.', 'success');
+        e.target.reset();
+        setCreateFolder(false);
+        
+      } else {
+        setError(response.message || 'Kansion luomisessa tapahtui virhe.');
+      }
 
-      // Transform folderData to publicFolder
-      const publicFolder = transformFolderDataPublic(folderData)
-
-      // Add publicFolder to the folders state
-      setFolders([...folders, publicFolder])
-      setCreateFolder(false)
     } catch (error) {
-      console.error("Error creating folder: ", error)
-      showAlert('Kansion luonti epäonnistui. Yritä uudelleen.', 'error')
+      console.error("Error creating folder: ", error);
+      showAlert('Kansion luonti epäonnistui. Yritä uudelleen.', 'error');
+
+    } finally {
+      setLoading(false);
     }
   }
+
+  if (loading) return <PopupLoader />
 
   return (
     <span className='fixed z-50 inset-0 flex justify-center items-center bg-black/50 p-4'>
@@ -79,6 +82,14 @@ function CreateFolder({ folders, setFolders, setCreateFolder }) {
             className="relative w-full py-2.5 px-3 bg-background text-sm border border-transparent outline-none focus:border-primary focus:ring-1"
             autoFocus
           />
+
+          {error && 
+            <div className='flex items-center justify-between gap-4 px-3 py-2.5 mt-2 text-white text-sm bg-red-500'>
+              <p>{error}</p>
+              <button onClick={() => setError(null)}><X size={20} /></button>
+            </div>
+          }
+
           <button 
             type="submit" 
             className="w-full mt-2 py-2.5 px-3 rounded-full bg-gradient-to-br from-primary to-blue-800 text-white 
@@ -87,6 +98,8 @@ function CreateFolder({ folders, setFolders, setCreateFolder }) {
               Luo kansio
           </button>
         </form>
+
+        {loading && <PopupLoader />}
       </div>
     </span>
   )

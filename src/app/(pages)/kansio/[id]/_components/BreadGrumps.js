@@ -4,13 +4,13 @@ import React from 'react';
 
 function Breadcrumbs({ folder }) {
     return (
-        <nav aria-label="Breadcrumb" className='flex items-center gap-2'>
+        <nav aria-label="Breadcrumb" className='flex items-center gap-1'>
             <Link href='/kansiot' className='flex items-center gap-1 text-primary hover:text-primary/75 transition-colors'>
                 <Folders size={18} /> 
                 Kansiot
             </Link>
 
-            <p>|</p>
+            <p>&#9656;</p>
 
             {folder.parent.id &&
                 <>
@@ -18,7 +18,7 @@ function Breadcrumbs({ folder }) {
                     {folder.parent.name}
                 </Link>
 
-                <ChevronLeft size={16} />
+                <p>&#9656;</p>
                 </>
             }
 

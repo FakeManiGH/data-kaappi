@@ -120,7 +120,7 @@ function Page({ params }) {
                 setSelectedObjects={setSelectedObjects}
             />
 
-            {createFolder && <CreateFolder folder={folder} folders={folders} setFolders={setFolders} setCreateFolder={setCreateFolder} />}
+            {createFolder && <CreateFolder folder={folder} setFolder={setFolder} folders={folders} setFolders={setFolders} setCreateFolder={setCreateFolder} />}
             {renamePopup && <RenamePopup selectedObject={selectedObjects[0]} setFolders={setFolders} setFiles={setFiles} setSelectedObjects={setSelectedObjects} setRenamePopup={setRenamePopup} />}
             {passwordPopup && <PasswordPopup selectedObject={selectedObjects[0]} setFolders={setFolders} setFiles={setFiles} setSelectedObjects={setSelectedObjects} setPasswordPopup={setPasswordPopup} />}
             {deletePopup && <DeletePopup selectedObjects={selectedObjects} setSelectedObjects={setSelectedObjects} setFolders={setFolders} setFiles={setFiles} setDeletePopup={setDeletePopup} />}

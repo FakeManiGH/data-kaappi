@@ -8,8 +8,8 @@ import { useUser } from '@clerk/nextjs';
 import { useAlert } from '@/app/contexts/AlertContext';
 import PageLoading from '@/app/_components/_common/PageLoading';
 import ErrorView from '../_components/ErrorView';
-import { getUserFilesByFolder } from '@/app/file-requests/files';
-import { getUserFolders } from '@/app/file-requests/folders';
+import { getUserBaseFiles } from '@/app/file-requests/files';
+import { getUserBaseFolders } from '@/app/file-requests/folders';
 import Link from 'next/link';
 import RenamePopup from './_components/RenamePopup';
 import PasswordPopup from './_components/PasswordPopup';
@@ -31,17 +31,30 @@ function Page() {
     const { user, isLoaded } = useUser();
     const { showAlert } = useAlert();
 
+
     useEffect(() => {
         const fetchFolders = async () => {
             if (isLoaded && user) {
                 try {
-                    const folders = await getUserFolders(user.id, '');
-                    const files = await getUserFilesByFolder(user.id, '');
-                    setFiles(files);
-                    setFolders(folders);
+                    const [foldersResponse, filesResponse] = await Promise.all([
+                        getUserBaseFolders(user.id),
+                        getUserBaseFiles(user.id),
+                    ]);
+    
+                    if (foldersResponse.success) {
+                        setFolders(foldersResponse.folders);
+                    } else {
+                        throw new Error(foldersResponse.message || 'Virhe kansioiden hakemisessa.');
+                    }
+    
+                    if (filesResponse.success) {
+                        setFiles(filesResponse.files);
+                    } else {
+                        throw new Error(filesResponse.message || 'Virhe tiedostojen hakemisessa.');
+                    }
                 } catch (error) {
                     setPageError('Palvelinvirhe! Yritä uudelleen.');
-                    showAlert('Palvelinvirhe! Yritä uudelleen.', 'error');
+                    showAlert(error.message || 'Palvelinvirhe! Yritä uudelleen.', 'error');
                 } finally {
                     setLoading(false);
                 }
@@ -50,21 +63,21 @@ function Page() {
                 navigatePage('/sign-in');
             }
         };
-
+    
         setCurrentIndex('/kansiot');
         fetchFolders();
-
+    
         return () => {
             setCurrentIndex('');
         };
-    }, [isLoaded, user, setCurrentIndex, navigatePage ]);
+    }, [isLoaded, user, setCurrentIndex, navigatePage]);
 
     if (loading) return <PageLoading />;
     if (pageError) return <ErrorView message={pageError} />;
 
     return (
         <main>
-            <h1 className="text-3xl"><strong>Kansiot</strong></h1>
+            <h1 className="text-2xl sm:text-3xl"><strong>Kansiot</strong></h1>
             <p className='text-sm'>
                 Hallitse kansioita ja tiedostojasi.
             </p>

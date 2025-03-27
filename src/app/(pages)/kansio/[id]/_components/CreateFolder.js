@@ -1,60 +1,66 @@
 import { X } from 'lucide-react'
-import React from 'react'
+import React, { useState } from 'react'
 import { generateRandomString } from '@/utils/GenerateRandomString'
-import { createFolder } from '@/app/file-requests/folders'
+import { createFolder, createSubfolder } from '@/app/file-requests/folders'
 import { useAlert } from '@/app/contexts/AlertContext'
 import { useUser } from '@clerk/nextjs'
 import { transformFolderDataPublic } from '@/utils/DataTranslation'
+import { folderNameRegex } from '@/utils/Regex'
 
-function CreateFolder({ folder, folders, setFolders, setCreateFolder }) {
+function CreateFolder({ folder, setFolder, folders, setFolders, setCreateFolder }) {
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
   const { showAlert } = useAlert()
   const { user } = useUser()
 
   const handleCreateFolder = async (e) => {
-    e.preventDefault()
+    e.preventDefault();
+    setLoading(true);
 
-    const folderName = e.target.folderName.value
+    const folderName = e.target.folderName.value.trim();
 
+    // Validate folder name
     if (!folderName) {
-      showAlert('Anna kansiolle nimi.', 'error')
-      return
+      setError('Anna kansiolle nimi, 2-50 merkkiä.');
+      setLoading(false);
+      return;
+    }
+
+    if (!folderNameRegex.test(folderName)) {
+      setError('Kansion nimen tulee olla 2-50 merkkiä, eikä saa sisältää <, >, /, \\ -merkkejä.');
+      setLoading(false);
+      return;
     }
 
     try {
-      const folderID = generateRandomString(11)
-      
-      const folderData = {
-        docType: 'folder', // String
-        folderID: folderID, // String
-        folderName: folderName, // String
-        parentFolderName: folder.name, // String
-        parentID: folder.id, // String
-        fileCount: 0, // Number
-        userID: user.id, // String
-        userName: user.fullName, // String
-        userEmail: user.primaryEmailAddress.emailAddress, // String
-        createdAt: new Date(), // Date
-        modifiedAt: new Date(), // Date
-        pwdProtected: false, // Boolean
-        pwd: '', // String
-        shared: false, // Boolean
-        sharedWith: [], // Array
+      const folderUser = {
+        id: user.id,
+        name: user.fullName,
+        email: user.primaryEmailAddress.emailAddress,
       }
 
-      // Database call
-      await createFolder(folderID, folderData)
+      const response = await createSubfolder(folderUser, folder, folderName);
 
-      // Transform folderData to publicFolder
-      const publicFolder = transformFolderDataPublic(folderData)
+      if (response.success) {
+        setFolders((prevFolders) => [...prevFolders, response.folder]);
+        setFolder((prevFolder) => ({
+          ...prevFolder,
+          fileCount: prevFolder.fileCount + 1,
+        }));
 
-      // Add publicFolder to the folders state
-      setFolders([...folders, publicFolder])
-      setCreateFolder(false)
+        showAlert('Uusi kansio luotu!', 'success');
+        e.target.reset(); 
+        setCreateFolder(false); 
+      } else {
+        setError(response.message || 'Kansion luonti epäonnistui. Yritä uudelleen.');
+      }
     } catch (error) {
-      console.error("Error creating folder: ", error)
-      showAlert('Kansion luonti epäonnistui. Yritä uudelleen.', 'error')
+      console.error('Error creating folder: ', error);
+      showAlert('Kansion luonti epäonnistui. Yritä uudelleen.', 'error');
+    } finally {
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <span className='fixed z-50 inset-0 flex justify-center items-center bg-black/50 p-4'>
@@ -79,6 +85,14 @@ function CreateFolder({ folder, folders, setFolders, setCreateFolder }) {
             className="relative w-full py-2.5 px-3 bg-background text-sm border border-transparent outline-none focus:border-primary focus:ring-1"
             autoFocus
           />
+
+          {error && 
+            <div className='flex items-center justify-between gap-4 px-3 py-2.5 mt-2 text-white text-sm bg-red-500'>
+              <p>{error}</p>
+              <button onClick={() => setError(null)}><X size={20} /></button>
+            </div>
+          }
+
           <button 
             type="submit" 
             className="w-full mt-2 py-2.5 px-3 rounded-full bg-gradient-to-br from-primary to-blue-800 text-white 

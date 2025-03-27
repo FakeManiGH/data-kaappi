@@ -75,13 +75,16 @@ export const transformFolderDataPublic = (folder) => {
             name: folder.userName,
             email: folder.userEmail
         },
-        created: new Date(folder.createdAt.seconds * 1000),
-        modified: new Date(folder.modifiedAt.seconds * 1000),
+        createdAt: new Date(folder.createdAt.seconds * 1000),
+        modifiedAt: new Date(folder.modifiedAt.seconds * 1000),
         passwordProtected: folder.pwdProtected,
-        password: '',
-        shared: folder.shared,
-        sharedWith: folder.sharedWith
-    }
+        sharing: {
+            link: folder.linkShare,
+            url: folder.shareUrl,
+            group: folder.groupShare,
+            groups: folder.shareGroups,
+        }
+    };
 }
 
 // Transform folder data for private use
@@ -90,7 +93,8 @@ export const transformFolderDataPrivate = (folder) => {
         docType: 'folder',
         folderID: folder.id,
         folderName: folder.name,
-        parentID: folder.parent,
+        parentFolderName: parentFolder.name,
+        parentID: parent.id,
         fileCount: folder.fileCount,
         userID: folder.user.id,
         userName: folder.user.name,
@@ -99,8 +103,9 @@ export const transformFolderDataPrivate = (folder) => {
         modifiedAt: folder.modified instanceof Date ? folder.modified : new Date(folder.modified.seconds * 1000),
         pwdProtected: folder.passwordProtected,
         pwd: folder.password,
-        shared: folder.shared,
-        sharedWith: folder.sharedWith
+        linkShare: folder.sharing.link,
+        groupShare: folder.sharing.group,
+        shareGroups: folder.sharing.groups,
     }
 }
 

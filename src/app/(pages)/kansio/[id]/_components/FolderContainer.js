@@ -116,7 +116,7 @@ function FolderContainer({ folders, files, setFolders, setFiles, setCreateFolder
                     onTouchEnd={() => handleTouchEnd(folder)}
                     className={`relative flex items-center justify-center p-4 rounded-lg transition-colors border group overflow-hidden
                         ${selectedObjects.includes(folder) ? 'border-primary' : 'border-transparent'}
-                        ${dragOverFolder === folder.id ? 'bg-primary' : 'bg-secondary'}`}
+                        ${dragOverFolder === folder.id ? 'bg-primary' : 'bg-contrast'}`}
                     style={{ touchAction: 'none' }}
                 >   
                     {isDragging && 

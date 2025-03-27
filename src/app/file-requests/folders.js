@@ -5,46 +5,148 @@ import { db } from '@/../firebaseConfig';
 import bcrypt from 'bcrypt';
 import { folderNameRegex, passwordRegex } from "@/utils/Regex";
 import { transformFileDataPublic, transformFolderDataPrivate, transformFolderDataPublic } from "@/utils/DataTranslation";
+import { generateRandomString } from "@/utils/GenerateRandomString";
+
 
 // FOLDER API FUNCTIONS
 // CREATE
 // Create folder
-export const createFolder = async (folderID, folderData) => {
+export const createFolder = async (user, folderName) => {
     try {
-        // Check if folder already exists
+        if (!folderNameRegex.test(folderName)) {
+            return { success: false, message: 'Kansion nimen tulee olla 2-50 merkkiä pitkä, eikä se saa sisältää <, >, /, \\ -merkkejä.' }
+        }
+
+        let folderID;
+        let folderExists;
+
+        do {
+            folderID = generateRandomString(11);
+            const folderRef = doc(db, "folders", folderID);
+            const folderSnap = await getDoc(folderRef);
+            folderExists = folderSnap.exists();
+        } while (folderExists);
+
         const folderRef = doc(db, 'folders', folderID);
         const docSnap = await getDoc(folderRef);
 
-        if (docSnap.exists()) {
-            const newFolderID = generateRandomString(11);
-            return createFolder(newFolderID, folderData);
-        }
+        const newFolder = {
+            docType: 'folder',
+            folderID: folderID,
+            folderName: folderName,
+            parentFolderName: null,
+            parentID: null,
+            fileCount: parseInt(0),
+            userID: user.id,
+            userName: user.name,
+            userEmail: user.email,
+            createdAt: Timestamp.fromDate(new Date()),
+            modifiedAt: Timestamp.fromDate(new Date()),
+            pwdProtected: false,
+            pwd: null,
+            linkShare: false,
+            shareUrl: process.env.NEXT_PUBLIC_BASE_URL + 'jaettu-kansio/' + folderID,
+            groupShare: false,
+            shareGroups: [],
+        };
 
-        folderData.createdAt = Timestamp.fromDate(new Date());
-        folderData.modifiedAt = Timestamp.fromDate(new Date());
+        await setDoc(doc(db, "folders", folderID), newFolder);
 
-        await setDoc(doc(db, 'folders', folderID), folderData);
+        const publicFolder = transformFolderDataPublic(newFolder);
+        return { success: true, folder: publicFolder, message: 'Kansio luotu onnistuneesti.' }
     } catch (error) {
         console.error("Error creating folder: ", error);
+        return { success: false, message: 'Kansion luomisessa tapahtui virhe, yritä uudelleen.' }
     }
 }
 
-// GET 
-// Get folders (with userID)
-export const getUserFolders = async (userID, parentID) => {
+// Create subfolder
+export const createSubfolder = async (user, parentFolder, folderName) => {
     try {
-        if (!userID) throw new Error("Request indentification error.")
+        // Validate folder name
+        if (!folderNameRegex.test(folderName)) {
+            return { success: false, message: 'Kansion nimen täytyy olla 2-50 merkkiä pitkä ja ei saa sisältää <, >, /, \\ merkkejä.' };
+        }
+
+        // Generate unique folder ID
+        let folderID;
+        let newFolder;
+        let folderExists = true;
+
+        do {
+            folderID = generateRandomString(11);
+            const folderRef = doc(db, "folders", folderID);
+            const folderSnap = await getDoc(folderRef);
+            folderExists = folderSnap.exists();
+        } while (folderExists);
+
+        // Use a Firestore transaction
+        await runTransaction(db, async (transaction) => {
+
+            // Update parent folder's fileCount
+            const parentFolderRef = doc(db, "folders", parentFolder.id);
+            const parentFolderSnap = await transaction.get(parentFolderRef);
+
+            if (!parentFolderSnap.exists()) {
+                throw new Error(`Parent folder with ID ${parentFolder.id} does not exist.`);
+            }
+
+            // Subfolder data
+            newFolder = {
+                docType: 'folder',
+                folderID,
+                folderName,
+                parentFolderName: parentFolder.name,
+                parentID: parentFolder.id,
+                fileCount: 0,
+                userID: user.id, 
+                userName: user.name, 
+                userEmail: user.email,
+                createdAt: Timestamp.fromDate(new Date()),
+                modifiedAt: Timestamp.fromDate(new Date()),
+                pwdProtected: false,
+                pwd: '',
+                linkShare: false,
+                shareUrl: process.env.NEXT_PUBLIC_BASE_URL + 'jaettu-kansio/' + folderID,
+                groupShare: false,
+                shareGroups: [],
+            };
+
+            // Add subfolder to Firestore
+            const subfolderRef = doc(db, "folders", folderID);
+            transaction.set(subfolderRef, newFolder);
+
+            transaction.update(parentFolderRef, { fileCount: increment(1) });
+        });
+
+        const publicFolder = transformFolderDataPublic(newFolder)
+        console.log(`Subfolder ${folderName} created successfully with ID ${folderID}.`);
+        return { success: true, folder: publicFolder };
+    } catch (error) {
+        console.error("Error creating subfolder: ", error);
+        return { success: false, message: 'Kansiota luodessa tapahtui virhe, yritä uudelleen.' };
+    }
+};
+
+// GET 
+// Get base folders
+export const getUserBaseFolders = async (userID) => {
+    try {
+        if (!userID) {
+            return { success: false, message: 'Käyttäjätietoja ei löytynyt.' }
+        }
+
         const q = query(
             collection(db, "folders"), 
             where("userID", "==", userID),
-            where("parentID", "==", parentID),
+            where("parentID", "==", null),
             orderBy("folderName", "asc")
         );
         const querySnapshot = await getDocs(q);
         const folders = querySnapshot.docs.map(doc => doc.data());
         const publicFolders = folders.map(folder => transformFolderDataPublic(folder));
             
-        return publicFolders;
+        return { success: true, folders: publicFolders }
     } catch (error) {
         console.error("Error fetching folders: ", error);
     }
@@ -64,7 +166,7 @@ export const getFolderContent = async (userID, folderID) => {
         const folderTemp = folderSnap.data();
 
         // Verify access rights
-        const isUnauthorized = !folderTemp.shared && folderTemp.sharedWith.length === 0 && userID !== folderTemp.userID;
+        const isUnauthorized = !folderTemp.linkShare && folderTemp.groupShare && userID !== folderTemp.userID;
         if (isUnauthorized) {
             return { success: false, message: 'Sinulla ei ole oikeutta tähän sisältöön.' };
         }
@@ -247,21 +349,32 @@ export const deleteFolder = async (userID, folderID) => {
         // Verify folder and check access control
         const folderRef = doc(db, "folders", folderID);
         const folderSnap = await getDoc(folderRef);
-        if (!folderSnap.exists()) throw new Error(`Kansiota ${folderID} ei löytynyt.`);
-
+        if (!folderSnap.exists()) { 
+            return { success: false, message: `Kansiota ${folderID} ei löytynyt.`};
+        }
         const folder = folderSnap.data();
-        if (userID !== folder.userID) throw new Error(`Ei oikeuksia kansioon ${folderID}.`);
+        if (userID !== folder.userID) {
+            return { success: false, message: `Ei oikeuksia kansioon ${folderID}` }
+        }
+
+        // Recursively delete subfolders and their files
+        const subfolderDeletionResult = await deleteSubfolders(userID, folderID);
+        if (!subfolderDeletionResult.success) {
+            return { success: false, message: subfolderDeletionResult.message };
+        }
 
         // Delete files in the folder
         const fileDeletionResult = await deleteFilesInFolder(userID, folderID);
         if (!fileDeletionResult.success) {
-            throw new Error(fileDeletionResult.message);
+            return { success: false, message: fileDeletionResult.message };
         }
 
         // Delete the folder itself
         await runTransaction(db, async (transaction) => {
             const folderSnap = await transaction.get(folderRef);
-            if (!folderSnap.exists()) throw new Error(`Kansiota ${folderID} ei löytynyt.`);
+            if (!folderSnap.exists()) {
+                return { success: false, message: `Kansiota ${folderID} ei löytynyt.` };
+            }
 
             transaction.delete(folderRef);
         });
@@ -273,6 +386,53 @@ export const deleteFolder = async (userID, folderID) => {
         return { success: false, message: error.message };
     }
 };
+
+
+// Delete subfolders
+export const deleteSubfolders = async (userID, parentID) => {
+    try {
+        // Query for subfolders
+        const subfoldersQuery = query(
+            collection(db, "folders"),
+            where("parentID", "==", parentID)
+        );
+        const querySnapshot = await getDocs(subfoldersQuery);
+
+        if (querySnapshot.empty) {
+            console.log(`No subfolders found for folder ${parentID}.`);
+            return { success: true, message: "Ei alikansioita poistettavaksi." };
+        }
+
+        // Iterate through each subfolder and delete its contents
+        for (const subfolderDoc of querySnapshot.docs) {
+            const subfolder = subfolderDoc.data();
+            const subfolderID = subfolder.folderID;
+
+            // Recursively delete subfolders of the current subfolder
+            const subfolderDeletionResult = await deleteSubfolders(userID, subfolderID);
+            if (!subfolderDeletionResult.success) {
+                return { success: false, message: subfolderDeletionResult.message };
+            }
+
+            // Delete files in the current subfolder
+            const fileDeletionResult = await deleteFilesInFolder(userID, subfolderID);
+            if (!fileDeletionResult.success) {
+                return { success: false, message: fileDeletionResult.message };
+            }
+
+            // Delete the current subfolder
+            const subfolderRef = doc(db, "folders", subfolderID);
+            await deleteDoc(subfolderRef);
+            console.log(`Subfolder ${subfolderID} deleted successfully.`);
+        }
+
+        return { success: true, message: "Kaikki alikansiot poistettu onnistuneesti." };
+    } catch (error) {
+        console.error("Error deleting subfolders and files: ", error);
+        return { success: false, message: "Alikansioiden poistaminen epäonnistui, yritä uudelleen." };
+    }
+};
+
 
 // Delete file in folder
 export const deleteFilesInFolder = async (userID, folderID) => {
