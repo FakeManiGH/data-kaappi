@@ -89,7 +89,7 @@ function Page() {
                         from-primary to-blue-800 text-white hover:to-primary transition-colors'
                 >
                     <FilePlus />
-                    Lisää tiedosto
+                    Lisää tiedostoja
                 </Link>
                 <button 
                     onClick={() => setCreateFolder(true)} 

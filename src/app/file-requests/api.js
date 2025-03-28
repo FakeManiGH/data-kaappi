@@ -29,13 +29,24 @@ export const createUserDocument = async (user) => {
 }
 
 // Get user document
-export const getUser = async (userID) => {
+export const getUserDocument = async (userID) => {
     try {
+        if (!userID) {
+            return { success: false, message: 'Käyttäjätiedot puuttuvat.'}
+        }
+
         const userDocRef = doc(db, 'users', userID)
         const docSnap = await getDoc(userDocRef)
-        return docSnap.data()
+
+        if (!docSnap.exists()) {
+            return { success: false, message: 'Käyttäjätietoja ei löytynyt.'}
+        }
+
+        const userDoc = docSnap.data();
+        return { success: true, document: userDoc }
     } catch (error) {
-        console.error("Error fetching user: ", error)
+        console.error("Error fetching user document: ", error)
+        return { success: false, message: 'Käyttäjätietojen hakemisessa tapahtui virhe, yritä uudelleen.' }
     }
 }
 
@@ -64,7 +75,7 @@ export const getSharedFile = async (id) => {
 
         const fileTemp = fileSnap.data();
 
-        if (!fileTemp.shared) {
+        if (!fileTemp.linkShare && !fileTemp.groupShare) {
             return { success: false, message: "Sisältö ei ole saatavilla."}
         }
 

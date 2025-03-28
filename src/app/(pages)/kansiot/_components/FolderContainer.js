@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { ArrowRightLeft, FilePlus, FolderPlus, FolderX, GripVertical, LockKeyhole, Pen, Pencil, Settings, Share2, Trash2, X } from 'lucide-react';
+import { ArrowRightLeft, FilePlus, FolderPlus, FolderX, GripVertical, Group, LockKeyhole, Pen, Pencil, Settings, Share2, Trash2, X } from 'lucide-react';
 import DownloadBtn from './DownloadBtn';
 import Link from 'next/link';
 import { translateFileSize } from '@/utils/DataTranslation';
@@ -93,17 +93,6 @@ function FolderContainer({ folders, files, setFolders, setFiles, setCreateFolder
         return (
             <div className="flex flex-col h-72 items-center justify-center text-sm gap-4">
                 <h2 className="text-xl text-contrast">Ei kansioita tai tiedostoja...</h2>
-                <div className="flex gap-2">
-                    <button onClick={() => setCreateFolder(true)} className='flex gap-1 items-center text-primary hover:text-primary/75 transition-colors'>
-                        <FolderPlus size={20} className='text-primary' />
-                        Luo kansio
-                    </button>
-                    <p>tai</p>
-                    <Link href='/tallenna' className='flex gap-1 items-center text-primary hover:text-primary/75 transition-colors'>
-                        <FilePlus size={20} className='text-primary' />
-                        Lisää tiedosto
-                    </Link>
-                </div>
             </div>
         );
     }
@@ -145,7 +134,8 @@ function FolderContainer({ folders, files, setFolders, setFiles, setCreateFolder
 
                     <div className='absolute top-1 left-1 flex flex-col gap-1 text-success'>
                         {folder.passwordProtected && <LockKeyhole size={16} />}
-                        {folder.shared && <Share2 size={16} />}
+                        {folder.linkShare && <Share2 size={16} />}
+                        {folder.groupShare && <Group size={16} />}
                     </div>
                 </div>
             ))}
@@ -192,7 +182,8 @@ function FolderContainer({ folders, files, setFolders, setFiles, setCreateFolder
 
                     <div className='absolute top-1 left-1 flex flex-col gap-1 text-success'>
                         {file.passwordProtected && <LockKeyhole size={16} />}
-                        {file.shared && <Share2 size={16} />}
+                        {file.linkShare && <Share2 size={16} />}
+                        {file.groupShare && <Group size={16} />}
                     </div>
                 </div>
             ))}

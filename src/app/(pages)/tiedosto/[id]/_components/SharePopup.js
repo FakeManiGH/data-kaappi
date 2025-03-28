@@ -13,7 +13,7 @@ const exampleGroups = [
 ];
 
 function SharePopup({ file, setFile, setSharePopup }) {
-    const [shareLink, setShareLink] = useState(file.shared);
+    const [shareLink, setShareLink] = useState(file.linkShare);
     const [shareGroup, setShareGroup] = useState(false);
     const [selectedGroups, setSelectedGroups] = useState([]);
     const [availableGroups, setAvailableGroups] = useState(exampleGroups);
@@ -40,7 +40,7 @@ function SharePopup({ file, setFile, setSharePopup }) {
             if (response.success) {
                 showAlert('Tiedoston linkillä jakamista muutettu.', 'info');
                 setShareLink(newShareValue); 
-                setFile({ ...file, shared: newShareValue }); 
+                setFile({ ...file, linkShare: newShareValue }); 
             } else {
                 showAlert(response.message, 'error');
             }

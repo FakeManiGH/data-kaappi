@@ -3,7 +3,7 @@ import SpaceMeterCircle from '@/app/_components/_common/SpaceMeterCircle'
 import React, { useState, useEffect } from 'react'
 import { useUser } from '@clerk/nextjs'
 import PageLoading from '@/app/_components/_common/PageLoading'
-import { getUser } from '@/app/file-requests/api'
+import { getUser, getUserDocument } from '@/app/file-requests/api'
 import Link from 'next/link'
 import { BadgeCheck, CircleAlert, Frown, Settings2 } from 'lucide-react'
 import { useNavigation } from '@/app/contexts/NavigationContext'
@@ -21,23 +21,28 @@ function Page() {
 
   useEffect(() => {
     setCurrentIndex('/kojelauta')
-    if (isLoaded) {
-      if (user) {
-        getUser(user.id)
-          .then((doc) => {
-            setUserDoc(doc)
-            setLoading(false)
-          })
-          .catch((err) => {
-            console.error("Error fetching user document:", err)
-            setError("Käyttäjätietojen hakeminen epäonnistui. Yritä uudelleen.")
-            setLoading(false)
-          })
+    const getUserData = async () => {
+      if (isLoaded && user) {
+        try {
+          const response = await getUserDocument(user.id);
+          if (response.success) {
+            setUserDoc(response.document);
+          } else {
+            setError(response.message || "Käyttäjätietojen hakemisessa tapahtui virhe.");
+          }
+        } catch (error) {
+          console.error("Error fetching userdata: " + error);
+          setError(error.message || "Palvelinvirhe, yritä uudelleen.");
+        } finally {
+          setLoading(false);
+        }
       } else {
         navigatePage('/sign-in')
       }
     }
-  }, [isLoaded, user, setUserDoc, setLoading, setCurrentIndex, navigatePage])
+
+    getUserData();
+  }, [isLoaded, user, setCurrentIndex, navigatePage])
 
   if (loading) return <PageLoading />
   if (error) return <ErrorView message={error} />

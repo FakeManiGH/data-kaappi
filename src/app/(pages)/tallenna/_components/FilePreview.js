@@ -12,13 +12,12 @@ function FilePreview({ files, folders, setNewFolder, removeFile, uploadProgress,
     const updatedFiles = [...files]
     updatedFiles[fileIndex].folderID = selectedFolderID
     setFiles(updatedFiles)
-    console.log(updatedFiles)
   }
 
   return (
     <div className='grid grid-cols-1 lg:grid-cols-2 w-full gap-2'>
       {files?.map((file, index) => (
-        <div key={index} className='flex flex-1 items-center gap-3 p-2 bg-secondary shadow-md shadow-black/25 rounded-xl'>
+        <div key={index} className='flex flex-1 items-center gap-3 p-2 bg-contrast shadow-md shadow-black/25 rounded-xl'>
           <Image 
             src={getFileIcon(file?.type)} 
             alt='file' 

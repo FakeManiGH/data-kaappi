@@ -1,16 +1,19 @@
 import React, { useState } from 'react';
-import AlertMsg from './AlertMsg';
 import { validateFile } from '@/utils/FileValidation';
 import { useAlert } from '@/app/contexts/AlertContext';
-import { getUser, updateUserDocumentValue } from '@/app/file-requests/api';
+import { generateRandomString } from '@/utils/GenerateRandomString';
 import { FilePlus2, Music2 } from 'lucide-react';
 import { useUser } from '@clerk/nextjs';
+import { app, db } from '@/../firebaseConfig';
+import { getStorage, getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
+import { doc, increment, Timestamp, runTransaction } from "firebase/firestore";
 
-function UploadForm({ uploadFile, files, setFiles, fileErrors, setFileErrors, setUploadProgress, setUserDoc }) {
+function UploadForm({ files, setFiles, fileErrors, setFileErrors, setUploadProgress, setUserDoc }) {
   const [isDragging, setIsDragging] = useState(false);
   const dragCounter = React.useRef(0);
   const { showAlert } = useAlert();
   const { user } = useUser();
+  const storage = getStorage(app);
 
   // Handle drag enter
   const handleDragEnter = (event) => {
@@ -62,32 +65,112 @@ function UploadForm({ uploadFile, files, setFiles, fileErrors, setFileErrors, se
     setUploadProgress(new Array(filesArray.length).fill(0));
   };
 
-  // Upload files to Firebase Storage
-  const uploadFiles = async (files) => {
-    const userDoc = await getUser(user.id);
-    console.log(userDoc);
-    
-    if (!userDoc) {
-      showAlert('Käyttäjää ei löytynyt.', 'error');
-      return;
-    }
-
-    if (userDoc.usedSpace >= userDoc.totalSpace) {
-      showAlert('Tilasi on täynnä. Poista tiedostoja tai ota yhteyttä ylläpitoon.', 'error');
-      return;
-    }
-
-    // Upload files
-    const uploadPromises = files.map(file => uploadFile(file));
-    await Promise.all(uploadPromises);
-
-    // Update used space
-    const totalSize = files.reduce((acc, file) => acc + file.size, 0);
-    await updateUserDocumentValue(user.id, 'usedSpace', userDoc.usedSpace + totalSize);
-    setUserDoc({ ...userDoc, usedSpace: userDoc.usedSpace + totalSize });
-
-    showAlert('Tiedosto(t) ladattu onnistuneesti.', 'success');
+  // Handle form reset
+  const handleFormReset = (e) => {
     setFiles([]);
+    setFileErrors([]);
+  }
+
+  // Upload files
+  const uploadFiles = async (files) => {
+    const uploadPromises = files.map(async (file, index) => {
+      const fileID = generateRandomString(11);
+      const storageRef = ref(storage, `file-base/${user.id}/${fileID}`);
+      const uploadTask = uploadBytesResumable(storageRef, file);
+  
+      return new Promise((resolve, reject) => {
+        uploadTask.on(
+          'state_changed',
+          (snapshot) => {
+            const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+            setUploadProgress((prevProgress) =>
+              prevProgress.map((prog, i) => (i === index ? progress : prog))
+            );
+          },
+          (error) => {
+            console.error('Error uploading file:', error);
+            setFileErrors((prevErrors) => [...prevErrors, error.message]);
+            reject(error);
+          },
+          async () => {
+            try {
+              const downloadURL = await getDownloadURL(storageRef);
+              const shareURL = process.env.NEXT_PUBLIC_BASE_URL + 'jaettu-tiedosto/' + fileID;
+  
+              const fileData = {
+                docType: 'file',
+                fileID,
+                fileName: file.name,
+                fileSize: parseFloat(file.size),
+                fileType: file.type,
+                fileUrl: downloadURL,
+                folderID: file.folderID || '',
+                linkShare: false,
+                shareUrl: shareURL,
+                groupShare: false,
+                shareGroups: [],
+                pwdProtected: false,
+                pwd: '',
+                userName: user.fullName,
+                userID: user.id,
+                userEmail: user.primaryEmailAddress.emailAddress,
+                uploadedAt: Timestamp.fromDate(new Date()),
+                modifiedAt: Timestamp.fromDate(new Date()),
+              };
+  
+              // Use Firestore transaction for atomic updates
+              await runTransaction(db, async (transaction) => {
+                // Perform all reads first
+                let folderSnap, userSnap;
+                if (file.folderID) {
+                  const folderRef = doc(db, 'folders', file.folderID);
+                  folderSnap = await transaction.get(folderRef);
+  
+                  if (!folderSnap.exists()) {
+                    throw new Error(`Kansiota ei löytynyt tiedostolle ${file.name}`);
+                  }
+                }
+  
+                const userRef = doc(db, 'users', user.id);
+                userSnap = await transaction.get(userRef);
+  
+                if (!userSnap.exists()) {
+                  throw new Error('Käyttäjätietoja ei löytynyt.');
+                }
+  
+                // Perform all writes after reads
+                const fileRef = doc(db, 'files', fileID);
+                transaction.set(fileRef, fileData);
+  
+                if (file.folderID) {
+                  const folderRef = doc(db, 'folders', file.folderID);
+                  transaction.update(folderRef, { fileCount: increment(1) });
+                }
+  
+                const currentUsedSpace = userSnap.data().usedSpace || 0;
+                transaction.update(userRef, { usedSpace: currentUsedSpace + file.size });
+              });
+  
+              // Remove the file from the upload queue
+              setFiles((prevFiles) => prevFiles.filter((f) => f !== file));
+              resolve();
+            } catch (error) {
+              console.error('Error saving file data or updating Firestore:', error);
+              setFileErrors((prevErrors) => [...prevErrors, error.message]);
+              reject(error);
+            }
+          }
+        );
+      });
+    });
+  
+    try {
+      await Promise.all(uploadPromises);
+      showAlert('Tiedosto(t) ladattu onnistuneesti.', 'success');
+      setFiles([]);
+    } catch (error) {
+      showAlert('Virhe tiedostojen lataamisessa. Yritä uudelleen.', 'error');
+    }
   };
     
   // Handle form submit
@@ -95,6 +178,7 @@ function UploadForm({ uploadFile, files, setFiles, fileErrors, setFileErrors, se
     event.preventDefault();
     uploadFiles(files);
   };
+
 
   return (
     <div className="flex flex-col items-center justify-center w-full">
@@ -117,8 +201,8 @@ function UploadForm({ uploadFile, files, setFiles, fileErrors, setFileErrors, se
           <label
             htmlFor="dropzone-file"
             className={`flex flex-col items-center w-full max-w-full justify-center h-72 rounded-xl
-              cursor-pointer border-2 border-dashed hover:border-primary transition-colors
-              ${isDragging ? 'border-primary bg-primary/10' : 'border-contrast bg-background'}`}
+              cursor-pointer border-2 border-dashed hover:border-solid transition-all
+              ${isDragging ? 'border-solid bg-primary/10' : 'border-primary bg-background'}`}
 
           >
             <div className="flex flex-col max-w-full items-center justify-center p-4 text-center pt-5 pb-6">
@@ -138,15 +222,27 @@ function UploadForm({ uploadFile, files, setFiles, fileErrors, setFileErrors, se
             <input id="dropzone-file" type="file" accept="media_type" className="hidden" multiple onChange={handleFileChange} />
           </label>
         </div>
-
-        <button 
-          type="submit"
-          className='w-full px-3 py-2.5 mt-4 rounded-full bg-gradient-to-br from-primary to-blue-800 shadow-black/25 shadow-md 
-            text-white transition-all disabled:from-secondary disabled:to-contrast disabled:text-contrast disabled:shadow-none hover:to-primary'
-          {...(files.length === 0 && { disabled: true })}
-        >
-          Tallenna
-        </button>
+        
+        <div className='flex items-center gap-1 mt-2 '>
+          <button 
+            type="submit"
+            className='w-full px-3 py-2.5 rounded-full bg-gradient-to-br from-primary to-blue-800 shadow-black/25 shadow-md 
+              text-white transition-all disabled:from-secondary disabled:to-contrast disabled:text-contrast disabled:shadow-none hover:to-primary'
+            {...(files.length === 0 && { disabled: true })}
+          >
+            Tallenna
+          </button>
+          {files.length > 0 &&
+            <button 
+              type="reset"
+              onClick={handleFormReset}
+              className='w-full px-3 py-2.5 rounded-full bg-gradient-to-br from-contrast to-navlink text-white shadow-black/25 shadow-md transition-colors
+                hover:from-navlink hover:to-navlink'
+            >
+              Tyhjennä
+            </button>
+          }
+        </div>
       </form>
     </div>
   );

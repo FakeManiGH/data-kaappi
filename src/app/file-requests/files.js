@@ -33,7 +33,7 @@ export const getFilePageInfo = async (userID, fileID) => {
         const data = docSnap.data();
 
         // Shared?
-        if (!data.shared && userID !== data.userID) {
+        if (!data.linkShare && userID !== data.userID) {
             return { success: false, message: 'Sisältö ei ole saatavilla tai sitä ei ole jaettu.'}
         }
 
@@ -267,7 +267,7 @@ export const deleteFile = async (userID, fileID) => {
         });
 
         // Delete the file from Firebase Storage
-        const fileStorageRef = ref(storage, `file-base/${fileID}`);
+        const fileStorageRef = ref(storage, `file-base/${userID}/${fileID}`);
         await deleteObject(fileStorageRef);
 
         // Log the storage transaction
@@ -376,7 +376,7 @@ export const setFileLinkSharing = async (userID, fileID, shareValue) => {
             return { success: false, message: 'Luvaton muutospyyntö.' }
         }
 
-        await updateDoc(fileRef, { shared: shareValue });
+        await updateDoc(fileRef, { linkShare: shareValue });
 
         return { success: true }
     } catch (error) {

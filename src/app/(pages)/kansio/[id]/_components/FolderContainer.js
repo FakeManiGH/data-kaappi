@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FilePlus, FolderPlus, GripVertical, LockKeyhole, Share2 } from 'lucide-react';
+import { FilePlus, FolderPlus, GripVertical, Group, LockKeyhole, Share2 } from 'lucide-react';
 import Link from 'next/link';
 import { translateFileSize } from '@/utils/DataTranslation';
 import { getFileIcon } from '@/utils/GetFileIcon';
@@ -116,7 +116,7 @@ function FolderContainer({ folders, files, setFolders, setFiles, setCreateFolder
                     onTouchEnd={() => handleTouchEnd(folder)}
                     className={`relative flex items-center justify-center p-4 rounded-lg transition-colors border group overflow-hidden
                         ${selectedObjects.includes(folder) ? 'border-primary' : 'border-transparent'}
-                        ${dragOverFolder === folder.id ? 'bg-primary' : 'bg-contrast'}`}
+                        ${dragOverFolder === folder.id ? 'bg-primary' : 'bg-secondary'}`}
                     style={{ touchAction: 'none' }}
                 >   
                     {isDragging && 
@@ -144,7 +144,8 @@ function FolderContainer({ folders, files, setFolders, setFiles, setCreateFolder
 
                     <div className='absolute top-1 left-1 flex flex-col gap-1 text-success'>
                         {folder.passwordProtected && <LockKeyhole size={16} />}
-                        {folder.shared && <Share2 size={16} />}
+                        {folder.linkShare && <Share2 size={16} />}
+                        {folder.groupShare && <Group size={16} />}
                     </div>
                 </div>
             ))}
@@ -183,15 +184,15 @@ function FolderContainer({ folders, files, setFolders, setFiles, setCreateFolder
                         <img 
                             src={file.type.includes('image') ? file.url : getFileIcon(file.type)} 
                             alt={file.name} 
-                            className='aspect-[4/3] h-16 object-cover rounded-md mb-1' 
+                            className='aspect-[4/3] h-20 object-cover rounded-sm mb-1' 
                         />
                         <h2 className=" text-sm max-w-full font-semibold truncate">{file.name}</h2>
-                        <p className="text-sm text-navlink">{translateFileSize(file.size)}</p>
                     </Link>
                     
                     <div className='absolute top-1 left-1 flex flex-col gap-1 text-success'>
                         {file.passwordProtected && <LockKeyhole size={16} />}
-                        {file.shared && <Share2 size={16} />}
+                        {file.linkShare && <Share2 size={16} />}
+                        {file.groupShare && <Group size={16} />}
                     </div>
                 </div>
             ))}

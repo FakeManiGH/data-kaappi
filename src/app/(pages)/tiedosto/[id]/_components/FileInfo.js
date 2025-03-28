@@ -36,8 +36,8 @@ function FileInfo({ file, folder }) {
       label: 'Näkyvyys:',
       value: (
         <span className="flex gap-1 items-center">
-          {file.shared && <span title="Jaettu" className="text-xs text-success"><Share2 size={18} /></span>}
-          {file.shared ? 'Jaettu' : 'Yksityinen'}
+          {file.linkShare && <span title="Jaettu" className="text-xs text-success"><Share2 size={18} /></span>}
+          {file.linkShare ? 'Linkki' : 'Yksityinen'}
         </span>
       ),
     },

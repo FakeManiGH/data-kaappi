@@ -8,7 +8,7 @@ import { transformFileDataPublic, transformFolderDataPrivate, transformFolderDat
 import { generateRandomString } from "@/utils/GenerateRandomString";
 
 
-// FOLDER API FUNCTIONS
+
 // CREATE
 // Create folder
 export const createFolder = async (user, folderName) => {
@@ -26,9 +26,6 @@ export const createFolder = async (user, folderName) => {
             const folderSnap = await getDoc(folderRef);
             folderExists = folderSnap.exists();
         } while (folderExists);
-
-        const folderRef = doc(db, 'folders', folderID);
-        const docSnap = await getDoc(folderRef);
 
         const newFolder = {
             docType: 'folder',
@@ -53,6 +50,7 @@ export const createFolder = async (user, folderName) => {
         await setDoc(doc(db, "folders", folderID), newFolder);
 
         const publicFolder = transformFolderDataPublic(newFolder);
+        console.log(`New base-folder ${folderName} created with ID ${folderID}.`);
         return { success: true, folder: publicFolder, message: 'Kansio luotu onnistuneesti.' }
     } catch (error) {
         console.error("Error creating folder: ", error);
@@ -120,7 +118,7 @@ export const createSubfolder = async (user, parentFolder, folderName) => {
         });
 
         const publicFolder = transformFolderDataPublic(newFolder)
-        console.log(`Subfolder ${folderName} created successfully with ID ${folderID}.`);
+        console.log(`Subfolder ${folderName} created with ID ${folderID}.`);
         return { success: true, folder: publicFolder };
     } catch (error) {
         console.error("Error creating subfolder: ", error);
@@ -128,8 +126,12 @@ export const createSubfolder = async (user, parentFolder, folderName) => {
     }
 };
 
+
+
+
+
 // GET 
-// Get base folders
+// Get user base folders
 export const getUserBaseFolders = async (userID) => {
     try {
         if (!userID) {
@@ -218,6 +220,28 @@ export const getFolderContent = async (userID, folderID) => {
     }
 };
 
+// Get all user folders
+export const getUserFolders = async (userID) => {
+    try {
+        if (!userID) {
+            return { success: false, message: 'Käyttäjätiedot puuttuvat.' }
+        }
+
+        const q = query(
+            collection(db, "folders"),
+            where("userID", "==", userID),
+            orderBy("folderName", "asc")
+        );
+        const querySnap = await getDocs(q);
+        const foldersTemp = querySnap.docs.map(doc => doc.data());
+        const folders = foldersTemp.map(folder => transformFolderDataPublic(folder));
+        return { success: true, folders: folders }
+    } catch (error) {
+        console.error("Error fetching user folders: " + error);
+        return { success: false, message: 'Kansiotietojen hakemisessa tapahtui virhe, yritä uudelleen.' }
+    }
+}
+
 
 // Get Public FolderInfo (folderID)
 export const getPublicFolderInfo = async (folderID) => {
@@ -232,6 +256,9 @@ export const getPublicFolderInfo = async (folderID) => {
         throw error;
     }
 }
+
+
+
 
 
 // UPDATE
@@ -342,6 +369,9 @@ export const removeFolderPassword = async (userID, folderID) => {
 }
 
 
+
+
+
 // DELETE
 // Delete Folder
 export const deleteFolder = async (userID, folderID) => {
@@ -386,7 +416,6 @@ export const deleteFolder = async (userID, folderID) => {
         return { success: false, message: error.message };
     }
 };
-
 
 // Delete subfolders
 export const deleteSubfolders = async (userID, parentID) => {
@@ -433,7 +462,6 @@ export const deleteSubfolders = async (userID, parentID) => {
     }
 };
 
-
 // Delete file in folder
 export const deleteFilesInFolder = async (userID, folderID) => {
     try {
@@ -477,7 +505,7 @@ export const deleteFilesInFolder = async (userID, folderID) => {
         // Delete files from Firebase Storage
         const deletePromises = querySnapshot.docs.map(async (docSnap) => {
             const fileData = docSnap.data();
-            const fileStorageRef = ref(storage, `file-base/${fileData.fileID}`);
+            const fileStorageRef = ref(storage, `file-base/${userID}/${fileData.fileID}`);
             await deleteObject(fileStorageRef);
         });
 
