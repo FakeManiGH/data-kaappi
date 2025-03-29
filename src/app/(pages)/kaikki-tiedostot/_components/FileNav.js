@@ -153,7 +153,7 @@ function FileNav({ fileState, setFileState }) {
     };
 
     return (
-        <div className='flex items-center gap-2 justify-between bg-background'>
+        <div className='flex items-center gap-2 justify-between'>
             <nav className='flex items-center gap-1'>
                 <button 
                     title='Ruudukko' 

@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useRef, use } from 'react';
+import React, { useState } from 'react';
 import { getFileIcon } from '@/utils/GetFileIcon';
-import { FilePlus, Grid, List, LockKeyhole, Share2 } from 'lucide-react';
+import { DownloadCloud, FilePlus, Share2, Trash2, LockKeyhole } from 'lucide-react';
 import Link from 'next/link';
 import { getCardPreview } from '@/utils/FilePreview';
 import { useAlert } from '@/app/contexts/AlertContext';
@@ -9,93 +9,160 @@ import DeleteConfirmPopup from './DeleteConfirmPopup';
 import { useUser } from '@clerk/nextjs';
 
 function FileContainer({ fileState, setFileState }) {
-    const [deletePopup, setDeletePopup] = useState(false);
-    const { showAlert } = useAlert();
-    const { user } = useUser();
+  const [deletePopup, setDeletePopup] = useState(false);
+  const [touchStartTime, setStartTouchTime] = useState(null);
+  const [activeFileId, setActiveFileId] = useState(null); // Track the active file for options
+  const { showAlert } = useAlert();
+  const { user } = useUser();
 
-    // Determine which files to display
-    const displayFiles = fileState.searched ? fileState.searchedFiles 
-                      : fileState.filtered ? fileState.filteredFiles 
-                      : fileState.sorted ? fileState.sortedFiles 
-                      : fileState.files;
-                      
+  // Determine which files to display
+  const displayFiles = fileState.searched
+    ? fileState.searchedFiles
+    : fileState.filtered
+    ? fileState.filteredFiles
+    : fileState.sorted
+    ? fileState.sortedFiles
+    : fileState.files;
 
-    return (
-        <>
-        {/* No files */}
-        {!fileState.files.length && (
-          <div className='flex flex-col gap-4 items-center justify-center h-96'>
-            <p className='text-xl text-contrast'>Ei tiedostoja...</p>
-            <Link href='/tallenna' className='flex items-center gap-1 text-sm text-primary hover:text-primary/75'>
-                <FilePlus size={20} /> 
-                Lisää tiedostoja
-            </Link>
-          </div>
-        )}
+  const handleTouchStart = (fileId) => {
+    setStartTouchTime(Date.now());
+    setActiveFileId(null); // Reset active file on new touch
+  };
 
-        {/* Grid view */}
-        {fileState.view === 'grid' && displayFiles.length > 0 &&
+  const handleTouchEnd = (fileId) => {
+    const touchDuration = Date.now() - touchStartTime;
+    if (touchDuration > 500) {
+      setActiveFileId(fileId); // Set the active file for options
+    }
+    setStartTouchTime(null);
+  };
+
+  return (
+    <>
+      {/* No files */}
+      {!fileState.files.length && (
+        <div className="flex flex-col gap-4 items-center justify-center h-96">
+          <p className="text-xl text-contrast">Ei tiedostoja...</p>
+          <Link
+            href="/tallenna"
+            className="flex items-center gap-1 text-sm text-primary hover:text-primary/75"
+          >
+            <FilePlus size={20} />
+            Lisää tiedostoja
+          </Link>
+        </div>
+      )}
+
+      {/* Grid view */}
+      {fileState.view === 'grid' && displayFiles.length > 0 && (
         <div className="masonry-grid">
-            {displayFiles.map((file) => (
-                <div 
-                    key={file.id} 
-                    className='masonry-item bg-background group'
-                >   
-                    <div className={`absolute flex flex-col items-center bg-background rounded-lg top-0 left-0 gap-1 ${file.shared || file.password ? 'p-1' : 'p-0'}`}>
-                        {file.shared && <span title='Jaettu' className='text-xs text-success'><Share2 size={18} /></span>}
-                        {file.password && <span title='Salasana suojattu' className='text-xs text-success'><LockKeyhole size={18} /></span>}
-                    </div>
+          {displayFiles.map((file) => (
+            <div
+              key={file.id}
+              className="masonry-item bg-background overflow-hidden shadow-md shadow-black/25 group"
+              onTouchStart={() => handleTouchStart(file.id)}
+              onTouchEnd={() => handleTouchEnd(file.id)}
+              title={file.name + '|' + translateFileSize(file.size)}
+            >
+              <div
+                className={`absolute flex flex-col items-center bg-background rounded-lg top-0 left-0 gap-1 ${
+                  file.shared || file.password ? 'p-1' : 'p-0'
+                }`}
+              >
+                {file.shared && (
+                  <span title="Jaettu" className="text-xs text-success">
+                    <Share2 size={18} />
+                  </span>
+                )}
+                {file.password && (
+                  <span title="Salasana suojattu" className="text-xs text-success">
+                    <LockKeyhole size={18} />
+                  </span>
+                )}
+              </div>
 
-                    <Link 
-                        className='flex flex-col gap-1 hover:text-primary'
-                        href={`/tiedosto/${file.id}`}
-                        onClick={(e) => e.stopPropagation()}
-                        title={file.name}
-                    >   
-                        <div className='align-middle'>
-                            {getCardPreview({ file })}
-                        </div>
-                       
-                        <p className="flex text-sm font-semibold hover:text-primary text-ellipsis whitespace-nowrap">
-                            {file.name}
-                        </p>
-                    </Link>
-                </div>
-            ))}
-        </div>
-        }
+              <div
+                className={`absolute top-0 flex gap-2 items-center justify-between w-full scale-y-0 origin-top group-hover:scale-y-100 bg-black/50 text-white 
+                        transition-all overflow-hidden
+                        ${activeFileId === file.id ? 'scale-y-100' : 'scale-y-0'}`}
+              >
+                <Link href={`/tiedosto/${file.id}`} className="p-1 px-2 truncate text-sm hover:text-primary">{file.name}</Link>
+                <button className="p-1 bg-red-500/50 hover:bg-red-500" title="Poista">
+                  <Trash2 size={20} />
+                </button>
+              </div>
 
-        {/* List view */}
-        {fileState.view === 'list' && displayFiles.length > 0 &&
-        <div className='flex flex-col gap-4 px-1'>
-            {displayFiles.map((file) => (
-                <div 
-                    key={file.id} 
-                    className='relative grid grid-cols-1 md:grid-cols-2 gap-2 py-2 border-b border-contrast transition-colors'
-                >   
-                    <div className='flex items-center gap-4 overflow-hidden'>
-                        <img src={getFileIcon(file.type)} alt={file.name} className="w-7 h-auto" />
-                        <Link 
-                            href={`/tiedosto/${file.id}`} 
-                            className="text-sm font-semibold hover:text-primary truncate-2-row text-ellipsis"
-                            onClick={(e) => e.stopPropagation()}
-                        >
-                            {file.name}
-                        </Link>
-                    </div>
-                    <div className='flex items-center gap-3 justify-start md:justify-end'>
-                        {file.shared && <p title='Jaettu' className='text-xs text-success'><Share2 size={18} /></p>}
-                        {file.password && <p title='Salasana suojattu' className='text-xs text-success'><LockKeyhole size={18} /></p>}
-                        <p className='text-sm whitespace-nowrap text-navlink'>{file.uploaded}</p>
-                        <p className="text-sm whitespace-nowrap text-navlink">{cleanDataType(file.type)}</p>
-                        <p className="text-sm whitespace-nowrap text-navlink">{translateFileSize(file.size)}</p>
-                    </div>
-                </div>
-            ))}
+              <div
+                className="flex flex-col gap-1 hover:text-primary"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div className="align-middle">{getCardPreview({ file })}</div>
+              </div>
+
+              <div
+                className={`absolute bottom-0 flex items-center w-full scale-y-0 origin-bottom group-hover:scale-y-100 bg-black/50 text-white 
+                        transition-all overflow-hidden
+                        ${activeFileId === file.id ? 'scale-y-100' : 'scale-y-0'}`}
+              >
+                <button className="flex gap-1 justify-center p-1 bg-gradient-to-br from-primary/50 to-blue-800/50 hover:from-primary hover:to-primary text-sm w-full">
+                  <Share2 size={20} /> Jako
+                </button>
+                <button className="flex gap-1 justify-center p-1 bg-gradient-to-br from-success/50 to-green-800/50 hover:from-success hover:to-success text-sm w-full">
+                  <DownloadCloud size={20} /> Lataa
+                </button>
+              </div>
+            </div>
+          ))}
         </div>
-        }
-        </>
-    );
+      )}
+
+      {/* List view */}
+      {fileState.view === 'list' && displayFiles.length > 0 && (
+        <div className="flex flex-col gap-4 px-1">
+          {displayFiles.map((file) => (
+            <div
+              key={file.id}
+              className="relative grid grid-cols-1 md:grid-cols-2 gap-2 py-2 border-b border-contrast transition-colors"
+            >
+              <div className="flex items-center gap-4 overflow-hidden">
+                <img
+                  src={getFileIcon(file.type)}
+                  alt={file.name}
+                  className="w-7 h-auto"
+                />
+                <Link
+                  href={`/tiedosto/${file.id}`}
+                  className="text-sm font-semibold hover:text-primary truncate-2-row text-ellipsis"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  {file.name}
+                </Link>
+              </div>
+              <div className="flex items-center gap-3 justify-start md:justify-end">
+                {file.shared && (
+                  <p title="Jaettu" className="text-xs text-success">
+                    <Share2 size={18} />
+                  </p>
+                )}
+                {file.password && (
+                  <p title="Salasana suojattu" className="text-xs text-success">
+                    <LockKeyhole size={18} />
+                  </p>
+                )}
+                <p className="text-sm whitespace-nowrap text-navlink">{file.uploaded}</p>
+                <p className="text-sm whitespace-nowrap text-navlink">
+                  {cleanDataType(file.type)}
+                </p>
+                <p className="text-sm whitespace-nowrap text-navlink">
+                  {translateFileSize(file.size)}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </>
+  );
 }
 
 export default FileContainer;

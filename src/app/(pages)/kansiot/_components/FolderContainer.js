@@ -104,7 +104,7 @@ function FolderContainer({ folders, files, setFolders, setFiles, setCreateFolder
                     key={folder.id} 
                     onTouchStart={() => handleTouchStart(folder)}
                     onTouchEnd={() => handleTouchEnd(folder)}
-                    className={`relative flex items-center justify-center p-4 rounded-lg transition-colors border group overflow-hidden
+                    className={`relative flex items-center justify-center p-2 rounded-lg transition-colors border group overflow-hidden
                         ${selectedObjects.includes(folder) ? 'border-primary' : 'border-transparent'}
                         ${dragOverFolder === folder.id ? 'bg-primary' : 'bg-secondary'}`}
                     style={{ touchAction: 'none' }}
@@ -149,7 +149,7 @@ function FolderContainer({ folders, files, setFolders, setFiles, setCreateFolder
                     draggable
                     onDragStart={() => handleDragStart(file)}
                     onDragEnd={() => handleDragEnd(file)}
-                    className={`relative flex items-center justify-center p-4 rounded-lg bg-secondary transition-colors group border overflow-hidden
+                    className={`relative flex items-center justify-center p-2 rounded-lg bg-secondary transition-colors group border overflow-hidden
                         ${selectedObjects.includes(file) ? 'border-primary' : 'border-transparent'}`}
                     style={{ touchAction: 'none' }}
                 >   
@@ -174,10 +174,9 @@ function FolderContainer({ folders, files, setFolders, setFiles, setCreateFolder
                         <img 
                             src={file.type.includes('image') ? file.url : getFileIcon(file.type)} 
                             alt={file.name} 
-                            className='aspect-[4/3] h-16 object-cover rounded-md mb-1' 
+                            className='aspect-[4/3] h-20 object-cover rounded-md mb-1' 
                         />
                         <h2 className=" text-sm max-w-full font-semibold truncate">{file.name}</h2>
-                        <p className="text-sm text-navlink">{translateFileSize(file.size)}</p>
                     </Link>
 
                     <div className='absolute top-1 left-1 flex flex-col gap-1 text-success'>

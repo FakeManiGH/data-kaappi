@@ -104,7 +104,7 @@ function UploadForm({ files, setFiles, fileErrors, setFileErrors, setUploadProgr
                 fileSize: parseFloat(file.size),
                 fileType: file.type,
                 fileUrl: downloadURL,
-                folderID: file.folderID || '',
+                folderID: file.folderID || null,
                 linkShare: false,
                 shareUrl: shareURL,
                 groupShare: false,
@@ -184,7 +184,7 @@ function UploadForm({ files, setFiles, fileErrors, setFileErrors, setUploadProgr
     <div className="flex flex-col items-center justify-center w-full">
       <form className="w-full mb-1 text-center" onSubmit={handleSubmit}>
         <div
-          className={`relative flex items-center justify-center w-full ${isDragging ? 'border-primary' : ''}`}
+          className='relative flex items-center justify-center w-full'
           onDragEnter={handleDragEnter}
           onDragLeave={handleDragLeave}
           onDragOver={(e) => e.preventDefault()} // Prevent default behavior
@@ -201,8 +201,8 @@ function UploadForm({ files, setFiles, fileErrors, setFileErrors, setUploadProgr
           <label
             htmlFor="dropzone-file"
             className={`flex flex-col items-center w-full max-w-full justify-center h-72 rounded-xl
-              cursor-pointer border-2 border-dashed hover:border-solid transition-all
-              ${isDragging ? 'border-solid bg-primary/10' : 'border-primary bg-background'}`}
+              cursor-pointer border-2 border-primary hover:border-solid transition-all
+              ${isDragging ? 'border-solid' : 'border-dashed'}`}
 
           >
             <div className="flex flex-col max-w-full items-center justify-center p-4 text-center pt-5 pb-6">

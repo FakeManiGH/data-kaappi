@@ -27,11 +27,13 @@ function Page() {
     loading: true,
   })
 
-  const [isVisible, setIsVisible] = useState(true)
-  const [lastScrollY, setLastScrollY] = useState(0)
-  const [scrollDelta, setScrollDelta] = useState(0)
+  const [isSticky, setIsSticky] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
+  const [scrollDelta, setScrollDelta] = useState(0);
   const scrollThreshold = 200 // Hide from top
   const sensitivityThreshold = 20 // Sensitivity
+
 
   useEffect(() => {
     const handleScroll = () => {
@@ -53,10 +55,21 @@ function Page() {
       }
     }
 
-    window.addEventListener('scroll', handleScroll)
+    const handleMenuBackground = () => {
+      const currentScrollY = window.scrollY
+      if (currentScrollY > scrollThreshold) {
+        setIsSticky(true);
+      } else {
+        setIsSticky(false);
+      }
+    }
+
+    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleMenuBackground);
 
     return () => {
-      window.removeEventListener('scroll', handleScroll)
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('scroll', handleMenuBackground);
     }
   }, [lastScrollY, scrollThreshold, sensitivityThreshold, scrollDelta])
 
@@ -91,7 +104,11 @@ function Page() {
   return (
     <main>
       <h1 className='text-2xl md:text-3xl'><strong>Kaikki tiedostot</strong></h1>
-      <div className={`sticky top-0 flex flex-col z-10 py-2 gap-2 bg-background transition-transform duration-300 ${isVisible ? 'translate-y-0' : '-translate-y-full'}`}>
+      <div 
+        className={`sticky top-0 flex flex-col z-10 p-2 sm:p-4 gap-2 transition-all duration-300 
+          ${isVisible ? 'translate-y-0' : '-translate-y-full'}
+          ${isSticky ? 'bg-background' : 'bg-transparent'}`}
+      >
         <SearchBar fileState={fileState} setFileState={setFileState} />
         <FileNav fileState={fileState} setFileState={setFileState} />
       </div>  
