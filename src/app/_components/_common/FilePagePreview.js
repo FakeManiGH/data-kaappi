@@ -18,7 +18,7 @@ function FilePagePreview({ file }) {
                 <img
                     src={file.url}
                     alt={file.name || 'Image preview'}
-                    className="h-full w-auto object-contain"
+                    className="h-full w-auto object-contain rounded-lg shadow-lg shadow-black/25"
                 />
             )}
 
@@ -26,7 +26,7 @@ function FilePagePreview({ file }) {
                 <video
                     src={file.url}
                     controls
-                    className="h-full w-auto object-contain"
+                    className="h-full w-auto object-contain rounded-lg shadow-lg shadow-black/25"
                 />
             )}
 
@@ -44,7 +44,7 @@ function FilePagePreview({ file }) {
                 <iframe
                     src={file.url}
                     title={file.name || 'Document preview'}
-                    className="h-[600px] w-full border"
+                    className="h-[600px] w-full rounded-lg shadow-lg shadow-black/25"
                 />
             )}
 

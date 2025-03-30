@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { getFileIcon } from '@/utils/GetFileIcon';
-import { DownloadCloud, FilePlus, Share2, Trash2, LockKeyhole } from 'lucide-react';
+import { DownloadCloud, FilePlus, Share2, Trash2, LockKeyhole, Fullscreen, Expand, Group } from 'lucide-react';
 import Link from 'next/link';
 import { getCardPreview } from '@/utils/FilePreview';
 import { useAlert } from '@/app/contexts/AlertContext';
@@ -59,6 +59,7 @@ function FileContainer({ fileState, setFileState }) {
           {displayFiles.map((file) => (
             <div
               key={file.id}
+              style={{ touchAction: 'scroll' }} 
               className="masonry-item bg-background overflow-hidden shadow-md shadow-black/25 group"
               onTouchStart={() => handleTouchStart(file.id)}
               onTouchEnd={() => handleTouchEnd(file.id)}
@@ -82,14 +83,19 @@ function FileContainer({ fileState, setFileState }) {
               </div>
 
               <div
-                className={`absolute top-0 flex gap-2 items-center justify-between w-full scale-y-0 origin-top group-hover:scale-y-100 bg-black/50 text-white 
+                className={`absolute top-0 flex items-center justify-between w-full scale-y-0 origin-top group-hover:scale-y-100 text-white bg-black/50
                         transition-all overflow-hidden
                         ${activeFileId === file.id ? 'scale-y-100' : 'scale-y-0'}`}
               >
-                <Link href={`/tiedosto/${file.id}`} className="p-1 px-2 truncate text-sm hover:text-primary">{file.name}</Link>
-                <button className="p-1 bg-red-500/50 hover:bg-red-500" title="Poista">
-                  <Trash2 size={20} />
-                </button>
+                <Link href={`/tiedosto/${file.id}`} className="w-full p-2 truncate text-sm hover:text-primary">
+                  {file.name}
+                </Link>
+
+                <div className='flex items-center gap-1 p-2'>
+                  {file.linkShare && <Share2 size={20} />}
+                  {file.groupShare && <Group size={20} />}
+                  {file.passwordProtected && <LockKeyhole size={20} />}
+                </div>
               </div>
 
               <div
@@ -100,15 +106,21 @@ function FileContainer({ fileState, setFileState }) {
               </div>
 
               <div
-                className={`absolute bottom-0 flex items-center w-full scale-y-0 origin-bottom group-hover:scale-y-100 bg-black/50 text-white 
+                className={`absolute bottom-1 flex items-center gap-1 px-1 w-full scale-y-0 origin-bottom group-hover:scale-y-100 text-white 
                         transition-all overflow-hidden
                         ${activeFileId === file.id ? 'scale-y-100' : 'scale-y-0'}`}
               >
-                <button className="flex gap-1 justify-center p-1 bg-gradient-to-br from-primary/50 to-blue-800/50 hover:from-primary hover:to-primary text-sm w-full">
-                  <Share2 size={20} /> Jako
+                <button title='Suurenna' className="p-2 rounded-md bg-primary hover:bg-blue-600 transition-colors">
+                  <Expand size={20} />
                 </button>
-                <button className="flex gap-1 justify-center p-1 bg-gradient-to-br from-success/50 to-green-800/50 hover:from-success hover:to-success text-sm w-full">
-                  <DownloadCloud size={20} /> Lataa
+                <button title='Jaa' className="p-2 rounded-md bg-primary hover:bg-blue-600 transition-colors">
+                  <Share2 size={20} />
+                </button>
+                <button title='Lataa' className="p-2 rounded-md bg-success hover:bg-green-600 transition-colors">
+                  <DownloadCloud size={20} />
+                </button>
+                <button title='Poista' className="p-2 bg-red-500 hover:bg-red-600 rounded-md transition-colors">
+                  <Trash2 size={20} />
                 </button>
               </div>
             </div>

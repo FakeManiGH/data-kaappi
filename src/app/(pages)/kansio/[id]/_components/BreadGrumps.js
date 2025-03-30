@@ -4,7 +4,7 @@ import React from 'react';
 
 function Breadcrumbs({ folder }) {
     return (
-        <nav aria-label="Breadcrumb" className='flex items-center gap-1'>
+        <nav aria-label="Breadcrumb" className='flex items-center gap-2 text-sm'>
             <Link href='/kansiot' className='flex items-center gap-1 text-primary hover:text-primary/75 transition-colors'>
                 <Folders size={18} /> 
                 Kansiot

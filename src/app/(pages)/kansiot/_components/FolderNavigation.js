@@ -4,7 +4,7 @@ import { useUser } from '@clerk/nextjs';
 import { ArrowRightLeft, LockKeyhole, Pen, Settings, Share2, Trash2, X } from 'lucide-react';
 
 
-function FolderNavigation({ folders, files, setFolders, setFiles, selectedObjects, setSelectedObjects, setRenamePopup, setPasswordPopup, setDeletePopup }) {
+function FolderNavigation({ folders, files, setFolders, setFiles, selectedObjects, setSelectedObjects, setRenamePopup, setMovePopup, setPasswordPopup, setDeletePopup }) {
     const [dropMenu, setDropMenu] = useState(false)
     const { showAlert } = useAlert();
     const { user } = useUser();
@@ -74,6 +74,7 @@ function FolderNavigation({ folders, files, setFolders, setFiles, selectedObject
                             <button 
                                 className='flex w-full items-center gap-2 px-4 py-2 text-sm text-navlink hover:text-primary' 
                                 role="menuitem"
+                                onClick={() => {setMovePopup(true), setDropMenu(false)}}
                             >
                                 <ArrowRightLeft size={16} />
                                 Siirrä

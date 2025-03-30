@@ -15,6 +15,7 @@ import RenamePopup from './_components/RenamePopup';
 import PasswordPopup from './_components/PasswordPopup';
 import FolderNavigation from './_components/FolderNavigation';
 import DeletePopup from './_components/DeletePopup';
+import MoveSelectedPopup from './_components/MoveSelectedPopup';
 
 
 function Page() {
@@ -26,6 +27,7 @@ function Page() {
     const [renamePopup, setRenamePopup] = useState(false);
     const [passwordPopup, setPasswordPopup] = useState(false)
     const [deletePopup, setDeletePopup] = useState(false);
+    const [movePopup, setMovePopup] = useState(false);
     const [loading, setLoading] = useState(true);
     const [pageError, setPageError] = useState(null);
     const { user, isLoaded } = useUser();
@@ -111,6 +113,7 @@ function Page() {
                     selectedObjects={selectedObjects}
                     setSelectedObjects={setSelectedObjects}
                     setRenamePopup={setRenamePopup}
+                    setMovePopup={setMovePopup}
                     setPasswordPopup={setPasswordPopup}
                     setDeletePopup={setDeletePopup}
                 />
@@ -128,6 +131,7 @@ function Page() {
 
             {createFolder && <CreateFolder folders={folders} setFolders={setFolders} setCreateFolder={setCreateFolder} />}
             {renamePopup && <RenamePopup selectedObject={selectedObjects[0]} setFolders={setFolders} setFiles={setFiles} setSelectedObjects={setSelectedObjects} setRenamePopup={setRenamePopup} />}
+            {movePopup && <MoveSelectedPopup selectedObjects={selectedObjects} setSelectedObjects={setSelectedObjects} setFolders={setFolders} setFiles={setFiles} setMovePopup={setMovePopup} />}
             {passwordPopup && <PasswordPopup selectedObject={selectedObjects[0]} setFolders={setFolders} setFiles={setFiles} setSelectedObjects={setSelectedObjects} setPasswordPopup={setPasswordPopup} />}
             {deletePopup && <DeletePopup selectedObjects={selectedObjects} setSelectedObjects={setSelectedObjects} setFolders={setFolders} setFiles={setFiles} setDeletePopup={setDeletePopup} />}
         </main>

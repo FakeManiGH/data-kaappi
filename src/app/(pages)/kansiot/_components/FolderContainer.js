@@ -75,12 +75,10 @@ function FolderContainer({ folders, files, setFolders, setFiles, setCreateFolder
         }
     };
 
-    // Handle long press on touch devices
     const handleTouchStart = () => {
         setTouchStartTime(Date.now());
     };
 
-    // Handle long press on touch devices
     const handleTouchEnd = (object) => {
         const touchDuration = Date.now() - touchStartTime;
         if (touchDuration > 500) { // 500 milliseconds for long press
@@ -89,6 +87,8 @@ function FolderContainer({ folders, files, setFolders, setFiles, setCreateFolder
         setTouchStartTime(null);
     };
 
+
+    // PAGE RENDER
     if (!folders.length && !files.length) {
         return (
             <div className="flex flex-col h-72 items-center justify-center text-sm gap-4">
@@ -98,16 +98,15 @@ function FolderContainer({ folders, files, setFolders, setFiles, setCreateFolder
     }
 
     return (
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 xl:grid-cols-7 2xl:grid-cols-8 gap-2">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8 gap-2">
             {folders.map(folder => (
                 <div 
                     key={folder.id} 
                     onTouchStart={() => handleTouchStart(folder)}
                     onTouchEnd={() => handleTouchEnd(folder)}
-                    className={`relative flex items-center justify-center p-2 rounded-lg transition-colors border group overflow-hidden
+                    className={`relative flex items-center justify-center p-2 rounded-lg transition-colors border group shadow-md shadow-black/25 overflow-hidden
                         ${selectedObjects.includes(folder) ? 'border-primary' : 'border-transparent'}
                         ${dragOverFolder === folder.id ? 'bg-primary' : 'bg-secondary'}`}
-                    style={{ touchAction: 'none' }}
                 >   
                     {isDragging && 
                         <span
@@ -126,7 +125,7 @@ function FolderContainer({ folders, files, setFolders, setFiles, setCreateFolder
                         onChange={() => handleObjectSelect(folder)}
                         checked={selectedObjects.includes(folder)}
                     />
-                    <Link style={{ touchAction: 'none' }} href={`/kansio/${folder.id}`} className='flex flex-col items-center max-w-full overflow-hidden text-foreground hover:text-primary'>
+                    <Link href={`/kansio/${folder.id}`} className='flex flex-col items-center max-w-full overflow-hidden text-foreground hover:text-primary'>
                         <img src={folder.fileCount > 0 ? "/icons/folder_file.png" : "/icons/folder.png"} alt="folder" className="w-16 h-16" />
                         <h2 className="text-sm font-semibold transition-colors ">{folder.name}</h2>
                         <p className="text-sm text-navlink truncate">{folder.fileCount} tiedostoa</p>
@@ -143,19 +142,18 @@ function FolderContainer({ folders, files, setFolders, setFiles, setCreateFolder
             {files.map(file => (
                 <div 
                     key={file.id}
-                    title={(file.name) + (file.passwordProtected ? ' - suojattu salasanalla' : '')}
                     onTouchStart={() => handleTouchStart(file)}
                     onTouchEnd={() => handleTouchEnd(file)}
+                    title={(file.name) + (file.passwordProtected ? ' - suojattu salasanalla' : '')}
                     draggable
                     onDragStart={() => handleDragStart(file)}
                     onDragEnd={() => handleDragEnd(file)}
                     className={`relative flex items-center justify-center p-2 rounded-lg bg-secondary transition-colors group border overflow-hidden
-                        ${selectedObjects.includes(file) ? 'border-primary' : 'border-transparent'}`}
-                    style={{ touchAction: 'none' }}
+                        shadow-md shadow-black/25 ${selectedObjects.includes(file) ? 'border-primary' : 'border-transparent'}`}
                 >   
                     <input 
                         type="checkbox" 
-                        className={`absolute top-2 right-2 p-2 bg-background group-hover:block appearance-none rounded-full border 
+                        className={`absolute top-2 right-2 p-2 bg-background group-hover:block appearance-none rounded-full  border 
                             border-navlink hover:border-primary checked:border-primary checked:bg-primary checked:hover:border-navlink transition-all
                             ${selectedObjects.includes(file) ? 'block' : 'block md:hidden'}`}
                         onChange={() => handleObjectSelect(file)}
@@ -167,7 +165,6 @@ function FolderContainer({ folders, files, setFolders, setFiles, setCreateFolder
                     </button>
                     
                     <Link 
-                        style={{ touchAction: 'none' }} 
                         href={`/tiedosto/${file.id}`} 
                         className='flex flex-col items-center justify-between text-foreground overflow-hidden 
                             hover:text-primary group'>

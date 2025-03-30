@@ -7,7 +7,7 @@
   --background: #ffffff;
   --contrast: #d1d1d1;
   --navlink: #444444;
-  --secondary: #e5e5e5;
+  --secondary: #dadada;
   --linear: linear-gradient(90deg, #d1d1d1, #e5e5e5, #d1d1d1);
 }
 
@@ -56,17 +56,22 @@ main {
 }
 
 .masonry-grid {
-  column-count: 6;
+  column-count: 4;
   gap: 0.5rem;
   margin: 0;
   padding: 0;
 
-  @media screen and (max-width: 1200px) {
+
+  @media screen and (max-width: 1280px) {
     column-count: 3;
   }
 
-  @media screen and (max-width: 768px) {
+  @media screen and (max-width: 1080px) {
     column-count: 2;
+  }
+
+  @media screen and (max-width:600px) {
+    column-count: 1;
   }
 }
 

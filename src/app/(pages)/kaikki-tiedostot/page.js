@@ -31,7 +31,7 @@ function Page() {
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
   const [scrollDelta, setScrollDelta] = useState(0);
-  const scrollThreshold = 200 // Hide from top
+  const scrollThreshold = 225 // Hide from top
   const sensitivityThreshold = 20 // Sensitivity
 
 
@@ -104,13 +104,13 @@ function Page() {
   return (
     <main>
       <h1 className='text-2xl md:text-3xl'><strong>Kaikki tiedostot</strong></h1>
+      <FileNav fileState={fileState} setFileState={setFileState} />
       <div 
-        className={`sticky top-0 flex flex-col z-10 p-2 sm:p-4 gap-2 transition-all duration-300 
+        className={`sticky top-0 flex flex-col z-10 py-2 gap-2 duration-300 
           ${isVisible ? 'translate-y-0' : '-translate-y-full'}
-          ${isSticky ? 'bg-background' : 'bg-transparent'}`}
+          ${isSticky ? 'w-screen ml-[-16px] bg-background' : ' bg-transparent'}`}
       >
         <SearchBar fileState={fileState} setFileState={setFileState} />
-        <FileNav fileState={fileState} setFileState={setFileState} />
       </div>  
       <FileContainer fileState={fileState} setFileState={setFileState} />
     </main>

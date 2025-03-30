@@ -43,7 +43,7 @@ function SearchBar({ fileState, setFileState }) {
 
     return (
         <div className="flex items-center gap-1 w-full">
-            <div className="flex items-center group w-full overflow-hidden">
+            <div className="flex items-center group w-full px-2 overflow-hidden">
                 <label htmlFor="search" 
                     className='p-2.5 text-foreground cursor-pointer group-hover:text-primary transition-colors'
                 >
