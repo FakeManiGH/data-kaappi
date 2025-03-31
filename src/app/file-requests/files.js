@@ -280,6 +280,10 @@ export const deleteFile = async (userID, fileID) => {
     }
 };
 
+
+
+
+
 // MOVING FILES
 export const moveFileToFolder = async (userID, fileID, folderID) => {
     try {
@@ -357,6 +361,8 @@ export const moveFileToFolder = async (userID, fileID, folderID) => {
         return { success: false, message: "Tiedoston siirtäminen epäonnistui. Yritä uudelleen." };
     }
 };
+
+
 
 
 // SHARING FILES

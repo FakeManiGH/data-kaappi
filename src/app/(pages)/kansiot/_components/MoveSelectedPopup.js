@@ -49,6 +49,24 @@ function MoveSelectedPopup({ selectedObjects, setSelectedObjects, setFolders, se
     );
   };
 
+  const moveSelectedObjects = async () => {
+    setLoading(true);
+    try {
+      selectedObjects.forEach(object => {
+        if (object.docType === 'folder') {
+
+        } else if (object.docType === 'file') {
+
+        }
+      })
+    } catch (error) {
+      console.error('Error moving selected objects: ' + error);
+
+    } finally {
+      setLoading(false);
+    }
+  }
+
 
   if (loading) return <PopupLoader />
 
