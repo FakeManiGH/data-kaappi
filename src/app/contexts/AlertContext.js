@@ -9,7 +9,7 @@ export const AlertProvider = ({ children }) => {
     setAlert({ message, type, isOpen: true });
     setTimeout(() => {
       setAlert({ message: '', type: '', isOpen: false });
-    }, 3000);
+    }, 4000);
   };
 
   return (

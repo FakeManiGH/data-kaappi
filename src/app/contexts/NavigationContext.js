@@ -11,7 +11,6 @@ export const NavigationProvider = ({ children }) => {
     useEffect(() => {
         const path = `/${window.location.pathname.split('/')[1]}`;
         setCurrentIndex(path);
-        console.log(path);
     }, []);
 
     const navList = [

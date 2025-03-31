@@ -91,6 +91,7 @@ function Page() {
         uploadProgress={uploadProgress}
         setFiles={setFiles}
       />
+      
       {newFolder && <CreateFolder setNewFolder={setNewFolder} folders={folders} setFolders={setFolders} files={files} setFiles={setFiles} />}
     </main>
   );

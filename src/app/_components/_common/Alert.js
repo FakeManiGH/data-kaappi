@@ -8,9 +8,10 @@ const Alert = () => {
   if (!alert.isOpen) return null;
 
   return (
-    <div className={`fixed z-50 box-border bg-background inset-x-4 md:inset-x-auto md:right-4 bottom-4 
-      md:w-fit flex items-center gap-4 p-6 shadow-black/25 shadow-lg text-foreground border-t-8
-       ${alert.type === 'error' ? 'border-red-500' : (alert.type === 'success' ? 'border-success' : 'border-primary')}`
+    <div className={`fixed z-50 bottom-14 px-4 py-6 mx-auto inset-x-4 max-w-2xl bg-foreground 
+      text-background rounded-lg flex items-center gap-4 shadow-black/50 shadow-lg 
+      border-l-8 border-r-8
+      ${alert.type === 'error' ? 'border-red-500' : (alert.type === 'success' ? 'border-success' : 'border-primary')}`
     }>
       {alert.type === 'success' && <CircleCheck className='text-success' size={24} />}
       {alert.type === 'error' && <CircleAlert className='text-red-500' size={24} />}

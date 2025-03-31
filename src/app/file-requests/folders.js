@@ -530,8 +530,9 @@ export const moveFolderInFolder = async (userID, folderID, toFolderID) => {
         if (!userID) {
             return { success: false, message: 'Käyttäjätietoja ei löytynyt.' };
         }
-  
-        if (await isCircularMove(folderID, toFolderID)) {
+        
+        const circularMove = await isCircularMove(folderID, toFolderID)
+        if (circularMove) {
             return { success: false, message: "Kansiota ei voi siirtää omaan alikansioonsa." };
         }
   
@@ -560,7 +561,7 @@ export const moveFolderInFolder = async (userID, folderID, toFolderID) => {
                     transaction.update(fromFolderRef, { fileCount: increment(-1) });
                 }
     
-                return; // Exit early for root-level moves
+                return { success: true };
             }
     
             const toFolderRef = doc(db, "folders", toFolderID);
@@ -576,7 +577,7 @@ export const moveFolderInFolder = async (userID, folderID, toFolderID) => {
             }
     
             // Check target folder capacity
-            if (toFolderData.fileCount >= MAX_FOLDER_CAPACITY) {
+            if (toFolderData.fileCount >= 10) {
                 throw new Error(`Kohdekansio ${toFolderData.folderName} on täynnä.`);
             }
     
@@ -597,7 +598,7 @@ export const moveFolderInFolder = async (userID, folderID, toFolderID) => {
         });
   
         console.log(`User ${userID} moved folder ${folderID} to folder ${toFolderID || 'root'} at ${new Date().toISOString()}.`);
-        return { success: true, message: 'Kansio siirretty onnistuneesti.' };
+        return { success: true };
     } catch (error) {
         console.error("Error changing folder parent: ", error.stack || error);
         return { success: false, message: error.message || `Kansion ${folderID} siirtäminen epäonnistui.` };
@@ -611,15 +612,23 @@ export const moveFolderInFolder = async (userID, folderID, toFolderID) => {
 // SUPPORT
 // Prevent circular folder moves
 const isCircularMove = async (folderID, toFolderID) => {
+    if (folderID === toFolderID) {
+        return true;
+    }
+  
     let currentFolderID = toFolderID;
   
     while (currentFolderID) {
-      if (currentFolderID === folderID) return true;
+      if (currentFolderID === folderID) {
+        return true;
+      }
   
       const currentFolderRef = doc(db, "folders", currentFolderID);
       const currentFolderSnap = await getDoc(currentFolderRef);
   
-      if (!currentFolderSnap.exists()) return false;
+      if (!currentFolderSnap.exists()) {
+        return false;
+      }
   
       currentFolderID = currentFolderSnap.data().parentID;
     }

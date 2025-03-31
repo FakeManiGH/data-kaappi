@@ -5,9 +5,13 @@ import { useUser } from '@clerk/nextjs';
 import { useAlert } from '@/app/contexts/AlertContext';
 import { getUserFolders } from '@/app/file-requests/folders';
 import PopupLoader from '@/app/_components/_common/PopupLoader';
+import { moveFolderInFolder } from '@/app/file-requests/folders';
+import { moveFileToFolder } from '@/app/file-requests/files';
 
 function MoveSelectedPopup({ selectedObjects, setSelectedObjects, setFolders, setFiles, setMovePopup }) {
   const [allFolders, setAllFolders] = useState(null);
+  const [targetID, setTargetID] = useState(null);
+  const [transferErrors, setTransferErrors] = useState([]);
   const [loading, setLoading] = useState(true);
   const { user, isLoaded } = useUser();
   const { showAlert } = useAlert();
@@ -43,29 +47,63 @@ function MoveSelectedPopup({ selectedObjects, setSelectedObjects, setFolders, se
     getAllUserFolders();
   }, [isLoaded, user, showAlert, selectedObjects]);
   
+  // Remove selected object
   const removeObjectSelection = (object) => {
     setSelectedObjects((prevSelectedObjects) => 
         prevSelectedObjects.filter((selectedObject) => selectedObject.id !== object.id)
     );
   };
 
+  // Change selected folder
+  const handleFolderChange = (e) => {
+    const selectedFolder = e.target.value;
+    setTargetID(selectedFolder);
+  }
+
+  // Move selected files into folder
   const moveSelectedObjects = async () => {
     setLoading(true);
+    setTransferErrors([]); // clear errors
+
+    if (!targetID) {
+      showAlert('Valitse kohdekansio ennen siirtoa.', 'info');
+      setLoading(false);
+      return;
+    }
+
     try {
-      selectedObjects.forEach(object => {
+      const errors = [];
+      const movePromises = selectedObjects.map(async (object) => {
         if (object.docType === 'folder') {
-
+          const response = await moveFolderInFolder(user.id, object.id, targetID);
+          if (!response.success) {
+            errors.push({ id: object.id, name: object.name, message: response.message });
+          }
         } else if (object.docType === 'file') {
-
+          const response = await moveFileToFolder(user.id, object.id, targetID);
+          if (!response.success) {
+            errors.push({ id: object.id, name: object.name, message: response.message });
+          }
         }
-      })
-    } catch (error) {
-      console.error('Error moving selected objects: ' + error);
+      });
 
+      await Promise.all(movePromises);
+      
+      if (errors.length > 0) {
+        setTransferErrors(errors)
+        showAlert('Joitakin kohteita ei voitu siirtää.', 'error');
+      } else {
+        showAlert('Kohteet siirretty onnistuneesti.', 'success');
+        setSelectedObjects([]); // Clear selected objects
+        setMovePopup(false); // Close the popup
+      }
+    } catch (error) {
+      console.error('Error moving selected objects:', error);
+      showAlert(error.message || 'Kohteiden siirtäminen epäonnistui.', 'error');
     } finally {
       setLoading(false);
     }
-  }
+  };
 
 
   if (loading) return <PopupLoader />
@@ -85,31 +123,49 @@ function MoveSelectedPopup({ selectedObjects, setSelectedObjects, setFolders, se
           <h2 className="text-2xl md:text-3xl mb-6 text-center font-bold">Siirrä kohteet</h2>
           
           <ul className='flex flex-col gap-1 text-sm'>
-            {selectedObjects.map(object => (
-              <li key={object.id} className='relative flex items-center justify-between gap-2 py-1'>
-                <div className='flex items-center gap-2'>
-                  <img src={object.docType === 'folder' ? '/icons/folder.png' : getFileIcon(object.type)} alt='Kansio tai tiedosto' className="w-7 h-auto" />
-                  <p className='truncate'>{object.name}</p>
-                  {object.docType === 'folder' && <span className='text-navlink'>({object.fileCount} tiedostoa)</span>}
-                </div>
+            {selectedObjects.map((object) => {
+              const error = transferErrors.find((err) => err.id === object.id); // Find error for this object
+              return (
+                <li key={object.id} className='relative flex flex-col gap-1 py-1'>
+                  <div className='flex items-center justify-between gap-2'>
+                    <div className='flex items-center gap-2'>
+                      <img
+                        src={object.docType === 'folder' ? '/icons/folder.png' : getFileIcon(object.type)}
+                        alt='Kansio tai tiedosto'
+                        className='w-7 h-auto'
+                      />
+                      <p className='truncate'>{object.name}</p>
+                      {object.docType === 'folder' && (
+                        <span className='text-navlink'>({object.fileCount} tiedostoa)</span>
+                      )}
+                    </div>
 
-                <button 
-                  title='Poista valinta' 
-                  className='text-navlink hover:text-foreground'
-                  onClick={() => removeObjectSelection(object)}
-                >
-                  <CircleMinus size={20} />
-                </button>
-              </li>
-            ))}
+                    <button
+                      title='Poista valinta'
+                      className='text-navlink hover:text-foreground'
+                      onClick={() => removeObjectSelection(object)}
+                    >
+                      <CircleMinus size={20} />
+                    </button>
+                  </div>
+
+                  {/* Display error message if it exists */}
+                  {error && (
+                    <p className='text-sm text-red-500'>
+                      <strong>Virhe:</strong> {error.message}
+                    </p>
+                  )}
+                </li>
+              );
+            })}
           </ul>
 
           <select
             id='folder'
             className='px-3 py-2.5 mt-4 bg-background text-sm border border-contrast focus:border-primary w-full focus:ring-primary focus:ring-1
               first:text-navlink'
-            onChange={(e) => handleFolderChange(e, index)}
-            value={''} // Prioritize preferredFolder
+            onChange={(e) => handleFolderChange(e)}
+            value={targetID || ''} // Prioritize preferredFolder
           >
             <option value="" disabled>Valitse kansio</option>
             {allFolders.map((folder) => (
@@ -119,7 +175,7 @@ function MoveSelectedPopup({ selectedObjects, setSelectedObjects, setFolders, se
           <label htmlFor='folder' className='sr-only'>Valitse kansio</label>
 
           <button 
-              onClick={() => setDeleteConfirm(true)} 
+              onClick={moveSelectedObjects} 
               className='text-white text-sm bg-gradient-to-br from-primary to-blue-800 hover:to-primary mt-4 py-2.5 px-3 rounded-full
                 shadow-md shadow-black/25'
           >
