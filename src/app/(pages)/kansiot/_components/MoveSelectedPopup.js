@@ -63,39 +63,63 @@ function MoveSelectedPopup({ selectedObjects, setSelectedObjects, setFolders, se
   // Move selected files into folder
   const moveSelectedObjects = async () => {
     setLoading(true);
-    setTransferErrors([]); // clear errors
-
+    setTransferErrors([]); // Clear previous errors
+  
     if (!targetID) {
       showAlert('Valitse kohdekansio ennen siirtoa.', 'info');
       setLoading(false);
       return;
     }
-
+  
     try {
-      const errors = [];
+      const errors = []; // Track errors
+      const movedObjects = []; // Track successfully moved objects
+  
       const movePromises = selectedObjects.map(async (object) => {
         if (object.docType === 'folder') {
           const response = await moveFolderInFolder(user.id, object.id, targetID);
           if (!response.success) {
             errors.push({ id: object.id, name: object.name, message: response.message });
+          } else {
+            movedObjects.push(object);
           }
         } else if (object.docType === 'file') {
           const response = await moveFileToFolder(user.id, object.id, targetID);
           if (!response.success) {
             errors.push({ id: object.id, name: object.name, message: response.message });
+          } else {
+            movedObjects.push(object);
           }
         }
       });
-
+  
       await Promise.all(movePromises);
-      
+  
+      setTransferErrors(errors);
       if (errors.length > 0) {
-        setTransferErrors(errors)
         showAlert('Joitakin kohteita ei voitu siirtää.', 'error');
       } else {
         showAlert('Kohteet siirretty onnistuneesti.', 'success');
-        setSelectedObjects([]); // Clear selected objects
-        setMovePopup(false); // Close the popup
+  
+        // Remove moved objects
+        setFolders((prevFolders) =>
+          prevFolders.filter((folder) => !movedObjects.some((obj) => obj.id === folder.id))
+        );
+        setFiles((prevFiles) =>
+          prevFiles.filter((file) => !movedObjects.some((obj) => obj.id === file.id))
+        );
+  
+        // Update targetFolder fileCount (if in this folder)
+        setFolders((prevFolders) =>
+          prevFolders.map((folder) =>
+            folder.id === targetID
+              ? { ...folder, fileCount: folder.fileCount + movedObjects.length }
+              : folder
+          )
+        );
+  
+        setSelectedObjects([]); // Clear selected 
+        setMovePopup(false); // Close popup
       }
     } catch (error) {
       console.error('Error moving selected objects:', error);

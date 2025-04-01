@@ -105,8 +105,6 @@ function Page() {
 
             {selectedObjects.length > 0 && 
                 <FolderNavigation 
-                    folders={folders}
-                    files={files}
                     setFolders={setFolders} 
                     setFiles={setFiles}
                     setCreateFolder={setCreateFolder}
@@ -129,9 +127,18 @@ function Page() {
                 setSelectedObjects={setSelectedObjects}
             />
 
+            {movePopup && 
+                <MoveSelectedPopup 
+                    selectedObjects={selectedObjects} 
+                    setSelectedObjects={setSelectedObjects}
+                    setFolders={setFolders}
+                    setFiles={setFiles} 
+                    setMovePopup={setMovePopup} 
+                />
+            }
+
             {createFolder && <CreateFolder folders={folders} setFolders={setFolders} setCreateFolder={setCreateFolder} />}
             {renamePopup && <RenamePopup selectedObject={selectedObjects[0]} setFolders={setFolders} setFiles={setFiles} setSelectedObjects={setSelectedObjects} setRenamePopup={setRenamePopup} />}
-            {movePopup && <MoveSelectedPopup selectedObjects={selectedObjects} setSelectedObjects={setSelectedObjects} setFolders={setFolders} setFiles={setFiles} setMovePopup={setMovePopup} />}
             {passwordPopup && <PasswordPopup selectedObject={selectedObjects[0]} setFolders={setFolders} setFiles={setFiles} setSelectedObjects={setSelectedObjects} setPasswordPopup={setPasswordPopup} />}
             {deletePopup && <DeletePopup selectedObjects={selectedObjects} setSelectedObjects={setSelectedObjects} setFolders={setFolders} setFiles={setFiles} setDeletePopup={setDeletePopup} />}
         </main>

@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useAlert } from '@/app/contexts/AlertContext';
 import { useUser } from '@clerk/nextjs';
-import { ArrowRightLeft, LockKeyhole, Pen, Settings, Share2, Trash2, X } from 'lucide-react';
+import { ArrowRightLeft, CheckSquare, LockKeyhole, Pen, Settings, Share2, Trash2, X } from 'lucide-react';
 
 
-function FolderNavigation({ folders, files, setFolders, setFiles, selectedObjects, setSelectedObjects, setRenamePopup, setMovePopup, setPasswordPopup, setDeletePopup }) {
+function FolderNavigation({ folders, files, selectedObjects, setSelectedObjects, setRenamePopup, setMovePopup, setPasswordPopup, setDeletePopup }) {
     const [dropMenu, setDropMenu] = useState(false)
     const { showAlert } = useAlert();
     const { user } = useUser();
@@ -24,6 +24,15 @@ function FolderNavigation({ folders, files, setFolders, setFiles, selectedObject
         }
     }), [dropMenu];
 
+    // Select all objects in folder
+    const selectAllObjects = () => {
+        const allObjects = [...folders, ...files];
+        const newSelectedObjects = allObjects.filter(
+            (object) => !selectedObjects.some((selected) => selected.id === object.id)
+        );
+
+        setSelectedObjects((prevSelectedObjects) => [...prevSelectedObjects, ...newSelectedObjects]);
+    };
 
 
     return (
@@ -87,6 +96,15 @@ function FolderNavigation({ folders, files, setFolders, setFiles, selectedObject
                                 <Share2 size={16} />
                                 Jaa
                             </button>
+                            <button 
+                                className='flex w-full items-center gap-2 px-4 py-2 text-sm text-navlink hover:text-primary'
+                                role='menuitem'
+                                onClick={selectAllObjects}
+                            >   
+                                <CheckSquare size={16} />
+                                Valitse kaikki
+                            </button>
+
 
                             
                         </div>
