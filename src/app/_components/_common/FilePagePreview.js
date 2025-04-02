@@ -18,7 +18,7 @@ function FilePagePreview({ file }) {
                 <img
                     src={file.url}
                     alt={file.name || 'Image preview'}
-                    className="h-full w-auto object-contain rounded-lg shadow-lg shadow-black/25"
+                    className="h-full w-auto object-contain rounded-lg shadow-md shadow-black/25"
                 />
             )}
 

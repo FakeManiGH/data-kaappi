@@ -6,7 +6,7 @@ function ErrorView({ message }) {
     <main>
         <div className='flex flex-col gap-4 items-center justify-center h-96'>
             <CloudAlert size={72} className='text-red-500' />
-            <h1 className='text-2xl md:text-3xl text-red-500 font-bold'>Jotain meni vikaan...</h1>
+            <h1 className='text-2xl md:text-4xl text-red-500 font-bold'>Jotain meni vikaan...</h1>
 
             {message &&
             <p className='text-center text-md text-navlink'>

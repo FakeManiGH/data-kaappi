@@ -1,13 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useAlert } from '@/app/contexts/AlertContext';
-import { useUser } from '@clerk/nextjs';
 import { ArrowRightLeft, CheckSquare, LockKeyhole, Pen, Settings, Share2, Trash2, X } from 'lucide-react';
 
 
 function FolderNavigation({ folders, files, selectedObjects, setSelectedObjects, setRenamePopup, setMovePopup, setPasswordPopup, setDeletePopup }) {
     const [dropMenu, setDropMenu] = useState(false)
-    const { showAlert } = useAlert();
-    const { user } = useUser();
     const dropRef = useRef(null);
 
     useEffect(() => {
@@ -40,7 +36,7 @@ function FolderNavigation({ folders, files, selectedObjects, setSelectedObjects,
             <div ref={dropRef} className='relative flex flex-wrap items-center'>
                 <button 
                     className='flex items-center w-fit gap-2 px-3 py-2 rounded-full text-sm bg-gradient-to-br from-primary to-blue-800 
-                        text-white transition-colors'
+                        text-white shadow-md shadow-black/25 transition-colors'
                     role="button"
                     onClick={() => setDropMenu(!dropMenu)}
                 >
@@ -132,14 +128,15 @@ function FolderNavigation({ folders, files, selectedObjects, setSelectedObjects,
                 <button
                     onClick={() => setSelectedObjects([])}
                     className='flex items-center w-fit gap-1 px-3 py-2 rounded-full border border-navlink text-sm text-foreground 
-                        hover:border-primary group transition-colors'
+                        hover:border-primary group shadow-md shadow-black/25 transition-colors'
                 >
                     <X size={20} className='group-hover:text-primary transition-colors' />
                     {selectedObjects.length} valittu
                 </button>
                 <button
                     onClick={() => setDeletePopup(true)}
-                    className='flex items-center w-fit gap-1 px-3 py-2 rounded-full text-sm bg-red-500 text-white hover:bg-red-600 transition-colors'
+                    className='flex items-center w-fit gap-1 px-3 py-2 rounded-full text-sm bg-red-500 text-white hover:bg-red-600 shadow-md shadow-black/25 
+                        transition-colors'
                 >
                     <Trash2 size={20} />
                     Poista

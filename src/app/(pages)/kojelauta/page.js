@@ -50,7 +50,7 @@ function Page() {
 
   return (
     <main>
-      <h1 className='text-2xl md:text-3xl'><strong>Hei, {user?.firstName}</strong></h1>
+      <h1 className='text-4xl md:text-4xl'><strong>Hei, {user?.firstName}</strong></h1>
       
       <div className='grid grid-cols-1 lg:grid-cols-2 gap-4 min-h-72'>
         <div className='flex gap-2 flex-wrap items-center justify-center bg-gradient-to-br from-secondary rounded-xl shadow-black/25 shadow-md to-contrast px-4 py-6'>

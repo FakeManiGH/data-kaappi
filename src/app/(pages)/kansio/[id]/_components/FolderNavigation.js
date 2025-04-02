@@ -1,13 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useAlert } from '@/app/contexts/AlertContext';
-import { useUser } from '@clerk/nextjs';
-import { ArrowRightLeft, LockKeyhole, Pen, Settings, Share2, Trash2, X } from 'lucide-react';
+import { ArrowRightLeft, CheckSquare, LockKeyhole, Pen, Settings, Share2, Trash2, X } from 'lucide-react';
 
 
-function FolderNavigation({ folders, files, setFolders, setFiles, selectedObjects, setSelectedObjects, setRenamePopup, setPasswordPopup, setDeletePopup }) {
+function FolderNavigation({ folders, files, selectedObjects, setSelectedObjects, setRenamePopup, setMovePopup, setPasswordPopup, setDeletePopup }) {
     const [dropMenu, setDropMenu] = useState(false)
-    const { showAlert } = useAlert();
-    const { user } = useUser();
     const dropRef = useRef(null);
 
     useEffect(() => {
@@ -24,13 +20,23 @@ function FolderNavigation({ folders, files, setFolders, setFiles, selectedObject
         }
     }), [dropMenu];
 
+    // Select all objects in folder
+    const selectAllObjects = () => {
+        const allObjects = [...folders, ...files];
+        const newSelectedObjects = allObjects.filter(
+            (object) => !selectedObjects.some((selected) => selected.id === object.id)
+        );
+
+        setSelectedObjects((prevSelectedObjects) => [...prevSelectedObjects, ...newSelectedObjects]);
+    };
+
 
     return (
         <div className='flex w-full items-center justify-between gap-1 flex-wrap'>
             <div ref={dropRef} className='relative flex flex-wrap items-center'>
                 <button 
                     className='flex items-center w-fit gap-2 px-3 py-2 rounded-full text-sm bg-gradient-to-br from-primary to-blue-800 
-                        text-white transition-colors'
+                        text-white hover:to-primary shadow-md shadow-black/25 transition-colors'
                     role="button"
                     onClick={() => setDropMenu(!dropMenu)}
                 >
@@ -73,6 +79,7 @@ function FolderNavigation({ folders, files, setFolders, setFiles, selectedObject
                             <button 
                                 className='flex w-full items-center gap-2 px-4 py-2 text-sm text-navlink hover:text-primary' 
                                 role="menuitem"
+                                onClick={() => {setMovePopup(true), setDropMenu(false)}}
                             >
                                 <ArrowRightLeft size={16} />
                                 Siirrä
@@ -86,7 +93,15 @@ function FolderNavigation({ folders, files, setFolders, setFiles, selectedObject
                                 Jaa
                             </button>
 
-                            
+                            <button 
+                                className='flex w-full items-center gap-2 px-4 py-2 text-sm text-navlink hover:text-primary'
+                                role='menuitem'
+                                onClick={selectAllObjects}
+                            >   
+                                <CheckSquare size={16} />
+                                Valitse kaikki
+                            </button>
+
                         </div>
 
                         <div className='bg-background pb-2'>
@@ -112,14 +127,15 @@ function FolderNavigation({ folders, files, setFolders, setFiles, selectedObject
                 <button
                     onClick={() => setSelectedObjects([])}
                     className='flex items-center w-fit gap-1 px-3 py-2 rounded-full border border-navlink text-sm text-foreground 
-                        hover:border-primary group transition-colors'
+                        hover:border-primary group shadow-md transition-colors'
                 >
                     <X size={20} className='group-hover:text-primary transition-colors' />
                     {selectedObjects.length} valittu
                 </button>
                 <button
                     onClick={() => setDeletePopup(true)}
-                    className='flex items-center w-fit gap-1 px-3 py-2 rounded-full text-sm bg-red-500 text-white hover:bg-red-600 transition-colors'
+                    className='flex items-center w-fit gap-1 px-3 py-2 rounded-full text-sm bg-red-500 text-white hover:bg-red-600 shadow-md shadow-black/25 
+                        transition-colors'
                 >
                     <Trash2 size={20} />
                     Poista

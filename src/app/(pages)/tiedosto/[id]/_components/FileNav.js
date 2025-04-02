@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import { LockKeyhole, Pen, Settings, Share2, Trash } from 'lucide-react'
 import SharePopup from './SharePopup'
 import PasswordPopup from './PasswordPopup'
 import DeletePopup from './DeletePopup'
-import { useUser } from '@clerk/nextjs'
 import RenamePopup from './RenamePopup'
 
 function FileNav({ file, setFile, setDeleted }) {
@@ -14,15 +13,18 @@ function FileNav({ file, setFile, setDeleted }) {
     const [renamePopup, setRenamePopup] = useState(false);
 
     useEffect(() => {
-        const handleClick = (e) => {
-            if (!e.target.closest('.relative')) {
-                setDropMenu(false)
-            }
+        if (dropRef) {
+            const handleClickOutside = (event) => {
+                if (dropRef.current && !dropRef.current.contains(event.target)) {
+                    setDropMenu(false);
+                }
+            };
+            document.addEventListener('mousedown', handleClickOutside);
+            return () => {
+                document.removeEventListener('mousedown', handleClickOutside);
+            };
         }
-
-        document.addEventListener('click', handleClick)
-        return () => document.removeEventListener('click', handleClick)
-    }, [])
+    }), [dropMenu];
 
     const handleRenamePopup = () => {
         setDropMenu(false);
@@ -46,7 +48,7 @@ function FileNav({ file, setFile, setDeleted }) {
 
     return (
         <div className='relative flex flex-wrap items-center justify-end w-full'>
-            <div>
+            <div ref={dropRef}>
                 <button 
                     className='flex items-center w-fit gap-1 px-3 py-2 rounded-full text-sm bg-gradient-to-br from-primary to-blue-800 text-white 
                         hover:to-primary shadow-md shadow-black/25 transition-colors'

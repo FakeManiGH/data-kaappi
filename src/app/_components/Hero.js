@@ -4,7 +4,7 @@ import { ChevronsLeft, ChevronsRight } from 'lucide-react'
 function Hero() {
     return (
         <>
-        <div className='w-full flex flex-col sm:flex-row items-center gap-4 justify-center h-96 rounded-xl rounded-b-full bg-gradient-to-b from-transparent to-contrast shadow-lg shadow-black/25'>
+        <div className='w-full flex flex-col sm:flex-row items-center gap-4 justify-center h-96 rounded-xl rounded-b-full bg-gradient-to-b from-transparent to-secondary shadow-lg shadow-black/25'>
             <img className="w-40" src="/logo.svg" alt="logo" />
             <h1 className='text-5xl font-bold'>Datakaappi</h1>
         </div>
@@ -12,7 +12,7 @@ function Hero() {
         <main>
             <div className="flex flex-col items-center gap-6 mx-auto text-center">
                 <div className='flex flex-col items-center gap-6 mx-auto max-w-2xl text-center'>
-                    <h2 className="text-3xl font-semibold sm:text-5xl">
+                    <h2 className="text-4xl font-semibold sm:text-5xl">
                         <strong className='text-primary'>Säilytä</strong> ja <strong className='text-primary'>jaa</strong> tärkeimmät tiedostosi 
                         turvallisesti.
                     </h2>

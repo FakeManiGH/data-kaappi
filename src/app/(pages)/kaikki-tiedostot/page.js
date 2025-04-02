@@ -103,7 +103,7 @@ function Page() {
     
   return (
     <main>
-      <h1 className='text-2xl md:text-3xl'><strong>Kaikki tiedostot</strong></h1>
+      <h1 className='text-4xl md:text-4xl'><strong>Kaikki tiedostot</strong></h1>
       <FileNav fileState={fileState} setFileState={setFileState} />
       <div 
         className={`sticky top-0 flex flex-col z-10 py-2 gap-2 duration-300 

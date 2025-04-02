@@ -287,6 +287,10 @@ export const deleteFile = async (userID, fileID) => {
 // MOVING FILES
 export const moveFileToFolder = async (userID, fileID, folderID) => {
     try {
+        if (!userID) {
+            return { success: false, message: 'Käyttäjätietoja ei löytynyt.' };
+        }
+
         await runTransaction(db, async (transaction) => {
             const fileRef = doc(db, "files", fileID);
             const fileSnap = await transaction.get(fileRef);
@@ -306,7 +310,16 @@ export const moveFileToFolder = async (userID, fileID, folderID) => {
             const toFolderSnap = await transaction.get(toFolderRef);
 
             if (!toFolderSnap.exists()) {
-                return { success: false, message: `Kansiota ${folderID} ei löydy.` }
+                transaction.update(fileRef, {
+                    folderID: null,
+                });
+        
+                if (file.folderID) {
+                    const fromFolderRef = doc(db, "folders", file.folderID);
+                    transaction.update(fromFolderRef, { fileCount: increment(-1) });
+                }
+    
+                return { success: true };
             }
 
             const toFolder = toFolderSnap.data();

@@ -79,7 +79,7 @@ function Page() {
 
     return (
         <main>
-            <h1 className="text-2xl sm:text-3xl"><strong>Kansiot</strong></h1>
+            <h1 className="text-4xl sm:text-4xl"><strong>Kansiot</strong></h1>
             <p className='text-sm'>
                 Hallitse kansioita ja tiedostojasi.
             </p>
@@ -88,7 +88,7 @@ function Page() {
                 <Link 
                     href='/tallenna' 
                     className='flex flex-1 sm:flex-none items-center justify-center w-fit gap-2 px-3 py-2 rounded-full text-sm bg-gradient-to-br 
-                        from-primary to-blue-800 text-white hover:to-primary transition-colors'
+                        from-primary to-blue-800 text-white hover:to-primary shadow-md shadow-black/25 transition-colors'
                 >
                     <FilePlus />
                     Lisää tiedostoja
@@ -96,7 +96,7 @@ function Page() {
                 <button 
                     onClick={() => setCreateFolder(true)} 
                     className='flex flex-1 sm:flex-none items-center justify-center w-fit gap-2 px-3 py-2 rounded-full text-sm bg-gradient-to-br 
-                        from-primary to-blue-800 text-white hover:to-primary transition-colors'
+                        from-primary to-blue-800 text-white hover:to-primary shadow-md shadow-black/25 transition-colors'
                 >
                     <FolderPlus />
                     Uusi kansio

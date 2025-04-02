@@ -38,7 +38,7 @@ function page() {
     return (
         <main>
             <p className='md:text-lg'>Hei, {user?.fullName}</p>
-            <h1 className="text-2xl font-extrabold sm:text-4xl">Tervetuloa käyttämään <strong className='text-primary'>Datakaappi</strong> pilvipalvelua!</h1>
+            <h1 className="text-4xl font-extrabold sm:text-4xl">Tervetuloa käyttämään <strong className='text-primary'>Datakaappi</strong> pilvipalvelua!</h1>
             <NavigationGrid />
         </main>
     )

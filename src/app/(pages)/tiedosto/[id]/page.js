@@ -72,7 +72,7 @@ function Page({ params }) {
     return (
         <main>
             <div className='flex flex-col overflow-hidden'>
-                <h1 className='text-2xl md:text-3xl truncate'><strong>{file.name}</strong></h1>
+                <h1 className='text-4xl md:text-4xl truncate'><strong>{file.name}</strong></h1>
                 <p className='flex items-center gap-1 text-md'><UserRoundCheck size={20} /> {file.user.name}</p>
             </div>
 

@@ -67,7 +67,7 @@ function Page() {
 
   return (
     <main>
-      <h1 className='text-2xl md:text-3xl'><strong>Tallenna</strong></h1>
+      <h1 className='text-4xl md:text-4xl'><strong>Tallenna</strong></h1>
       <p className='text-sm'>
         Talleta tiedostoja kaappiisi. Voit tallentaa useita tiedostoja kerralla ja luoda kansioita, jotta tiedostot pysyvät kätevästi järjestyksessä.
       </p>

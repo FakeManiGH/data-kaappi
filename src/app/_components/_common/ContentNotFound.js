@@ -7,7 +7,7 @@ function ContentNotFound({ message }) {
         <main>
             <div className='flex flex-col gap-4 items-center justify-center h-96'>
                 <h1 className='text-7xl font-black'>404</h1>
-                <h2 className='text-2xl md:text-3xl font-bold'>Nyt kävi hassusti...</h2>
+                <h2 className='text-2xl md:text-4xl font-bold'>Nyt kävi hassusti...</h2>
 
                 {message &&
                 <p className='text-center text-md text-navlink'>

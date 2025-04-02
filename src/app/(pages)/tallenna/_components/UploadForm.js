@@ -201,8 +201,8 @@ function UploadForm({ files, setFiles, fileErrors, setFileErrors, setUploadProgr
           <label
             htmlFor="dropzone-file"
             className={`flex flex-col items-center w-full max-w-full justify-center h-72 rounded-xl
-              cursor-pointer border-2 border-primary hover:border-solid transition-all
-              ${isDragging ? 'border-solid' : 'border-dashed'}`}
+              cursor-pointer border-2 border-dashed hover:border-primary bg-background transition-all
+              ${isDragging ? 'border-primary' : 'border-contrast'}`}
 
           >
             <div className="flex flex-col max-w-full items-center justify-center p-4 text-center pt-5 pb-6">

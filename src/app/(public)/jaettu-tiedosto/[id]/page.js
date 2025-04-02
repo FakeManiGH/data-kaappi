@@ -50,7 +50,7 @@ function Page({ params }) {
         <p>Jaettu tiedosto:</p>
 
         <div className='flex flex-col'>
-          <h1 className="text-2xl font-bold">{file.name}</h1>
+          <h1 className="text-4xl font-bold">{file.name}</h1>
           <p className='flex itmes-center gap-2 text-navlink'><UserCheck2 /> {file.user.name}</p>
         </div>
 
