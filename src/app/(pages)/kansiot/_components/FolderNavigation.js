@@ -35,7 +35,7 @@ function FolderNavigation({ folders, files, selectedObjects, setSelectedObjects,
         <div className='flex w-full items-center justify-between gap-1 flex-wrap'>
             <div ref={dropRef} className='relative flex flex-wrap items-center'>
                 <button 
-                    className='flex items-center w-fit gap-2 px-3 py-2 rounded-full text-sm bg-gradient-to-br from-primary to-blue-800 
+                    className='flex items-center w-fit gap-2 px-3 py-2 rounded-full text-sm bg-primary hover:bg-primary/75 
                         text-white shadow-md shadow-black/25 transition-colors'
                     role="button"
                     onClick={() => setDropMenu(!dropMenu)}
@@ -128,7 +128,7 @@ function FolderNavigation({ folders, files, selectedObjects, setSelectedObjects,
                 <button
                     onClick={() => setSelectedObjects([])}
                     className='flex items-center w-fit gap-1 px-3 py-2 rounded-full border border-navlink text-sm text-foreground 
-                        hover:border-primary group shadow-md shadow-black/25 transition-colors'
+                        hover:border-primary group transition-colors'
                 >
                     <X size={20} className='group-hover:text-primary transition-colors' />
                     {selectedObjects.length} valittu

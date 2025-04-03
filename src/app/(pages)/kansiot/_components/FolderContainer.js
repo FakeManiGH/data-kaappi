@@ -131,10 +131,10 @@ function FolderContainer({ folders, files, setFolders, setFiles, setCreateFolder
                         <p className="text-sm text-navlink truncate">{folder.fileCount} tiedostoa</p>
                     </Link>
 
-                    <div className='absolute top-1 left-1 flex flex-col gap-1 text-success'>
+                    <div className='absolute top-2 left-2 flex flex-col gap-1 text-success'>
                         {folder.passwordProtected && <LockKeyhole size={16} />}
-                        {folder.linkShare && <Share2 size={16} />}
-                        {folder.groupShare && <Group size={16} />}
+                        {folder.sharing.link && <Share2 size={16} />}
+                        {folder.sharing.group && <Group size={16} />}
                     </div>
                 </div>
             ))}
@@ -176,7 +176,7 @@ function FolderContainer({ folders, files, setFolders, setFiles, setCreateFolder
                         <h2 className=" text-sm max-w-full font-semibold truncate">{file.name}</h2>
                     </Link>
 
-                    <div className='absolute top-1 left-1 flex flex-col gap-1 text-success'>
+                    <div className='absolute top-2 left-2 flex flex-col gap-1 text-success'>
                         {file.passwordProtected && <LockKeyhole size={16} />}
                         {file.linkShare && <Share2 size={16} />}
                         {file.groupShare && <Group size={16} />}

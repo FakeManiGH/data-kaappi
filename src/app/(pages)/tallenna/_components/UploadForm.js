@@ -226,8 +226,8 @@ function UploadForm({ files, setFiles, fileErrors, setFileErrors, setUploadProgr
         <div className='flex items-center gap-1 mt-2 '>
           <button 
             type="submit"
-            className='w-full px-3 py-2.5 rounded-full bg-gradient-to-br from-primary to-blue-800 shadow-black/25 shadow-md 
-              text-white transition-all disabled:from-secondary disabled:to-contrast disabled:text-contrast disabled:shadow-none hover:to-primary'
+            className='w-full px-3 py-2.5 rounded-full bg-primary shadow-black/25 shadow-md 
+              text-white transition-all disabled:bg-secondary disabled:text-contrast disabled:shadow-none hover:bg-primary/75'
             {...(files.length === 0 && { disabled: true })}
           >
             Tallenna

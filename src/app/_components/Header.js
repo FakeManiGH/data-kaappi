@@ -57,8 +57,8 @@ function Header() {
                     <div className="flex items-center gap-4">
                         {isLoaded && user ? (
                             <Link
-                                className="flex gap-1 items-center px-3 py-2 text-sm bg-gradient-to-br from-primary to-blue-800 text-white 
-                                    rounded-lg hover:to-primary transition-colors shadow-md shadow-black/25"
+                                className="flex gap-1 items-center px-3 py-2 text-sm bg-primary text-white 
+                                    rounded-lg hover:bg-primary/75 transition-colors shadow-md shadow-black/25"
                                 href="/kojelauta"
                             >   
                                 <CircleGauge />
@@ -66,8 +66,8 @@ function Header() {
                             </Link>
                         ) : (
                             <Link
-                                className="flex gap-1 items-center px-3 py-2 text-sm bg-gradient-to-br from-primary to-blue-800 text-white 
-                                    rounded-lg hover:to-primary transition-colors shadow-md shadow-black/25"
+                                className="flex gap-1 items-center px-3 py-2 text-sm bg-primary text-white 
+                                    rounded-lg hover:bg-primary/75 transition-colors shadow-md shadow-black/25"
                                 href="/sign-in"
                             >   
                                 <LogIn />

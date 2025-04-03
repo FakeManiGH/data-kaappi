@@ -83,18 +83,18 @@ function FileContainer({ fileState, setFileState }) {
               </div>
 
               <div
-                className={`absolute top-0 flex items-center justify-between w-full scale-y-0 origin-top group-hover:scale-y-100 text-white bg-black/50
+                className={`absolute top-0 flex items-center justify-between w-full scale-y-0 origin-top group-hover:scale-y-100 text-white bg-black/75
                         transition-all overflow-hidden
                         ${activeFileId === file.id ? 'scale-y-100' : 'scale-y-0'}`}
               >
-                <Link href={`/tiedosto/${file.id}`} className="w-full p-2 truncate text-sm hover:text-primary">
+                <Link href={`/tiedosto/${file.id}`} className="w-full p-2 truncate text-base hover:text-primary">
                   {file.name}
                 </Link>
 
                 <div className='flex items-center gap-1 p-2'>
-                  {file.linkShare && <Share2 size={20} />}
-                  {file.groupShare && <Group size={20} />}
-                  {file.passwordProtected && <LockKeyhole size={20} />}
+                  {file.linkShare && <Share2 size={18} />}
+                  {file.groupShare && <Group size={18} />}
+                  {file.passwordProtected && <LockKeyhole size={18} />}
                 </div>
               </div>
 
@@ -106,21 +106,21 @@ function FileContainer({ fileState, setFileState }) {
               </div>
 
               <div
-                className={`absolute bottom-1 flex items-center gap-1 px-1 w-full scale-y-0 origin-bottom group-hover:scale-y-100 text-white 
-                        transition-all overflow-hidden
+                className={`absolute bottom-0 flex items-center gap-1 p-1 w-full scale-y-0 origin-bottom group-hover:scale-y-100 text-white 
+                        bg-black/75 transition-all overflow-hidden
                         ${activeFileId === file.id ? 'scale-y-100' : 'scale-y-0'}`}
               >
                 <button title='Suurenna' className="p-2 rounded-md bg-primary hover:bg-blue-600 transition-colors">
-                  <Expand size={20} />
+                  <Expand size={18} />
                 </button>
                 <button title='Jaa' className="p-2 rounded-md bg-primary hover:bg-blue-600 transition-colors">
-                  <Share2 size={20} />
+                  <Share2 size={18} />
                 </button>
                 <button title='Lataa' className="p-2 rounded-md bg-success hover:bg-green-600 transition-colors">
-                  <DownloadCloud size={20} />
+                  <DownloadCloud size={18} />
                 </button>
                 <button title='Poista' className="p-2 bg-red-500 hover:bg-red-600 rounded-md transition-colors">
-                  <Trash2 size={20} />
+                  <Trash2 size={18} />
                 </button>
               </div>
             </div>

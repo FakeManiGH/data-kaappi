@@ -608,6 +608,35 @@ export const moveFolderInFolder = async (userID, folderID, toFolderID) => {
 
 
 
+// SHARING
+// Folder link sharing
+export const changeFolderLinkSharing = async (userID, folderID, shareValue) => {
+    try {
+        const folderRef = doc(db, "folders", folderID);
+        const folderSnap = await getDoc(folderRef);
+
+        if (!folderSnap.exists()) {
+            return { success: false, message: `Kansiota ${folderID} ei löytynyt.` }
+        }
+
+        const folder = folderSnap.data();
+
+        if (userID !== folder.userID) {
+            return { success: false, message: 'Ei muutosoikeuksia kansioon.' }
+        }
+
+        await updateDoc(folderRef, { linkShare: shareValue });
+
+        return { success: true }
+    } catch (error) {
+        console.error("Error changing folder link sharing: " + error);
+        return { success: false, message: 'Kansion jako-asetusten muuttaminen epäonnistui, yritä uudelleen.'}
+    }
+} 
+
+
+
+
 
 // SUPPORT
 // Prevent circular folder moves

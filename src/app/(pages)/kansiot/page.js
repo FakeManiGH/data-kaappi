@@ -87,16 +87,16 @@ function Page() {
             <div className='flex items-center gap-1'>
                 <Link 
                     href='/tallenna' 
-                    className='flex flex-1 sm:flex-none items-center justify-center w-fit gap-2 px-3 py-2 rounded-full text-sm bg-gradient-to-br 
-                        from-primary to-blue-800 text-white hover:to-primary shadow-md shadow-black/25 transition-colors'
+                    className='flex flex-1 sm:flex-none items-center justify-center w-fit gap-2 px-3 py-2 rounded-full text-sm text-white bg-primary 
+                        hover:bg-primary/75 shadow-md shadow-black/25 transition-colors'
                 >
                     <FilePlus />
                     Lisää tiedostoja
                 </Link>
                 <button 
                     onClick={() => setCreateFolder(true)} 
-                    className='flex flex-1 sm:flex-none items-center justify-center w-fit gap-2 px-3 py-2 rounded-full text-sm bg-gradient-to-br 
-                        from-primary to-blue-800 text-white hover:to-primary shadow-md shadow-black/25 transition-colors'
+                    className='flex flex-1 sm:flex-none items-center justify-center w-fit gap-2 px-3 py-2 rounded-full text-sm text-white bg-primary 
+                        hover:bg-primary/75 shadow-md shadow-black/25 transition-colors'
                 >
                     <FolderPlus />
                     Uusi kansio

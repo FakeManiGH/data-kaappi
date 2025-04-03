@@ -157,15 +157,15 @@ function FileNav({ fileState, setFileState }) {
             <nav className='flex items-center gap-1'>
                 <button 
                     title='Ruudukko' 
-                    className={`p-2 rounded-full bg-gradient-to-br hover:from-primary hover:to-blue-800 hover:text-white shadow-md shadow-black/25
-                        ${fileState.view === 'grid' ? 'from-primary to-blue-800 text-white' : 'text-foreground bg-transparent'}` } 
+                    className={`p-2 rounded-full shadow-md shadow-black/25 hover:bg-primary hover:text-white transition-colors
+                        ${fileState.view === 'grid' ? 'bg-primary text-white' : 'text-foreground bg-transparent'}` } 
                     onClick={() => setFileState(prevState => ({ ...prevState, view: 'grid' }))}>
                         <Grid />
                 </button>
                 <button 
                     title='Lista' 
-                    className={`p-2 rounded-full bg-gradient-to-br hover:from-primary hover:to-blue-800 hover:text-white shadow-md shadow-black/25
-                        ${fileState.view === 'list' ? 'from-primary to-blue-800 text-white' : 'text-foreground bg-transparent'}` } 
+                    className={`p-2 rounded-full shadow-md shadow-black/25 hover:bg-primary hover:text-white transition-colors
+                        ${fileState.view === 'list' ? 'bg-primary text-white' : 'text-foreground bg-transparent'}` } 
                     onClick={() => setFileState(prevState => ({ ...prevState, view: 'list' }))}>
                         <List />
                 </button>
@@ -174,8 +174,8 @@ function FileNav({ fileState, setFileState }) {
             <div ref={dropDowns} className='flex items-center gap-1'>
                 <div>
                     <button 
-                        className='flex items-center w-fit gap-1 px-3 py-2 rounded-full text-sm bg-gradient-to-br from-primary to-blue-800 text-white
-                            shadow-md shadow-black/25 transition-colors hover:to-primary' 
+                        className='flex items-center w-fit gap-1 px-3 py-2 rounded-full text-sm bg-primary text-white
+                            shadow-md shadow-black/25 transition-colors hover:bg-primary/75' 
                         role="button"
                         onClick={() => {setDropMenu(!dropMenu); setDropMenu2(false);}}
                     >   
@@ -246,8 +246,8 @@ function FileNav({ fileState, setFileState }) {
                 </div>
                 <div>
                     <button 
-                        className='flex items-center w-fit gap-1 px-3 py-2 rounded-full text-sm bg-gradient-to-br from-primary to-blue-800 text-white
-                            shadow-md shadow-black/25 transition-colors hover:to-primary'
+                        className='flex items-center w-fit gap-1 px-3 py-2 rounded-full text-sm bg-primary text-white
+                            shadow-md shadow-black/25 transition-colors hover:bg-primary/75'
                         role="button"
                         onClick={() => {setDropMenu2(!dropMenu2); setDropMenu(false);}}
                     >

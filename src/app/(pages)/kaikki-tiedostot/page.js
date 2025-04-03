@@ -108,7 +108,7 @@ function Page() {
       <div 
         className={`sticky top-0 flex flex-col z-10 py-2 gap-2 duration-300 
           ${isVisible ? 'translate-y-0' : '-translate-y-full'}
-          ${isSticky ? 'w-screen ml-[-16px] bg-background' : ' bg-transparent'}`}
+          ${isSticky ? 'w-full bg-background' : ' bg-transparent'}`}
       >
         <SearchBar fileState={fileState} setFileState={setFileState} />
       </div>  

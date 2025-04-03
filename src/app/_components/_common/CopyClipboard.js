@@ -21,7 +21,7 @@ function CopyClipboard({ content }) {
                 <input id="copy-text" type="text" className="w-full py-2.5 px-3 bg-background text-sm border border-transparent outline-none focus:border-primary focus:ring-1" value={content} readOnly />
             </div>
             <button 
-                className="flex items-center justify-center px-3 py-2.5 rounded-lg text-white bg-primary text-sm gap-2 hover:border-primary/75 transition-colors"
+                className="flex items-center justify-center px-3 py-2 rounded-full text-white bg-primary text-sm hover:bg-primary/75 transition-colors"
                 onClick={copyToClipboard}
             >   
                 {copied ? 'Kopioitu!' : 'Kopioi'}
