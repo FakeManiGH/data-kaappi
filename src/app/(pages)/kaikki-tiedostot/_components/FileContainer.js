@@ -60,7 +60,7 @@ function FileContainer({ fileState, setFileState }) {
             <div
               key={file.id}
               style={{ touchAction: 'scroll' }} 
-              className="masonry-item bg-background overflow-hidden shadow-md shadow-black/25 group"
+              className="masonry-item bg-background overflow-hidden  group"
               onTouchStart={() => handleTouchStart(file.id)}
               onTouchEnd={() => handleTouchEnd(file.id)}
               title={file.name + '|' + translateFileSize(file.size)}

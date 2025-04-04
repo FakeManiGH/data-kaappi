@@ -11,7 +11,7 @@ export default function Page() {
                 </div>
                 <SignIn />
                 <Link href='/' className='flex items-center gap-1 mt-4 px-3 py-2 rounded-full bg-gradient-to-br text-white from-primary to-blue-800
-                    hover:bg-primary/75 shadow-md shadow-black/25'
+                    hover:bg-primary/75 '
                 >
                     <Home />
                     Palaa etusivulle

@@ -166,7 +166,7 @@ function SharePopup({ file, setFile, setSharePopup }) {
                             <button 
                                 type="submit" 
                                 className="w-full py-2.5 px-3 rounded-full bg-primary text-white 
-                                text-sm hover:bg-primary/75 shadow-md shadow-black/25 transition-colors"
+                                text-sm hover:bg-primary/75  transition-colors"
                             >
                                 Tallenna
                             </button>

@@ -154,7 +154,7 @@ function RenamePopup({ selectedObject, setFolders, setFiles, setSelectedObjects,
           <button 
             type="submit" 
             className="w-full mt-4 py-2.5 px-3 rounded-full bg-primary text-white 
-              text-sm hover:bg-primary/75 shadow-md shadow-black/25 transition-colors"
+              text-sm hover:bg-primary/75  transition-colors"
           >
               Tallenna
           </button>

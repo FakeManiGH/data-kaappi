@@ -114,7 +114,7 @@ function FolderContainer({ folders, files, setFolders, setFiles, setCreateFolder
                     key={folder.id} 
                     onTouchStart={() => handleTouchStart(folder)}
                     onTouchEnd={() => handleTouchEnd(folder)}
-                    className={`relative flex items-center justify-center p-4 rounded-lg transition-colors border group shadow-md shadow-black/25 overflow-hidden
+                    className={`relative flex items-center justify-center p-4 rounded-lg transition-colors border group  overflow-hidden
                         ${selectedObjects.includes(folder) ? 'border-primary' : 'border-transparent'}
                         ${dragOverFolder === folder.id ? 'bg-primary' : 'bg-secondary'}`}
                 >   
@@ -158,7 +158,7 @@ function FolderContainer({ folders, files, setFolders, setFiles, setCreateFolder
                     draggable
                     onDragStart={() => handleDragStart(file)}
                     onDragEnd={() => handleDragEnd(file)}
-                    className={`relative flex items-center justify-center p-2 rounded-lg bg-secondary transition-colors group border shadow-md shadow-black/25 overflow-hidden
+                    className={`relative flex items-center justify-center p-2 rounded-lg bg-secondary transition-colors group border  overflow-hidden
                         ${selectedObjects.includes(file) ? 'border-primary' : 'border-transparent'}`}
                 >   
                     <input 

@@ -7,7 +7,7 @@
   --background: #ffffff;
   --contrast: #d1d1d1;
   --navlink: #444444;
-  --secondary: #dadada;
+  --secondary: #e5e5e5;
   --linear: linear-gradient(90deg, #d1d1d1, #e5e5e5, #d1d1d1);
 }
 
@@ -15,9 +15,9 @@
   :root {
     --foreground: #ffffff;
     --background: #111111;
-    --contrast: #444444;
+    --contrast: #272727;
     --navlink: #999999;
-    --secondary: #242424;
+    --secondary: #222222;
     --linear: linear-gradient(0deg, #1a1a1a, #333333, #1a1a1a);
   }
 }

@@ -207,7 +207,7 @@ function MoveSelectedPopup({ selectedObjects, setSelectedObjects, setFolders, se
           <button 
               onClick={moveSelectedObjects} 
               className='text-white text-sm bg-primary hover:bg-primary/75 mt-4 py-2.5 px-3 rounded-full
-                shadow-md shadow-black/25'
+                '
           >
               Siirrä
           </button>

@@ -26,7 +26,7 @@ function ContentNotFound({ message }) {
                 <Link 
                     href='/kojelauta' 
                     className='flex items-center gap-1 px-3 py-2 rounded-full text-white bg-primary hover:bg-primary/75 
-                    shadow-md shadow-black/25 transition-colors'
+                     transition-colors'
                 >
                     <Home />
                     Etusivulle

@@ -228,7 +228,7 @@ function FolderSettingsPage({ folder, setFolder, folderSettings, setFolderSettin
                             <button 
                                 type="submit" 
                                 className="w-full py-2.5 px-3 rounded-full bg-gradient-to-br from-primary to-blue-800 text-white 
-                                text-sm hover:bg-primary/75 shadow-md shadow-black/25 transition-colors"
+                                text-sm hover:bg-primary/75  transition-colors"
                             >
                                 Tallenna
                             </button>
@@ -290,7 +290,7 @@ function FolderSettingsPage({ folder, setFolder, folderSettings, setFolderSettin
 
                     <button 
                         type="submit" 
-                        className="w-full py-2 px-3 mt-2 rounded-full text-white bg-primary hover:bg-primary/75 shadow-md shadow-black/25 transition-colors"
+                        className="w-full py-2 px-3 mt-2 rounded-full text-white bg-primary hover:bg-primary/75  transition-colors"
                     >
                         Tallenna salasana
                     </button>

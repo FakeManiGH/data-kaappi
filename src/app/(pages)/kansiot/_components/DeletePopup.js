@@ -60,7 +60,7 @@ function DeletePopup({ selectedObjects, setSelectedObjects, setFolders, setFiles
 
                 <button 
                     onClick={() => setDeleteConfirm(true)} 
-                    className='text-white text-sm bg-red-500 mt-4 py-2.5 px-3 rounded-full hover:bg-red-600 shadow-md shadow-black/25'
+                    className='text-white text-sm bg-red-500 mt-4 py-2.5 px-3 rounded-full hover:bg-red-600 '
                 >
                     Poista
                 </button>

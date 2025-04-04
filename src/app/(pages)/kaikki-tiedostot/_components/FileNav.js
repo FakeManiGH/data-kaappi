@@ -153,18 +153,18 @@ function FileNav({ fileState, setFileState }) {
     };
 
     return (
-        <div className='flex items-center gap-2 justify-between'>
+        <div className='relative flex items-center gap-2 justify-between'>
             <nav className='flex items-center gap-1'>
                 <button 
                     title='Ruudukko' 
-                    className={`p-2 rounded-full shadow-md shadow-black/25 hover:bg-primary hover:text-white transition-colors
+                    className={`p-2 rounded-full  hover:bg-primary hover:text-white transition-colors
                         ${fileState.view === 'grid' ? 'bg-primary text-white' : 'text-foreground bg-transparent'}` } 
                     onClick={() => setFileState(prevState => ({ ...prevState, view: 'grid' }))}>
                         <Grid />
                 </button>
                 <button 
                     title='Lista' 
-                    className={`p-2 rounded-full shadow-md shadow-black/25 hover:bg-primary hover:text-white transition-colors
+                    className={`p-2 rounded-full  hover:bg-primary hover:text-white transition-colors
                         ${fileState.view === 'list' ? 'bg-primary text-white' : 'text-foreground bg-transparent'}` } 
                     onClick={() => setFileState(prevState => ({ ...prevState, view: 'list' }))}>
                         <List />
@@ -175,7 +175,7 @@ function FileNav({ fileState, setFileState }) {
                 <div>
                     <button 
                         className='flex items-center w-fit gap-1 px-3 py-2 rounded-full text-sm bg-primary text-white
-                            shadow-md shadow-black/25 transition-colors hover:bg-primary/75' 
+                             transition-colors hover:bg-primary/75' 
                         role="button"
                         onClick={() => {setDropMenu(!dropMenu); setDropMenu2(false);}}
                     >   
@@ -247,7 +247,7 @@ function FileNav({ fileState, setFileState }) {
                 <div>
                     <button 
                         className='flex items-center w-fit gap-1 px-3 py-2 rounded-full text-sm bg-primary text-white
-                            shadow-md shadow-black/25 transition-colors hover:bg-primary/75'
+                             transition-colors hover:bg-primary/75'
                         role="button"
                         onClick={() => {setDropMenu2(!dropMenu2); setDropMenu(false);}}
                     >

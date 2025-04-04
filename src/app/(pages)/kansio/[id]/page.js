@@ -69,7 +69,7 @@ function Page({ params }) {
         };
 
         if (isLoaded && user) {
-            setCurrentIndex('/kansio');
+            setCurrentIndex('/kansiot');
             getFolder();
         } else {
             navigatePage('/sign-in');
@@ -194,19 +194,19 @@ function Page({ params }) {
                     </li>
                 </ul>
 
-                <div className='flex items-center gap-1'>
+                <div className='flex items-center gap-1 flex-wrap'>
                     <Link 
                         href='/tallenna' 
-                        className='flex flex-1 sm:flex-none items-center justify-center w-fit gap-2 px-3 py-2 rounded-full text-sm text-white bg-primary
-                            hover:bg-primary/75 shadow-md shadow-black/25 transition-colors'
+                        className='flex flex-1 sm:flex-none items-center justify-center w-fit whitespace-nowrap gap-2 px-3 py-2 rounded-full text-sm text-white bg-primary
+                            hover:bg-primary/75  transition-colors'
                     >
                         <FilePlus />
-                        Lisää tiedosto
+                        Lisää tiedostoja
                     </Link>
                     <button 
                         onClick={() => setCreateFolder(true)} 
-                        className='flex flex-1 sm:flex-none items-center justify-center w-fit gap-2 px-3 py-2 rounded-full text-sm text-white bg-primary
-                            hover:bg-primary/75 shadow-md shadow-black/25 transition-colors'
+                        className='flex flex-1 sm:flex-none items-center justify-center w-fit whitespace-nowrap gap-2 px-3 py-2 rounded-full text-sm text-white bg-primary
+                            hover:bg-primary/75  transition-colors'
                     >
                         <FolderPlus />
                         Uusi kansio

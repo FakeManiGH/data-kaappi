@@ -52,7 +52,7 @@ function FileNav({ file, setFile, setDeleted }) {
             <div ref={dropRef}>
                 <button 
                     className='flex items-center w-fit gap-1 px-3 py-2 rounded-full text-sm bg-primary text-white 
-                        hover:bg-primary/75 shadow-md shadow-black/25 transition-colors'
+                        hover:bg-primary/75  transition-colors'
                     role="button"
                     onClick={() => setDropMenu(!dropMenu)}
                 >

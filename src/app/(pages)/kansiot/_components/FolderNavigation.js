@@ -36,7 +36,7 @@ function FolderNavigation({ folders, files, selectedObjects, setSelectedObjects,
             <div ref={dropRef} className='relative flex flex-wrap items-center'>
                 <button 
                     className='flex items-center w-fit gap-2 px-3 py-2 rounded-full text-sm bg-primary hover:bg-primary/75 
-                        text-white shadow-md shadow-black/25 transition-colors'
+                        text-white  transition-colors'
                     role="button"
                     onClick={() => setDropMenu(!dropMenu)}
                 >
@@ -50,7 +50,7 @@ function FolderNavigation({ folders, files, selectedObjects, setSelectedObjects,
                             border border-contrast bg-background shadow-lg shadow-black/25"
                         role="menu"
                     >
-                        <div className='bg-background shadow-md shadow-black/25'>
+                        <div className='bg-background '>
                             <strong className="block p-2 text-xs font-medium uppercase text-gray-500">
                                 Yleiset
                             </strong>
@@ -135,7 +135,7 @@ function FolderNavigation({ folders, files, selectedObjects, setSelectedObjects,
                 </button>
                 <button
                     onClick={() => setDeletePopup(true)}
-                    className='flex items-center w-fit gap-1 px-3 py-2 rounded-full text-sm bg-red-500 text-white hover:bg-red-600 shadow-md shadow-black/25 
+                    className='flex items-center w-fit gap-1 px-3 py-2 rounded-full text-sm bg-red-500 text-white hover:bg-red-600  
                         transition-colors'
                 >
                     <Trash2 size={20} />

@@ -58,7 +58,7 @@ function Header() {
                         {isLoaded && user ? (
                             <Link
                                 className="flex gap-1 items-center px-3 py-2 text-sm bg-primary text-white 
-                                    rounded-lg hover:bg-primary/75 transition-colors shadow-md shadow-black/25"
+                                    rounded-lg hover:bg-primary/75 transition-colors "
                                 href="/kojelauta"
                             >   
                                 <CircleGauge />
@@ -67,7 +67,7 @@ function Header() {
                         ) : (
                             <Link
                                 className="flex gap-1 items-center px-3 py-2 text-sm bg-primary text-white 
-                                    rounded-lg hover:bg-primary/75 transition-colors shadow-md shadow-black/25"
+                                    rounded-lg hover:bg-primary/75 transition-colors "
                                 href="/sign-in"
                             >   
                                 <LogIn />

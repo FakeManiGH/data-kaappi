@@ -100,7 +100,7 @@ function CreateFolder({ setNewFolder, folders, setFolders, files, setFiles }) {
             <button 
               type="submit" 
               className="w-full mt-2 py-2.5 px-3 rounded-full bg-primary text-white 
-                text-sm hover:bg-primary/75 shadow-md shadow-black/25 transition-colors"
+                text-sm hover:bg-primary/75  transition-colors"
             >
                 Luo kansio
             </button>
@@ -114,12 +114,12 @@ function CreateFolder({ setNewFolder, folders, setFolders, files, setFiles }) {
           <div className='flex items-center justify-center gap-1 mt-4 text-sm'>
             <button 
                 onClick={handlePreferredFolder} 
-                className='text-white bg-gradient-to-br from-success to-green-800 py-2.5 px-3 rounded-full hover:to-success shadow-md shadow-black/25'
+                className='text-white bg-gradient-to-br from-success to-green-800 py-2.5 px-3 rounded-full hover:to-success '
             >
                 Kyllä
             </button>
             <button 
-                className='text-foreground bg-contrast py-2.5 px-3 rounded-full shadow-md shadow-black/25'
+                className='text-foreground bg-contrast py-2.5 px-3 rounded-full '
                 onClick={() => setNewFolder(false)}
             >
                 Peruuta
