@@ -75,8 +75,8 @@ export const transformFolderDataPublic = (folder) => {
             name: folder.userName,
             email: folder.userEmail
         },
-        createdAt: new Date(folder.createdAt.seconds * 1000),
-        modifiedAt: new Date(folder.modifiedAt.seconds * 1000),
+        created: new Date(folder.createdAt.seconds * 1000),
+        modified: new Date(folder.modifiedAt.seconds * 1000),
         passwordProtected: folder.pwdProtected,
         sharing: {
             link: folder.linkShare,
@@ -133,8 +133,8 @@ export const transformFileDataPublic = (file) => {
             name: file.userName,
             email: file.userEmail
         },
-        uploadedAt: new Date(file.uploadedAt.seconds * 1000),
-        modifiedAt: new Date(file.modifiedAt.seconds * 1000)
+        uploaded: new Date(file.uploadedAt.seconds * 1000),
+        modified: new Date(file.modifiedAt.seconds * 1000)
     };
 }
 
@@ -157,7 +157,27 @@ export const transformFileDataPrivate = (file) => {
         userName: file.user.name,
         userEmail: file.user.email,
         userID: file.user.id,
-        uploadedAt: file.uploadedAt instanceof Date ? file.uploadedAt : new Date(file.uploadedAt.seconds * 1000),
-        modifiedAt: file.modifiedAt instanceof Date ? file.modifiedAt : new Date(file.modifiedAt.seconds * 1000)
+        uploadedAt: file.uploaded instanceof Date ? file.uploaded : new Date(file.uploadedAt.seconds * 1000),
+        modifiedAt: file.modified instanceof Date ? file.modified : new Date(file.modifiedAt.seconds * 1000)
     };
+}
+
+
+// CONVERT GROUPS
+export const transformGroupDataPublic = (group) => {
+    return {
+        docType: group.docType,
+        id: group.groupID,
+        name: group.groupName,
+        desc: group.groupDesc,
+        visibility: group.groupVisibility,
+        created: new Date(group.createdAt.seconds * 1000),
+        passwordProtected: group.pwdProtected,
+        members: group.groupMembers,
+        user: {
+            id: group.userID,
+            name: group.userName,
+            email: group.userEmail
+        }
+    }
 }

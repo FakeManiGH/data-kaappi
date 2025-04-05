@@ -10,7 +10,7 @@ function SpaceMeterCircle({ usedSpace, totalSpace }) {
         <div className="relative size-40">
             <svg className="rotate-[90deg] size-full" viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg">
                 {/* Background circle */}
-                <circle cx="18" cy="18" r="15" fill="none" className="stroke-current text-background" strokeWidth="4" strokeDasharray="100 25"></circle>
+                <circle cx="18" cy="18" r="15" fill="none" className="stroke-current text-white" strokeWidth="4" strokeDasharray="100 25"></circle>
                 {/* Progress circle */}
                 <circle cx="18" cy="18" r="15" fill="none" className="stroke-current text-primary" strokeWidth="4" strokeDasharray={strokeDasharray}></circle>
             </svg>

@@ -30,7 +30,7 @@ function Header() {
 
     return (
     <header>
-        <div className="relative p-4 w-full">
+        <div className="relative bg-background p-4 w-full">
             <div className='flex items-center justify-between gap-2 mx-auto max-w-7xl'>
                 <div className="flex items-center gap-2">
                     <Image src='/logo.svg' alt="Logo" width={40} height={40} />
@@ -44,8 +44,8 @@ function Header() {
                                 <li key={item.id}>
                                     <Link 
                                         href={item.path} 
-                                        className={`flex items-center gap-2 py-0.5 text-sm text-foreground hover:text-primary 
-                                            ${currentIndex === item.path ? 'text-primary' : 'text-foreground'}`}
+                                        className={`flex items-center gap-2 py-0.5 text-sm hover:text-primary 
+                                            ${currentIndex === item.path ? 'text-primary' : 'text-navlink'}`}
                                     >
                                         {item.name}
                                     </Link>
@@ -58,7 +58,7 @@ function Header() {
                         {isLoaded && user ? (
                             <Link
                                 className="flex gap-1 items-center px-3 py-2 text-sm bg-primary text-white 
-                                    rounded-lg hover:bg-primary/75 transition-colors "
+                                    rounded-full hover:bg-primary/75 transition-colors "
                                 href="/kojelauta"
                             >   
                                 <CircleGauge />
@@ -67,7 +67,7 @@ function Header() {
                         ) : (
                             <Link
                                 className="flex gap-1 items-center px-3 py-2 text-sm bg-primary text-white 
-                                    rounded-lg hover:bg-primary/75 transition-colors "
+                                    rounded-full hover:bg-primary/75 transition-colors "
                                 href="/sign-in"
                             >   
                                 <LogIn />
@@ -77,7 +77,7 @@ function Header() {
 
                         <div className='md:hidden relative flex items-center' ref={dropdownRef}>
                             <button 
-                                className='text-foreground hover:text-primary cursor-pointer transition-colors'
+                                className='hover:text-primary cursor-pointer transition-colors'
                                 onClick={() => setDropdown(!dropdown)}
                             >
                                 <AlignJustify size={30} />

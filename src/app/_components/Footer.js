@@ -6,8 +6,8 @@ function Footer() {
 
     return (
         <div>
-            <footer className='absolute bottom-0 w-full bg-contrast1 text-center text-sm text-foreground p-4'>
-                <p>&copy; {currentYear} Datakaappi. All rights reserved.</p>
+            <footer className='absolute bottom-0 w-full text-center text-sm p-4'>
+                <p>&copy; {currentYear} Datakaappi. Kaikki oikeudet pidätetään.</p>
             </footer>
         </div>
     )

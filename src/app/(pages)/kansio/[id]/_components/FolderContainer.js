@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import { FilePlus, FolderPlus, GripVertical, Group, LockKeyhole, Share2 } from 'lucide-react';
 import Link from 'next/link';
-import { translateFileSize } from '@/utils/DataTranslation';
+import { cleanDataType, translateFileSize } from '@/utils/DataTranslation';
 import { getFileIcon } from '@/utils/GetFileIcon';
 import { useAlert } from '@/app/contexts/AlertContext';
 import { moveFileToFolder } from '@/app/file-requests/files';
 import { useUser } from '@clerk/nextjs';
 
 
-function FolderContainer({ folders, files, setFolders, setFiles, setCreateFolder, selectedObjects, setSelectedObjects }) {
+function FolderContainer({ view, folders, files, setFolders, setFiles, setCreateFolder, selectedObjects, setSelectedObjects }) {
     const [draggedFile, setDraggedFile] = useState(null);
     const [isDragging, setIsDragging] = useState(false)
     const [dragOverFolder, setDragOverFolder] = useState(null);
@@ -107,14 +107,14 @@ function FolderContainer({ folders, files, setFolders, setFiles, setCreateFolder
         );
     }
 
-    return (
+    if (view === 'grid') return (
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8 gap-2">
             {folders.map(folder => (
                 <div 
                     key={folder.id} 
                     onTouchStart={() => handleTouchStart(folder)}
                     onTouchEnd={() => handleTouchEnd(folder)}
-                    className={`relative flex items-center justify-center p-4 rounded-lg transition-colors border group  overflow-hidden
+                    className={`relative flex items-center justify-center p-2 rounded-lg transition-colors border group  overflow-hidden
                         ${selectedObjects.includes(folder) ? 'border-primary' : 'border-transparent'}
                         ${dragOverFolder === folder.id ? 'bg-primary' : 'bg-secondary'}`}
                 >   
@@ -137,8 +137,8 @@ function FolderContainer({ folders, files, setFolders, setFiles, setCreateFolder
                     />
                     <Link href={`/kansio/${folder.id}`} className='flex flex-col items-center max-w-full overflow-hidden text-foreground hover:text-primary'>
                         <img src={folder.fileCount > 0 ? "/icons/folder_file.png" : "/icons/folder.png"} alt="folder" className="w-16 h-16" />
-                        <h2 className="text-sm font-semibold transition-colors ">{folder.name}</h2>
-                        <p className="text-sm text-navlink truncate">{folder.fileCount} tiedostoa</p>
+                        <h2 className="text-sm font-semibold truncate transition-colors ">{folder.name}</h2>
+                        <p className="text-sm text-navlink">{folder.fileCount} tiedostoa</p>
                     </Link>
 
                     <div className='absolute top-2 left-2 flex flex-col gap-1 text-success'>
@@ -152,18 +152,18 @@ function FolderContainer({ folders, files, setFolders, setFiles, setCreateFolder
             {files.map(file => (
                 <div 
                     key={file.id}
-                    title={(file.name) + (file.passwordProtected ? ' - suojattu salasanalla' : '')}
                     onTouchStart={() => handleTouchStart(file)}
                     onTouchEnd={() => handleTouchEnd(file)}
+                    title={(file.name) + (file.passwordProtected ? ' - suojattu salasanalla' : '')}
                     draggable
                     onDragStart={() => handleDragStart(file)}
                     onDragEnd={() => handleDragEnd(file)}
-                    className={`relative flex items-center justify-center p-2 rounded-lg bg-secondary transition-colors group border  overflow-hidden
-                        ${selectedObjects.includes(file) ? 'border-primary' : 'border-transparent'}`}
+                    className={`relative flex items-center justify-center p-2 rounded-lg bg-secondary transition-colors group border overflow-hidden
+                         ${selectedObjects.includes(file) ? 'border-primary' : 'border-transparent'}`}
                 >   
                     <input 
                         type="checkbox" 
-                        className={`absolute top-1 right-1 p-2 bg-background group-hover:block appearance-none rounded-full border 
+                        className={`absolute top-2 right-2 p-2 bg-background group-hover:block appearance-none rounded-full  border 
                             border-navlink hover:border-primary checked:border-primary checked:bg-primary checked:hover:border-navlink transition-all
                             ${selectedObjects.includes(file) ? 'block' : 'block md:hidden'}`}
                         onChange={() => handleObjectSelect(file)}
@@ -181,11 +181,11 @@ function FolderContainer({ folders, files, setFolders, setFiles, setCreateFolder
                         <img 
                             src={file.type.includes('image') ? file.url : getFileIcon(file.type)} 
                             alt={file.name} 
-                            className='aspect-[4/3] h-20 object-cover rounded-sm mb-1' 
+                            className='aspect-[4/3] h-20 object-cover rounded-md mb-1' 
                         />
                         <h2 className=" text-sm max-w-full font-semibold truncate">{file.name}</h2>
                     </Link>
-                    
+
                     <div className='absolute top-2 left-2 flex flex-col gap-1 text-success'>
                         {file.passwordProtected && <LockKeyhole size={16} />}
                         {file.linkShare && <Share2 size={16} />}
@@ -194,6 +194,80 @@ function FolderContainer({ folders, files, setFolders, setFiles, setCreateFolder
                 </div>
             ))}
         </div>
+    );
+
+    if (view === 'list') return (
+        <ul className='flex flex-col text-sm gap-1'>
+            {folders.map(folder => (
+                <li 
+                    key={folder.id} 
+                    title={`${folder.name}, ${folder.fileCount} tiedostoa`}
+                    className={`flex items-center gap-2 flex-wrap px-2 py-1 border-b 
+                        ${selectedObjects.includes(folder) ? 'border-primary' : 'border-contrast'}`}
+                >
+                    <input 
+                        type="checkbox" 
+                        className={`p-2 bg-background appearance-none rounded-full border border-navlink hover:border-primary checked:border-primary 
+                            checked:bg-primary checked:hover:border-navlink transition-all`}
+                        onChange={() => handleObjectSelect(folder)}
+                        checked={selectedObjects.includes(folder)}
+                    />
+
+                    <img
+                        src='icons/folder.png'
+                        alt={folder.name}
+                        className="w-7 h-auto"
+                    />
+
+                    <Link href={`kansio/${folder.id}`} className='hover:text-primary truncate'>{folder.name}</Link>
+
+                    <p className='text-sm text-navlink' title={`${folder.fileCount} tiedostoa`}>({folder.fileCount})</p>
+
+                    <div className='flex items-center gap-1 text-success'>
+                        {folder.passwordProtected && <LockKeyhole size={16} />}
+                        {folder.sharing.link && <Share2 size={16} />}
+                        {folder.sharing.group && <Group size={16} />}
+                    </div>
+                </li>
+            ))}
+
+            {files.map(file => (
+                <li 
+                    key={file.id} 
+                    title={`${file.name}, ${translateFileSize(file.size)}, ${cleanDataType(file.type)}`}
+                    className={`flex items-center gap-2 px-2 py-1 border-b justify-between
+                        ${selectedObjects.includes(file) ? 'border-primary' : 'border-contrast'}`}
+                >
+                    <div className='flex items-center gap-2'>
+                        <input 
+                            type="checkbox" 
+                            className={`p-2 bg-background appearance-none rounded-full border border-navlink hover:border-primary checked:border-primary 
+                                checked:bg-primary checked:hover:border-navlink transition-all`}
+                            onChange={() => handleObjectSelect(file)}
+                            checked={selectedObjects.includes(file)}
+                        />
+
+                        <img
+                            src={getFileIcon(file.type)}
+                            alt={file.name}
+                            className="w-7 h-auto"
+                        />
+                        <Link href={`tiedosto/${file.id}`} className='hover:text-primary truncate'>{file.name}</Link>
+                    </div>
+                                
+                    <div className='flex items-center gap-2'>
+                        <div className='flex items-center gap-1 text-success'>
+                            {file.passwordProtected && <LockKeyhole size={16} />}
+                            {file.linkShare && <Share2 size={16} />}
+                            {file.groupShare && <Group size={16} />}
+                        </div>
+                        
+                        <p className='hidden md:block'>{cleanDataType(file.type)}</p>
+                        <p className='hidden md:block'>{translateFileSize(file.size)}</p>
+                    </div>
+                </li>
+            ))}
+        </ul>
     );
 }
 

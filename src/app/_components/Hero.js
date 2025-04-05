@@ -3,48 +3,45 @@ import { ChevronsLeft, ChevronsRight } from 'lucide-react'
 
 function Hero() {
     return (
-        <>
-        <div className='w-full flex flex-col sm:flex-row items-center gap-4 justify-center h-96 rounded-xl rounded-b-full bg-gradient-to-b from-transparent to-secondary shadow-lg shadow-black/25'>
-            <img className="w-40" src="/logo.svg" alt="logo" />
-            <h1 className='text-5xl font-bold'>Datakaappi</h1>
-        </div>
-
         <main>
-            <div className="flex flex-col items-center gap-6 mx-auto text-center">
-                <div className='flex flex-col items-center gap-6 mx-auto max-w-2xl text-center'>
-                    <h2 className="text-4xl font-semibold sm:text-5xl">
-                        <strong className='text-primary'>Säilytä</strong> ja <strong className='text-primary'>jaa</strong> tärkeimmät tiedostosi 
-                        turvallisesti.
-                    </h2>
+            <div className='flex flex-col gap-2 justify-center items-center bg-[url(/images/field.jpg)] bg-center bg-h-full rounded-r-full ml-[-2rem] py-20'>
+                <img className="w-40" src="/logo.svg" alt="logo" />
+                <h1 className='text-5xl font-bold text-white'>Datakaappi</h1>
+            </div>
 
-                    <p className="text-lg">
-                        Datakaappi on helppo ja turvallinen tapa säilyttää ja jakaa tärkeät tiedostosi.
-                        <br />
-                        Luo ilmainen tili jo tänään!
-                    </p>
+            <div 
+                className="flex flex-col gap-6 px-4 py-4 mt-4 mx-auto max-w-3xl"
+            >
+                <p className="text-2xl font-extrabold">
+                    Säilytä ja jaa tärkeimmät tiedostosi turvallisesti ja helposti.
+                </p>
 
-                    <div className="flex flex-col items-center gap-3 w-full">
-                        <a
-                            className="flex gap-3 items-center justify-center bg-primary w-72 px-5 py-3 rounded-full
-                                text-lg text-white hover:bg-primary/75 hover:gap-1  transition-all"
-                            href="/sign-in"
-                        >   
-                            <ChevronsRight />
-                            Aloita tästä
-                            <ChevronsLeft />
-                        </a>
+                <p>
+                    Datakaappi on suunniteltu kiinnittäen ertityistä huomiota käyttäjäystävällisyyteen ja turvallisuuteen.
+                    Palvelun avulla <strong>säilytät</strong>, <strong>selaat</strong> ja <strong>jaat</strong> tiedostoja helposti ja turvallisesti 
+                    läheisten-, ystävien-, tai esimerkiksi kollegoiden kanssa. Luo ilmainen tili jo tänään.
+                </p>
 
-                        <a
-                            className="text-md text-navlink hover:text-primary"
-                            href="/tietoa"
-                        >
-                            Lue lisää
-                        </a>
-                    </div>
+                <div className="flex flex-col items-center gap-4">
+                    <a
+                        className="flex gap-3 items-center justify-center bg-primary w-72 px-5 py-3 font-semibold rounded-full
+                            text-lg text-white hover:bg-primary/75 hover:gap-1 transition-all"
+                        href="/sign-in"
+                    >   
+                        <ChevronsRight />
+                        Aloita tästä
+                        <ChevronsLeft />
+                    </a>
+
+                    <a
+                        className="text-md text-primary hover:text-primary/75"
+                        href="/tietoa"
+                    >
+                        Lue lisää
+                    </a>
                 </div>
             </div>
         </main>
-        </>
     )
 }
 

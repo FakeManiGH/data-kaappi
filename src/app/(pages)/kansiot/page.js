@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigation } from '@/app/contexts/NavigationContext';
 import FolderContainer from './_components/FolderContainer';
 import CreateFolder from './_components/CreateFolder';
-import { FilePlus, FolderPlus } from 'lucide-react';
+import { FilePlus, FolderPlus, Grid, List } from 'lucide-react';
 import { useUser } from '@clerk/nextjs';
 import { useAlert } from '@/app/contexts/AlertContext';
 import PageLoading from '@/app/_components/_common/PageLoading';
@@ -30,6 +30,7 @@ function Page() {
     const [movePopup, setMovePopup] = useState(false);
     const [loading, setLoading] = useState(true);
     const [pageError, setPageError] = useState(null);
+    const [view, setView] = useState('grid');
     const { user, isLoaded } = useUser();
     const { showAlert } = useAlert();
 
@@ -74,12 +75,31 @@ function Page() {
         };
     }, [isLoaded, user, setCurrentIndex, navigatePage]);
 
+
     if (loading) return <PageLoading />;
     if (pageError) return <ErrorView message={pageError} />;
 
     return (
         <main>
-            <h1 className="text-4xl sm:text-4xl"><strong>Kansiot</strong></h1>
+            <div className='flex items-center gap-2 justify-between'>
+                <h1 className="text-4xl sm:text-4xl truncate"><strong>Kansiot</strong></h1>
+                <nav className='flex items-center gap-1'>
+                    <button 
+                        title='Ruudukko' 
+                        className={`p-2 rounded-full  hover:bg-primary hover:text-white transition-colors
+                            ${view === 'grid' ? 'bg-primary text-white' : 'text-foreground bg-transparent'}` } 
+                        onClick={() => setView('grid')}>
+                            <Grid />
+                    </button>
+                    <button 
+                        title='Lista' 
+                        className={`p-2 rounded-full  hover:bg-primary hover:text-white transition-colors
+                            ${view === 'list' ? 'bg-primary text-white' : 'text-foreground bg-transparent'}` } 
+                        onClick={() => setView('list')}>
+                            <List />
+                    </button>
+                </nav>
+            </div>
             <p className='text-sm'>
                 Hallitse kansioita ja tiedostojasi.
             </p>
@@ -87,16 +107,16 @@ function Page() {
             <div className='flex items-center gap-1 flex-wrap'>
                 <Link 
                     href='/tallenna' 
-                    className='flex flex-1 sm:flex-none items-center justify-center w-fit whitespace-nowrap gap-2 px-3 py-2 rounded-full text-sm text-white bg-success 
-                        hover:bg-success/75  transition-colors'
+                    className='flex flex-1 sm:flex-none items-center justify-center w-fit whitespace-nowrap gap-2 px-3 py-2 rounded-full text-sm text-white bg-primary 
+                        hover:bg-primary/75  transition-colors'
                 >
                     <FilePlus />
                     Lisää tiedostoja
                 </Link>
                 <button 
                     onClick={() => setCreateFolder(true)} 
-                    className='flex flex-1 sm:flex-none items-center justify-center w-fit whitespace-nowrap gap-2 px-3 py-2 rounded-full text-sm text-white bg-success 
-                        hover:bg-success/75  transition-colors'
+                    className='flex flex-1 sm:flex-none items-center justify-center w-fit whitespace-nowrap gap-2 px-3 py-2 rounded-full text-sm text-white bg-primary 
+                        hover:bg-primary/75  transition-colors'
                 >
                     <FolderPlus />
                     Uusi kansio
@@ -118,6 +138,7 @@ function Page() {
             }
 
             <FolderContainer 
+                view={view}
                 folders={folders}
                 files={files}
                 setFolders={setFolders} 

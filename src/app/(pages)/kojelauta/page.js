@@ -52,8 +52,11 @@ function Page() {
     <main>
       <h1 className='text-4xl md:text-4xl'><strong>Hei, {user?.firstName}</strong></h1>
       
-      <div className='grid grid-cols-1 lg:grid-cols-2 gap-4 min-h-72'>
-        <div className='flex gap-2 flex-wrap items-center justify-center bg-gradient-to-br from-secondary rounded-xl shadow-black/25 shadow-md to-contrast px-4 py-6'>
+      <div 
+        className='flex items-center justify-center min-h-96 px-4 py-8 pr-4 bg-[url(/images/helsinki.jpg)] bg-bottom mr-[-1rem] md:mr-[-2rem] overflow-hidden
+          rounded-l-xl lg:rounded-l-full'
+      >
+        <div className='flex gap-2 p-4 flex-wrap items-center justify-center bg-black/50 backdrop-blur-sm rounded-xl shadow-lg shadow-black/25'>
           <SpaceMeterCircle usedSpace={userDoc?.usedSpace} totalSpace={userDoc?.totalSpace} />
           <div className='flex flex-col gap-2'>
             <h3 className='text-xl font-bold'>Tallennustilan käyttö</h3>
@@ -68,7 +71,7 @@ function Page() {
         </div>
       </div>
 
-      <div className='grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-8 gap-2'>
+      <div className='grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-8 gap-2 mt-2'>
           {filteredList.map((item) => (
           <Link 
               href={item.path}

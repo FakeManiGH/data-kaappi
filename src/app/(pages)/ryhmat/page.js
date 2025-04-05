@@ -5,13 +5,14 @@ import GroupInvites from './_components/GroupInvites'
 import CreateGroupPopup from './_components/CreateGroupPopup';
 import { PlusCircle, Search } from 'lucide-react';
 
-function page() {
+function Page() {
     const { setCurrentIndex } = useNavigation();
+    const [groups, setGroups] = useState(null);
     const [createGroup, setCreateGroup] = useState(false);
 
     useEffect(() => {
         setCurrentIndex('/ryhmat');
-    }), [];
+    }, [setCurrentIndex]);
 
     return (
         <main>
@@ -39,9 +40,9 @@ function page() {
            
             <h2 className='text-2xl md:text-3xl font-semibold'>Omat ryhmät</h2>
 
-            {createGroup && <CreateGroupPopup setCreateGroup={setCreateGroup} />}
+            {createGroup && <CreateGroupPopup setGroups={setGroups} setCreateGroup={setCreateGroup} />}
         </main>
     )
 }
 
-export default page
+export default Page;

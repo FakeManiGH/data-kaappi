@@ -14,10 +14,10 @@ export default function Home() {
   , [setCurrentIndex]);
 
   return (
-    <div>
+    <>
       <Header />
       <Hero />
       <Footer />
-    </div>
+    </>
   );
 }

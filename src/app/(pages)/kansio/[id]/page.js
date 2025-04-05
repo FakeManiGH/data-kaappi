@@ -13,7 +13,7 @@ import CreateFolder from './_components/CreateFolder';
 import RenamePopup from './_components/RenamePopup';
 import PasswordPopup from './_components/PasswordPopup';
 import DeletePopup from './_components/DeletePopup';
-import { ArrowBigLeftDash, FilePlus, FolderPlus, Group, GroupIcon, LockKeyhole, PenBox, Settings, Share2, Users2, X } from 'lucide-react';
+import { ArrowBigLeftDash, FilePlus, FolderPlus, Grid, Group, GroupIcon, List, LockKeyhole, PenBox, Settings, Share2, Users2, X } from 'lucide-react';
 import Link from 'next/link';
 import MoveSelectedPopup from './_components/MoveSelectedPopup';
 import FolderSettingsPage from './_components/FolderSettingsPage';
@@ -28,6 +28,7 @@ function Page({ params }) {
     const { showAlert } = useAlert();
     const { setCurrentIndex, navigatePage } = useNavigation();
     const [loading, setLoading] = useState(true);
+    const [view, setView] = useState('grid');
     const [pwdVerified, setPwdVerified] = useState(true);
     const [folder, setFolder] = useState(null);
     const [folderSettings, setFolderSettings] = useState(false);
@@ -123,38 +124,40 @@ function Page({ params }) {
 
     return (
         <main>
-            <Breadcrumbs folder={folder} />
-            <div className='flex items-center max-w-full gap-2 justify-between'>
-                {folderSettings ? (
-                    <div className='flex flex-col w-full'>
-                        <div className='flex items-center gap-2 flex-nowrap'>
-                            <input 
-                                defaultValue={folder.name} 
-                                onChange={assignNewFolderName} 
-                                placeholder='Anna kansiolle nimi...'
-                                className='w-full font-bold text-3xl md:text-4xl border-b border-contrast bg-transparent outline-none focus:border-primary hover:border-primary' 
-                            />
-                            {newFolderName &&
-                                <button
-                                    className='text-sm px-3 py-2 rounded-full text-white bg-primary hover:bg-primary/75'
-                                    onClick={handleFolderRenaming}
-                                >
-                                    Tallenna
-                                </button>
-                            }
-                        </div>
-
-                        {nameError && 
-                            <div className='flex items-center justify-between gap-4 px-3 py-2.5 mt-2 rounded-lg text-white text-sm bg-red-500'>
-                            <p>{nameError}</p>
-                            <button onClick={() => setNameError('')}><X size={20} /></button>
-                            </div>
+            <div className='flex items-center gap-2 justify-between'>
+                <Breadcrumbs folder={folder} />
+            </div>
+            
+            <div className='flex items-center max-w-full gap-2 justify-between'>   
+            {folderSettings ? (
+                <div className='flex flex-col w-full'>
+                    <div className='flex items-center gap-2 flex-nowrap'>
+                        <input 
+                            defaultValue={folder.name} 
+                            onChange={assignNewFolderName} 
+                            placeholder='Anna kansiolle nimi...'
+                            className='w-full font-bold text-3xl md:text-4xl border-b border-contrast bg-transparent outline-none focus:border-primary hover:border-primary' 
+                        />
+                        {newFolderName &&
+                            <button
+                                className='text-sm px-3 py-2 rounded-full text-white bg-primary hover:bg-primary/75'
+                                onClick={handleFolderRenaming}
+                            >
+                                Tallenna
+                            </button>
                         }
                     </div>
-                ) : (
-                    <h1 className='font-bold text-3xl md:text-4xl truncate'>{folder.name}</h1>
-                )}
-                
+
+                    {nameError && 
+                        <div className='flex items-center justify-between gap-4 px-3 py-2.5 mt-2 rounded-lg text-white text-sm bg-red-500'>
+                            <p>{nameError}</p>
+                            <button onClick={() => setNameError('')}><X size={20} /></button>
+                        </div>
+                    }
+                </div>
+            ) : (
+                <h1 className='font-bold text-3xl md:text-4xl truncate'>{folder.name}</h1> 
+            )}
                 <button 
                     className={`relative flex items-center flex-wrap hover:text-primary transition-all
                         ${folderSettings ? 'rotate-[-90deg]' : 'rotate-0'}`} 
@@ -164,12 +167,11 @@ function Page({ params }) {
                     <Settings className={folderSettings ? 'text-red-500 hover:text-red-600' : 'text-primary hover:text-primary/75'} size={28} />
                 </button>
             </div>
-
             {folderSettings ? (
                 <FolderSettingsPage folder={folder} setFolder={setFolder} folderSettings={folderSettings} setFolderSettings={setFolderSettings} />
             ) : (
                 <>
-                <ul className='flex items-center gap-x-4 gap-y-1 flex-wrap text-sm text-gray-400 mt-[-10px]'>
+                <ul className='flex items-center gap-x-4 gap-y-1 flex-wrap text-sm text-gray-600 dark:text-gray-400'>
                     <li className='flex gap-2 flex-nowrap whitespace-nowrap'>
                         <Share2 size={18} />
                         <p>Jaettu linkillä:</p>
@@ -194,27 +196,46 @@ function Page({ params }) {
                     </li>
                 </ul>
 
-                <div className='flex items-center gap-1 flex-wrap'>
-                    <Link 
-                        href='/tallenna' 
-                        className='flex flex-1 sm:flex-none items-center justify-center w-fit whitespace-nowrap gap-2 px-3 py-2 rounded-full text-sm text-white bg-primary
-                            hover:bg-primary/75  transition-colors'
-                    >
-                        <FilePlus />
-                        Lisää tiedostoja
-                    </Link>
-                    <button 
-                        onClick={() => setCreateFolder(true)} 
-                        className='flex flex-1 sm:flex-none items-center justify-center w-fit whitespace-nowrap gap-2 px-3 py-2 rounded-full text-sm text-white bg-primary
-                            hover:bg-primary/75  transition-colors'
-                    >
-                        <FolderPlus />
-                        Uusi kansio
-                    </button>
+                <div className='flex items-center gap-2 justify-between flex-wrap'>
+                    <nav className='flex items-center gap-1'>
+                        <Link 
+                            href='/tallenna' 
+                            className='flex flex-1 sm:flex-none items-center justify-center w-fit whitespace-nowrap gap-2 px-3 py-2 rounded-full text-sm text-white bg-primary
+                                hover:bg-primary/75  transition-colors'
+                        >
+                            <FilePlus />
+                            Lisää tiedostoja
+                        </Link>
+                        <button 
+                            onClick={() => setCreateFolder(true)} 
+                            className='flex flex-1 sm:flex-none items-center justify-center w-fit whitespace-nowrap gap-2 px-3 py-2 rounded-full text-sm text-white bg-primary
+                                hover:bg-primary/75  transition-colors'
+                        >
+                            <FolderPlus />
+                            Uusi kansio
+                        </button>
+                    </nav>
+
+                    <nav className='flex items-center gap-1'>
+                        <button 
+                            title='Ruudukko' 
+                            className={`p-2 rounded-full  hover:bg-primary hover:text-white transition-colors
+                                ${view === 'grid' ? 'bg-primary text-white' : 'text-foreground bg-transparent'}` } 
+                            onClick={() => setView('grid')}>
+                                <Grid />
+                        </button>
+                        <button 
+                            title='Lista' 
+                            className={`p-2 rounded-full  hover:bg-primary hover:text-white transition-colors
+                                ${view === 'list' ? 'bg-primary text-white' : 'text-foreground bg-transparent'}` } 
+                            onClick={() => setView('list')}>
+                                <List />
+                        </button>    
+                    </nav> 
                 </div>
 
                 {selectedObjects.length > 0 && 
-                    <FolderNavigation 
+                    <FolderNavigation
                         folders={folders}
                         files={files}
                         setFolders={setFolders} 
@@ -230,6 +251,7 @@ function Page({ params }) {
                 }
 
                 <FolderContainer 
+                    view={view}
                     folders={folders}
                     files={files}
                     setFolders={setFolders} 
