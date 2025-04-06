@@ -4,8 +4,8 @@ import { ChevronsLeft, ChevronsRight } from 'lucide-react'
 function Hero() {
     return (
         <main>
-            <div className='flex flex-col gap-2 justify-center items-center bg-[url(/images/field.jpg)] bg-center bg-h-full rounded-r-full ml-[-2rem] py-20'>
-                <img className="w-40" src="/logo.svg" alt="logo" />
+            <div className='flex flex-col gap-2 justify-center items-center bg-[url(/images/field.jpg)] bg-center bg-h-full rounded-r-full ml-[-2rem] py-28'>
+                <img className="w-24 h-auto" src="/logo.svg" alt="logo" />
                 <h1 className='text-5xl font-bold text-white'>Datakaappi</h1>
             </div>
 

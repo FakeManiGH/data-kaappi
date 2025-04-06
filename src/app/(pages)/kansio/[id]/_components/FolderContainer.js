@@ -235,7 +235,7 @@ function FolderContainer({ view, folders, files, setFolders, setFiles, setCreate
                 <li 
                     key={file.id} 
                     title={`${file.name}, ${translateFileSize(file.size)}, ${cleanDataType(file.type)}`}
-                    className={`flex items-center gap-2 px-2 py-1 border-b justify-between
+                    className={`flex items-center gap-2 px-2 py-1 border-b justify-between flex-wrap
                         ${selectedObjects.includes(file) ? 'border-primary' : 'border-contrast'}`}
                 >
                     <div className='flex items-center gap-2'>
@@ -255,15 +255,15 @@ function FolderContainer({ view, folders, files, setFolders, setFiles, setCreate
                         <Link href={`tiedosto/${file.id}`} className='hover:text-primary truncate'>{file.name}</Link>
                     </div>
                                 
-                    <div className='flex items-center gap-2'>
+                    <div className='flex items-center gap-2 text-xs whitespace-nowrap'>
                         <div className='flex items-center gap-1 text-success'>
                             {file.passwordProtected && <LockKeyhole size={16} />}
                             {file.linkShare && <Share2 size={16} />}
                             {file.groupShare && <Group size={16} />}
                         </div>
                         
-                        <p className='hidden md:block'>{cleanDataType(file.type)}</p>
-                        <p className='hidden md:block'>{translateFileSize(file.size)}</p>
+                        <p className='text-navlink'>{cleanDataType(file.type)}</p>
+                        <p className='text-navlink'>{translateFileSize(file.size)}</p>
                     </div>
                 </li>
             ))}

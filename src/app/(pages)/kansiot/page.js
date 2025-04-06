@@ -16,6 +16,7 @@ import PasswordPopup from './_components/PasswordPopup';
 import FolderNavigation from './_components/FolderNavigation';
 import DeletePopup from './_components/DeletePopup';
 import MoveSelectedPopup from './_components/MoveSelectedPopup';
+import UploadFilesPopup from './_components/UploadFilesPopup';
 
 
 function Page() {
@@ -28,6 +29,7 @@ function Page() {
     const [passwordPopup, setPasswordPopup] = useState(false)
     const [deletePopup, setDeletePopup] = useState(false);
     const [movePopup, setMovePopup] = useState(false);
+    const [uploadPopup, setUploadPopup] = useState(false);
     const [loading, setLoading] = useState(true);
     const [pageError, setPageError] = useState(null);
     const [view, setView] = useState('grid');
@@ -105,14 +107,14 @@ function Page() {
             </p>
 
             <div className='flex items-center gap-1 flex-wrap'>
-                <Link 
-                    href='/tallenna' 
+                <button 
+                    onClick={() => setUploadPopup(true)}
                     className='flex flex-1 sm:flex-none items-center justify-center w-fit whitespace-nowrap gap-2 px-3 py-2 rounded-full text-sm text-white bg-primary 
                         hover:bg-primary/75  transition-colors'
                 >
                     <FilePlus />
                     Lisää tiedostoja
-                </Link>
+                </button>
                 <button 
                     onClick={() => setCreateFolder(true)} 
                     className='flex flex-1 sm:flex-none items-center justify-center w-fit whitespace-nowrap gap-2 px-3 py-2 rounded-full text-sm text-white bg-primary 
@@ -125,6 +127,8 @@ function Page() {
 
             {selectedObjects.length > 0 && 
                 <FolderNavigation 
+                    files={files}
+                    folders={folders}
                     setFolders={setFolders} 
                     setFiles={setFiles}
                     setCreateFolder={setCreateFolder}
@@ -159,6 +163,7 @@ function Page() {
             }
 
             {createFolder && <CreateFolder folders={folders} setFolders={setFolders} setCreateFolder={setCreateFolder} />}
+            {uploadPopup && <UploadFilesPopup files={files} setFiles={setFiles} setUploadPopup={setUploadPopup} />}
             {renamePopup && <RenamePopup selectedObject={selectedObjects[0]} setFolders={setFolders} setFiles={setFiles} setSelectedObjects={setSelectedObjects} setRenamePopup={setRenamePopup} />}
             {passwordPopup && <PasswordPopup selectedObject={selectedObjects[0]} setFolders={setFolders} setFiles={setFiles} setSelectedObjects={setSelectedObjects} setPasswordPopup={setPasswordPopup} />}
             {deletePopup && <DeletePopup selectedObjects={selectedObjects} setSelectedObjects={setSelectedObjects} setFolders={setFolders} setFiles={setFiles} setDeletePopup={setDeletePopup} />}

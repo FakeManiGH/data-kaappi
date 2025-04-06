@@ -53,8 +53,8 @@ function Page() {
       <h1 className='text-4xl md:text-4xl'><strong>Hei, {user?.firstName}</strong></h1>
       
       <div 
-        className='flex items-center justify-center min-h-96 px-4 py-8 pr-4 bg-[url(/images/helsinki.jpg)] bg-bottom mr-[-1rem] md:mr-[-2rem] overflow-hidden
-          rounded-l-xl lg:rounded-l-full'
+        className='flex items-center justify-center min-h-96 px-4 py-8 pr-4 bg-[url(/images/helsinki.jpg)] bg-bottom mr-[-1rem] md:mr-[-2rem]
+          rounded-l-full'
       >
         <div className='flex gap-2 p-4 flex-wrap items-center justify-center bg-black/50 backdrop-blur-sm rounded-xl shadow-lg shadow-black/25'>
           <SpaceMeterCircle usedSpace={userDoc?.usedSpace} totalSpace={userDoc?.totalSpace} />

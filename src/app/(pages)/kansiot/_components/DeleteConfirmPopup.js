@@ -1,16 +1,19 @@
 import { X } from 'lucide-react';
-import React from 'react';
+import React, { useState } from 'react';
 import { useUser } from '@clerk/nextjs';
 import { deleteFolder } from '@/app/file-requests/folders';
 import { deleteFile } from '@/app/file-requests/files';
 import { useAlert } from '@/app/contexts/AlertContext';
+import PopupLoader from '@/app/_components/_common/PopupLoader';
 
 function DeleteConfirmPopup({ selectedObjects, setSelectedObjects, setFolders, setFiles, setDeletePopup, setDeleteConfirm }) {
     const { user } = useUser();
     const { showAlert } = useAlert();
+    const [loading, setLoading] = useState(false);
 
     const handleDeletingObjects = async () => {
         try {
+            setLoading(true);
             const failedDeletions = [];
     
             const deletionPromises = selectedObjects.map(async (object) => {
@@ -20,6 +23,7 @@ function DeleteConfirmPopup({ selectedObjects, setSelectedObjects, setFolders, s
                     response = await deleteFolder(user.id, object.id);
                     if (response.success) {
                         setFolders((prevFolders) => prevFolders.filter((folder) => folder.id !== object.id));
+                        setSelectedObjects((prevObjects) => prevObjects.filter((object) => folder.id !== object.id));
                     }
                 } else if (object.docType === 'file') {
                     response = await deleteFile(user.id, object.id);
@@ -53,8 +57,13 @@ function DeleteConfirmPopup({ selectedObjects, setSelectedObjects, setFolders, s
         } catch (error) {
             console.error('Error deleting objects: ', error);
             showAlert('Virhe poistettaessa kohteita. Yritä uudelleen.', 'error');
+        } finally {
+            setLoading(false);
         }
     };
+
+
+    if (loading) return <PopupLoader />
 
     return (
         <div className='fixed z-50 inset-0 flex justify-center items-center bg-black/50 px-4 py-2'>

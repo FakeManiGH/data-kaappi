@@ -14,7 +14,7 @@ function FileInfo({ file, folder }) {
     },
     {
       label: 'Tallennettu:',
-      value: convertDate(file.uploadedAt),
+      value: convertDate(file.uploaded),
     },
     {
       label: 'Kansio:',
