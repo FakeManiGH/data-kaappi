@@ -1,5 +1,5 @@
 "use client"
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useNavigation } from '../contexts/NavigationContext'
@@ -11,22 +11,11 @@ function Header() {
     const [isLoggedIn, setIsLoggedIn] = useState(false)
     const { isLoaded, user } = useUser()
     const { publicNav, currentIndex } = useNavigation()
-    const dropdownRef = useRef(null)
 
     useEffect(() => {
-        const handleClickOutside = (event) => {
-            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-                setDropdown(false)
-            }
-        }
+        if (isLoaded && user) setIsLoggedIn(true);
+    }, [isLoaded, user])
 
-        if (isLoaded && user) setIsLoggedIn(true)
-
-        document.addEventListener('mousedown', handleClickOutside)
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside)
-        }
-    }, [dropdownRef, isLoaded, user])
 
     return (
     <header>
@@ -55,7 +44,7 @@ function Header() {
                     </nav>
 
                     <div className="flex items-center gap-4">
-                        {isLoaded && user ? (
+                        {isLoggedIn ? (
                             <Link
                                 className="flex gap-1 items-center px-3 py-2 text-sm bg-primary text-white 
                                     rounded-full hover:bg-primary/75 transition-colors "
@@ -75,7 +64,7 @@ function Header() {
                             </Link>
                         )}
 
-                        <div className='md:hidden relative flex items-center' ref={dropdownRef}>
+                        <div className='md:hidden relative flex items-center'>
                             <button 
                                 className='hover:text-primary cursor-pointer transition-colors'
                                 onClick={() => setDropdown(!dropdown)}

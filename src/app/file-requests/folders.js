@@ -384,7 +384,7 @@ export const deleteFolder = async (userID, folderID) => {
         }
         const folder = folderSnap.data();
         if (userID !== folder.userID) {
-            return { success: false, message: `Ei oikeuksia kansioon ${folderID}` }
+            return { success: false, message: `Ei oikeuksia kansioon ${folder.folderName}` }
         }
 
         // Recursively delete subfolders and their files

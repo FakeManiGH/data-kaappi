@@ -5,6 +5,7 @@ import DeleteConfirmPopup from './DeleteConfirmPopup';
 
 function DeletePopup({ selectedObjects, setSelectedObjects, setFolders, setFiles, setDeletePopup }) {
     const [deleteConfirm, setDeleteConfirm] = useState(false);
+    const [deleteErrors, setDeleteErrors] = useState([]);
 
     useEffect(() => {
         if (selectedObjects.length === 0) {
@@ -58,6 +59,16 @@ function DeletePopup({ selectedObjects, setSelectedObjects, setFolders, setFiles
                     ))}
                 </ul>
 
+                {/* Delete errors */}
+                {deleteErrors?.map((error, index) => (
+                    <div key={index} className='flex items-center gap-2 px-3 py-2 mt-2 rounded-lg justify-between text-sm text-white bg-red-500'>
+                        <p>{error}</p>
+                        <button onClick={() => setDeleteErrors((prevErrors) => prevErrors.filter((_, i) => i !== index))}>
+                            <X />
+                        </button> 
+                    </div>
+                ))}
+
                 <button 
                     onClick={() => setDeleteConfirm(true)} 
                     className='text-white text-sm bg-red-500 mt-4 py-2.5 px-3 rounded-full hover:bg-red-600 '
@@ -71,7 +82,8 @@ function DeletePopup({ selectedObjects, setSelectedObjects, setFolders, setFiles
                     selectedObjects={selectedObjects}
                     setSelectedObjects={setSelectedObjects} 
                     setFolders={setFolders} 
-                    setFiles={setFiles} 
+                    setFiles={setFiles}
+                    setDeleteErrors={setDeleteErrors} 
                     setDeletePopup={setDeletePopup} 
                     setDeleteConfirm={setDeleteConfirm} 
                 />

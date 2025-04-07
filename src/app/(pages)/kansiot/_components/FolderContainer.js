@@ -7,6 +7,7 @@ import { getFileIcon } from '@/utils/GetFileIcon';
 import { useAlert } from '@/app/contexts/AlertContext';
 import { moveFileToFolder } from '@/app/file-requests/files';
 import { useUser } from '@clerk/nextjs';
+import FileCardPreview from '@/app/_components/_common/FileCardPreview';
 
 
 function FolderContainer({ view, folders, files, setFolders, setFiles, setCreateFolder, selectedObjects, setSelectedObjects }) {
@@ -164,17 +165,16 @@ function FolderContainer({ view, folders, files, setFolders, setFiles, setCreate
                         <GripVertical />
                     </button>
                     
-                    <Link 
-                        href={`/tiedosto/${file.id}`} 
-                        className='flex flex-col items-center justify-between text-foreground overflow-hidden 
-                            hover:text-primary group'>
-                        <img 
-                            src={file.type.includes('image') ? file.url : getFileIcon(file.type)} 
-                            alt={file.name} 
-                            className='aspect-[4/3] h-20 object-cover rounded-md mb-1' 
-                        />
-                        <h2 className=" text-sm max-w-full font-semibold truncate">{file.name}</h2>
-                    </Link>
+                    <div className='flex flex-col items-center justify-between overflow-hidden'>
+                        <FileCardPreview file={file} />
+
+                        <Link 
+                            href={`/tiedosto/${file.id}`} 
+                            className='hover:text-primary text-xs'
+                        >
+                            {file.name}
+                        </Link>
+                    </div>
 
                     <div className='absolute top-2 left-2 flex flex-col gap-1 text-success'>
                         {file.passwordProtected && <LockKeyhole size={16} />}

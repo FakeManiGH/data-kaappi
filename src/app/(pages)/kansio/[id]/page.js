@@ -13,13 +13,13 @@ import CreateFolder from './_components/CreateFolder';
 import RenamePopup from './_components/RenamePopup';
 import PasswordPopup from './_components/PasswordPopup';
 import DeletePopup from './_components/DeletePopup';
-import { ArrowBigLeftDash, FilePlus, FolderPlus, Grid, Group, GroupIcon, List, LockKeyhole, PenBox, Settings, Share2, Users2, X } from 'lucide-react';
-import Link from 'next/link';
+import { FilePlus, FolderPlus, Grid, List, LockKeyhole, Settings, Share2, Users2, X } from 'lucide-react';
 import MoveSelectedPopup from './_components/MoveSelectedPopup';
 import FolderSettingsPage from './_components/FolderSettingsPage';
 import { folderNameRegex } from '@/utils/Regex';
 import { updateFolderName } from '@/app/file-requests/folders';
 import { useAlert } from '@/app/contexts/AlertContext';
+import UploadFilesPopup from './_components/UploadFilesPopup';
 
 
 function Page({ params }) {
@@ -39,6 +39,7 @@ function Page({ params }) {
     const [selectedObjects, setSelectedObjects] = useState([]);
     const [movePopup, setMovePopup] = useState(false);
     const [createFolder, setCreateFolder] = useState(false);
+    const [uploadPopup, setUploadPopup] = useState(false);
     const [renamePopup, setRenamePopup] = useState(false);
     const [passwordPopup, setPasswordPopup] = useState(false)
     const [deletePopup, setDeletePopup] = useState(false);
@@ -198,14 +199,14 @@ function Page({ params }) {
 
                 <div className='flex items-center gap-2 justify-between flex-wrap'>
                     <nav className='flex items-center gap-1'>
-                        <Link 
-                            href='/tallenna' 
+                        <button 
+                            onClick={() => setUploadPopup(true)} 
                             className='flex flex-1 sm:flex-none items-center justify-center w-fit whitespace-nowrap gap-2 px-3 py-2 rounded-full text-sm text-white bg-primary
                                 hover:bg-primary/75  transition-colors'
                         >
                             <FilePlus />
                             Lisää tiedostoja
-                        </Link>
+                        </button>
                         <button 
                             onClick={() => setCreateFolder(true)} 
                             className='flex flex-1 sm:flex-none items-center justify-center w-fit whitespace-nowrap gap-2 px-3 py-2 rounded-full text-sm text-white bg-primary
@@ -273,6 +274,7 @@ function Page({ params }) {
                 />
             }
             {createFolder && <CreateFolder folder={folder} setFolder={setFolder} folders={folders} setFolders={setFolders} setCreateFolder={setCreateFolder} />}
+            {uploadPopup && <UploadFilesPopup currentFolder={folder} files={files} setFiles={setFiles} setUploadPopup={setUploadPopup} />}
             {renamePopup && <RenamePopup selectedObject={selectedObjects[0]} setFolders={setFolders} setFiles={setFiles} setSelectedObjects={setSelectedObjects} setRenamePopup={setRenamePopup} />}
             {passwordPopup && <PasswordPopup selectedObject={selectedObjects[0]} setFolders={setFolders} setFiles={setFiles} setSelectedObjects={setSelectedObjects} setPasswordPopup={setPasswordPopup} />}
             {deletePopup && <DeletePopup selectedObjects={selectedObjects} setSelectedObjects={setSelectedObjects} setFolders={setFolders} setFiles={setFiles} setDeletePopup={setDeletePopup} />}

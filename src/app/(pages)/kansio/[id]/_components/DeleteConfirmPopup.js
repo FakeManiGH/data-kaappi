@@ -1,60 +1,85 @@
 import { X } from 'lucide-react';
-import React from 'react';
+import React, { useState } from 'react';
 import { useUser } from '@clerk/nextjs';
 import { deleteFolder } from '@/app/file-requests/folders';
 import { deleteFile } from '@/app/file-requests/files';
 import { useAlert } from '@/app/contexts/AlertContext';
+import PopupLoader from '@/app/_components/_common/PopupLoader';
 
-function DeleteConfirmPopup({ selectedObjects, setSelectedObjects, setFolders, setFiles, setDeletePopup, setDeleteConfirm }) {
+function DeleteConfirmPopup({ selectedObjects, setSelectedObjects, setFolders, setFiles, setDeleteErrors, setDeletePopup, setDeleteConfirm }) {
     const { user } = useUser();
     const { showAlert } = useAlert();
+    const [loading, setLoading] = useState(false);
 
+    // Handle deletion
     const handleDeletingObjects = async () => {
         try {
+            setLoading(true);
             const failedDeletions = [];
+            const deletedFolders = [];
+            const deletedFiles = [];
     
-            const deletionPromises = selectedObjects.map(async (object) => {
-                let response;
-    
+            // Helper function for deletion
+            const deleteObject = async (object) => {
                 if (object.docType === 'folder') {
-                    response = await deleteFolder(user.id, object.id);
+                    const response = await deleteFolder(user.id, object.id);
                     if (response.success) {
-                        setFolders((prevFolders) => prevFolders.filter((folder) => folder.id !== object.id));
+                        deletedFolders.push(object.id);
+                    } else {
+                        failedDeletions.push({ id: object.id, message: response.message });
                     }
+                    return response.success;
                 } else if (object.docType === 'file') {
-                    response = await deleteFile(user.id, object.id);
+                    const response = await deleteFile(user.id, object.id);
                     if (response.success) {
-                        setFiles((prevFiles) => prevFiles.filter((file) => file.id !== object.id));
+                        deletedFiles.push(object.id);
+                    } else {
+                        failedDeletions.push({ id: object.id, message: response.message });
                     }
+                    return response.success;
                 }
+            };
     
-                // Track failed deletions
-                if (!response.success) {
-                    failedDeletions.push(object.name);
-                }
-            });
+            // Process deletions
+            await Promise.allSettled(selectedObjects.map((object) => deleteObject(object)));
     
-            // Wait for all deletions
-            await Promise.all(deletionPromises);
+            // Update states
+            setFolders((prevFolders) =>
+                prevFolders.filter((folder) => !deletedFolders.includes(folder.id))
+            );
+
+            setFiles((prevFiles) =>
+                prevFiles.filter((file) => !deletedFiles.includes(file.id))
+            );
+    
+            // Update selectedObjects to remove successfully deleted items
+            setSelectedObjects((prevObjects) =>
+                prevObjects.filter(
+                    (object) => !deletedFolders.includes(object.id) && !deletedFiles.includes(object.id)
+                )
+            );
     
             // Handle failed deletions
             if (failedDeletions.length > 0) {
-                showAlert(
-                    `Virhe poistettaessa seuraavia kohteita: ${failedDeletions.join(', ')}`,
-                    'error'
-                );
+                setDeleteErrors(failedDeletions.map((error) => error.message));
+                setDeleteConfirm(false);
                 return;
             }
     
-            showAlert('Kaikki valitut kohteet on poistettu onnistuneesti.', 'success');
-            setSelectedObjects([]);
-            setDeleteConfirm(false); 
-            setDeletePopup(false); 
+            // Success message
+            showAlert('Kaikki kohteet on poistettu onnistuneesti.', 'success');
+            setDeletePopup(false);
+            setDeleteConfirm(false);
         } catch (error) {
             console.error('Error deleting objects: ', error);
             showAlert('Virhe poistettaessa kohteita. Yritä uudelleen.', 'error');
+        } finally {
+            setLoading(false);
         }
     };
+
+
+    if (loading) return <PopupLoader />
 
     return (
         <div className='fixed z-50 inset-0 flex justify-center items-center bg-black/50 px-4 py-2'>

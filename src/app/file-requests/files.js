@@ -227,12 +227,20 @@ export const deleteFile = async (userID, fileID) => {
             const fileSnap = await transaction.get(fileRef);
 
             if (!fileSnap.exists()) {
-                return { success: false, message: 'Poistettavaa tiedostoa ei löytynyt.'}
+                return { success: false, message: `Tiedostoa ${fileID} ei löytynyt.`}
             }
                 
             const file = fileSnap.data();
             if (userID !== file.userID) {
-                return { success: false, message: 'Luvaton poistamispyyntö.'}
+                return { success: false, message: `Luvaton poistamispyyntö tiedostolle ${file.fileName}.`}
+            }
+
+            // User document
+            const userRef = doc(db, "users", userID);
+            const userSnap = await transaction.get(userRef);
+            const userDoc = userSnap.data();
+            if (userDoc.usedSpace < file.fileSize) {
+                return { success: false, message: 'Käyttäjän tallennustilan käyttö ei voi olla negatiivinen.'}
             }
 
             // Handle possible folder fileCount
@@ -241,7 +249,7 @@ export const deleteFile = async (userID, fileID) => {
                 const folderSnap = await transaction.get(folderRef);
 
                 if (!folderSnap.exists()) {
-                    return { success: false, message: 'Tiedoston kansioita ei löytynyt. Yritä uudelleen.'}
+                    return { success: false, message: `Tiedoston ${file.fileName} kansioita ei löytynyt. Yritä uudelleen.`}
                 }
 
                 const folder = folderSnap.data();
@@ -253,13 +261,7 @@ export const deleteFile = async (userID, fileID) => {
                 transaction.update(folderRef, { fileCount: increment(-1) });
             }
 
-            // Handle user storage space
-            const userRef = doc(db, "users", userID);
-            const userSnap = await transaction.get(userRef);
-            const userDoc = userSnap.data();
-            if (userDoc.usedSpace < file.fileSize) {
-                return { success: false, message: 'Käyttäjän tallennustilan käyttö ei voi olla negatiivinen.'}
-            }
+            // Update user space
             transaction.update(userRef, { usedSpace: increment(-file.fileSize) });
 
             // Delete the file document
@@ -276,7 +278,7 @@ export const deleteFile = async (userID, fileID) => {
         return { success: true, message: "Tiedosto poistettu onnistuneesti." };
     } catch (error) {
         console.error("Error deleting file: ", error);
-        return { success: false, message: "Tiedoston poistaminen epäonnistui. Yritä uudelleen." };
+        return { success: false, message: `Tiedoston ${fileID} poistaminen epäonnistui. Yritä uudelleen.` };
     }
 };
 
