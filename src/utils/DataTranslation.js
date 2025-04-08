@@ -102,7 +102,6 @@ export const transformFolderDataPrivate = (folder) => {
         createdAt: folder.created instanceof Date ? folder.created : new Date(folder.created.seconds * 1000),
         modifiedAt: folder.modified instanceof Date ? folder.modified : new Date(folder.modified.seconds * 1000),
         pwdProtected: folder.passwordProtected,
-        pwd: folder.password,
         linkShare: folder.sharing.link,
         groupShare: folder.sharing.group,
         shareGroups: folder.sharing.groups,
@@ -126,7 +125,6 @@ export const transformFileDataPublic = (file) => {
         groupShare: file.groupShare,
         shareGroups: file.shareGroups,
         passwordProtected: file.pwdProtected,
-        password: '',
         uploadedBy: file.uploadedBy,
         user: {
             id: file.userID,
@@ -153,7 +151,6 @@ export const transformFileDataPrivate = (file) => {
         groupShare: file.groupShare,
         shareGroups: file.shareGroups,
         pwdProtected: file.passwordProtected,
-        pwd: file.password,
         userName: file.user.name,
         userEmail: file.user.email,
         userID: file.user.id,
@@ -164,6 +161,7 @@ export const transformFileDataPrivate = (file) => {
 
 
 // CONVERT GROUPS
+// Convert group-data public
 export const transformGroupDataPublic = (group) => {
     return {
         docType: group.docType,
@@ -179,5 +177,22 @@ export const transformGroupDataPublic = (group) => {
             name: group.userName,
             email: group.userEmail
         }
+    }
+}
+
+// Convert group-data private
+export const transformGroupDataPrivate = (group) => {
+    return {
+        docType: group.docType,
+        groupID: group.id,
+        groupName: group.name,
+        groupDesc: group.desc,
+        groupVisibility: group.visibility,
+        createdAt: group.created instanceof Date ? group.created : new Date(group.created.seconds * 1000),
+        pwdProtected: group.passwordProtected,
+        groupMembers: group.members,
+        userID: group.user.id,
+        userName: group.user.name,
+        userEmail: group.user.email
     }
 }

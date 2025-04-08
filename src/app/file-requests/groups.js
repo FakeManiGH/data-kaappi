@@ -63,3 +63,32 @@ export const createNewGroup = async (userData, groupData) => {
 
 
 
+
+
+// GET
+// Get user groups
+export const getUserGroups = async (userID) => {
+    try {
+        if (!userID) {
+            return { success: false, message: 'Käyttäjäteitoja ei löytynyt.' }
+        }
+
+        const q = query(
+            collection(db, "groups"),
+            where("groupMembers", "array-contains", userID)
+        );
+
+        const querySnap = await getDocs(q);
+        const userGroups = querySnap.docs.map((doc) => doc.data());
+        const publicGroups = userGroups.map(group => transformGroupDataPublic(group));
+
+        return { success: true, groups: publicGroups }
+
+    } catch (error) {
+        console.error("Error fetching user groups: " + error);
+        return { success: false, message: 'Ryhmien hakemisessa tapahtui virhe, yritä uudelleen.' }
+    }
+}
+
+
+

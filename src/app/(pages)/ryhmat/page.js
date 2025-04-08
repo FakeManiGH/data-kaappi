@@ -4,15 +4,56 @@ import { useNavigation } from '@/app/contexts/NavigationContext';
 import GroupInvites from './_components/GroupInvites'
 import CreateGroupPopup from './_components/CreateGroupPopup';
 import { PlusCircle, Search } from 'lucide-react';
+import GroupContainer from './_components/GroupContainer';
+import { useUser } from '@clerk/nextjs';
+import { useAlert } from '@/app/contexts/AlertContext';
+import { getUserGroups } from '@/app/file-requests/groups';
+import PageLoading from '@/app/_components/_common/PageLoading';
+import ErrorView from '../_components/ErrorView';
+import ContentNotFound from '@/app/_components/_common/ContentNotFound';
+
 
 function Page() {
-    const { setCurrentIndex } = useNavigation();
+    const [loading, setLoading] = useState(true);
     const [groups, setGroups] = useState(null);
     const [createGroup, setCreateGroup] = useState(false);
+    const [dataError, setDataError] = useState(null);
+    const [serverError, setServerError] = useState(null);
+    const { isLoaded, user } = useUser();
+    const { showAlert } = useAlert();
+    const { setCurrentIndex, navigatePage } = useNavigation();
 
     useEffect(() => {
+        const fetchGroups = async () => {
+            if (isLoaded && user) {
+                try {
+                    const response = await getUserGroups(user.id);
+                    if (response.success) {
+                        setGroups(response.groups);
+                    } else {
+                        setDataError(response.message || 'Ryhmien hakeminen epäonnistui.');
+                    }
+                } catch (error) {
+                    console.error("Error fetching groups: " + error);
+                    setServerError('Ryhmien hakeminen epäonnistui. Yritä uudelleen.');
+                    showAlert('Palvelinvirhe, tietojen hakeminen epäoonistui.', 'error');
+                } finally {
+                    setLoading(false);
+                }
+            } else {
+                setLoading(false);
+                navigatePage('/sign-in');
+            }
+        }
+
+        fetchGroups();
         setCurrentIndex('/ryhmat');
-    }, [setCurrentIndex]);
+    }, [setCurrentIndex, isLoaded, user, navigatePage, showAlert]);
+
+
+    if (loading) return <PageLoading />
+    if (serverError) return <ErrorView message={serverError} />
+    if (dataError) return <ContentNotFound message={dataError} />
 
     return (
         <main>
@@ -39,6 +80,7 @@ function Page() {
             </div>
            
             <h2 className='text-2xl md:text-3xl font-semibold'>Omat ryhmät</h2>
+            <GroupContainer groups={groups} />
 
             {createGroup && <CreateGroupPopup setGroups={setGroups} setCreateGroup={setCreateGroup} />}
         </main>

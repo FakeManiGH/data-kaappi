@@ -20,6 +20,7 @@ import { folderNameRegex } from '@/utils/Regex';
 import { updateFolderName } from '@/app/file-requests/folders';
 import { useAlert } from '@/app/contexts/AlertContext';
 import UploadFilesPopup from './_components/UploadFilesPopup';
+import FolderInfoContainer from './_components/FolderInfoContainer';
 
 
 function Page({ params }) {
@@ -172,30 +173,7 @@ function Page({ params }) {
                 <FolderSettingsPage folder={folder} setFolder={setFolder} folderSettings={folderSettings} setFolderSettings={setFolderSettings} />
             ) : (
                 <>
-                <ul className='flex items-center gap-x-4 gap-y-1 flex-wrap text-sm text-gray-600 dark:text-gray-400'>
-                    <li className='flex gap-2 flex-nowrap whitespace-nowrap'>
-                        <Share2 size={18} />
-                        <p>Jaettu linkillä:</p>
-                        {folder.sharing.link ? 'Kyllä' : 'Ei'}
-                    </li>
-
-                    <li className='flex gap-2'>
-                        <Users2 size={18} />
-                        <p>Jaettu rymässä:</p>
-                        {folder.sharing.groups.length > 0 ?
-                            folder.sharing.groups.map(group => (
-                                <p key={group.id}>{group.name}</p>
-                        )) : (
-                            <p>Ei</p>
-                        )}  
-                    </li>
-
-                    <li className='flex gap-2'>
-                        <LockKeyhole size={18} />
-                        <p>Salasana:</p>
-                        {folder.passwordProtected ? 'Kyllä' : 'Ei'}
-                    </li>
-                </ul>
+                <FolderInfoContainer files={files} folder={folder} folders={folders} />
 
                 <div className='flex items-center gap-2 justify-between flex-wrap'>
                     <nav className='flex items-center gap-1'>

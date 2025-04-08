@@ -105,7 +105,7 @@ function FolderContainer({ view, folders, files, setFolders, setFiles, setCreate
                     key={folder.id} 
                     onTouchStart={() => handleTouchStart(folder)}
                     onTouchEnd={() => handleTouchEnd(folder)}
-                    className={`relative flex items-center justify-center p-2 rounded-lg transition-colors border group  overflow-hidden
+                    className={`relative flex items-center justify-center p-2 rounded-lg transition-colors border group overflow-hidden
                         ${selectedObjects.includes(folder) ? 'border-primary' : 'border-transparent'}
                         ${dragOverFolder === folder.id ? 'bg-primary' : 'bg-secondary'}`}
                 >   

@@ -4,14 +4,13 @@ import { ChevronsLeft, ChevronsRight } from 'lucide-react'
 function Hero() {
     return (
         <main>
-            <div className='flex flex-col gap-2 justify-center items-center bg-[url(/images/field.jpg)] bg-center bg-h-full rounded-r-full ml-[-2rem] py-28'>
-                <img className="w-24 h-auto" src="/logo.svg" alt="logo" />
-                <h1 className='text-5xl font-bold text-white'>Datakaappi</h1>
-            </div>
+            <div className='flex flex-col gap-2 justify-center items-center bg-[url(/images/hero.png)] bg-center bg-contain bg-h-full rounded-r-full ml-[-2rem] h-72 md:h-96' />
 
             <div 
                 className="flex flex-col gap-6 px-4 py-4 mt-4 mx-auto max-w-3xl"
             >
+                <h1 className='text-5xl font-bold text-white'>Datakaappi</h1>
+
                 <p className="text-2xl font-extrabold">
                     Säilytä ja jaa tärkeimmät tiedostosi turvallisesti ja helposti.
                 </p>
