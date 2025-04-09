@@ -10,7 +10,7 @@ function GroupContainer({ groups }) {
                     key={group.id} 
                     className='relative flex flex-col rounded-xl aspect-square group overflow-hidden shadow-lg shadow-black/25 bg-secondary'
                 >
-                    <img src='images/shareSafe.png' alt={`Linkki ryhmään ${group.name}`} className='w-full h-full object-cover' />
+                    <img src={group.logo ? group.logo : 'icons/group.png'} alt={`Linkki ryhmään ${group.name}`} className='w-full h-full object-cover' />
 
                     <div className='absolute inset-x-0 bottom-0 backdrop-blur-md flex items-center gap-2 bg-black/50
                         justify-between p-2 truncate group-hover:text-primary'

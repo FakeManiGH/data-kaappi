@@ -4,6 +4,7 @@ import { AlertProvider } from './contexts/AlertContext';
 import { ClerkProvider } from "@clerk/nextjs";
 import { NavigationProvider } from './contexts/NavigationContext';
 import { dark } from "@clerk/themes";
+import { UserdataProvider } from './contexts/UserdataContext';
 
 export function Providers({ children }) {
   const [theme, setTheme] = useState(dark);
@@ -52,7 +53,9 @@ export function Providers({ children }) {
       }
     }>
     <NavigationProvider>
+    <UserdataProvider>
       {children}
+    </UserdataProvider>
     </NavigationProvider>
     </ClerkProvider>
     </AlertProvider>

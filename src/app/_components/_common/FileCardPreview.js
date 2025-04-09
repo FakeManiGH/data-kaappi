@@ -24,20 +24,21 @@ function FileCardPreview({ file }) {
             />
 
             {previewPopup && (
-                <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/75'>
-                    <div className='relative w-full max-w-4xl'>
-                        <img
-                            src={file.url}
-                            className='w-full h-auto max-h-screen object-contain rounded-md'
-                        />
+                <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-1'>
+                    <div className='relative max-w-3xl max-h-screen'>
                         <button
                             onClick={handleClosePopup}
-                            className='absolute top-2 right-2 p-2 text-white bg-red-500 rounded-full hover:bg-red-600'
+                            className='absolute top-2 right-2 p-1 text-white bg-red-500 rounded-full hover:bg-red-600'
                             title='Sulje'
                         >
                             <X />
                         </button>
-                    </div>
+            
+                        <img
+                            src={file.url}
+                            className='object-contain rounded-md max-h-screen'
+                        />
+                    </div>   
                 </div>
             )}
             </>

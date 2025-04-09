@@ -83,8 +83,36 @@ function Page() {
 
     return (
         <main>
-            <div className='flex items-center gap-2 justify-between'>
-                <h1 className="text-4xl sm:text-4xl truncate"><strong>Kansiot</strong></h1>
+            <div 
+                className='flex items-center justify-center min-h-72 px-4 py-8 pr-4 bg-[url(/images/safe_folders.png)] bg-center bg-contain rounded-2xl'
+            >
+                <h1 className="page-title text-6xl font-black truncate"><strong>Kansiot</strong></h1>
+            </div>
+
+            <p className='text-sm'>
+                Hallitse kansioita ja tiedostojasi.
+            </p>
+
+            <div className='flex items-center justify-between gap-1 flex-wrap'>
+                <nav className='flex items-center gap-1'>
+                    <button 
+                        onClick={() => setUploadPopup(true)}
+                        className='flex flex-1 sm:flex-none items-center justify-center w-fit whitespace-nowrap gap-2 px-3 py-2 rounded-full text-sm text-white bg-primary 
+                            hover:bg-primary/75  transition-colors'
+                    >
+                        <FilePlus />
+                        Lisää tiedostoja
+                    </button>
+                    <button 
+                        onClick={() => setCreateFolder(true)} 
+                        className='flex flex-1 sm:flex-none items-center justify-center w-fit whitespace-nowrap gap-2 px-3 py-2 rounded-full text-sm text-white bg-primary 
+                            hover:bg-primary/75  transition-colors'
+                    >
+                        <FolderPlus />
+                        Uusi kansio
+                    </button>
+                </nav>
+
                 <nav className='flex items-center gap-1'>
                     <button 
                         title='Ruudukko' 
@@ -101,28 +129,6 @@ function Page() {
                             <List />
                     </button>
                 </nav>
-            </div>
-            <p className='text-sm'>
-                Hallitse kansioita ja tiedostojasi.
-            </p>
-
-            <div className='flex items-center gap-1 flex-wrap'>
-                <button 
-                    onClick={() => setUploadPopup(true)}
-                    className='flex flex-1 sm:flex-none items-center justify-center w-fit whitespace-nowrap gap-2 px-3 py-2 rounded-full text-sm text-white bg-primary 
-                        hover:bg-primary/75  transition-colors'
-                >
-                    <FilePlus />
-                    Lisää tiedostoja
-                </button>
-                <button 
-                    onClick={() => setCreateFolder(true)} 
-                    className='flex flex-1 sm:flex-none items-center justify-center w-fit whitespace-nowrap gap-2 px-3 py-2 rounded-full text-sm text-white bg-primary 
-                        hover:bg-primary/75  transition-colors'
-                >
-                    <FolderPlus />
-                    Uusi kansio
-                </button>
             </div>
 
             {selectedObjects.length > 0 && 

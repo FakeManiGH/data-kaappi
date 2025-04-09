@@ -3,7 +3,7 @@ import SideNav from './_components/SideNav';
 import TopHeader from './_components/TopHeader';
 import Footer from './_components/Footer';
 import Alert from '../_components/_common/Alert';
-import React, { useEffect, Suspense } from 'react';
+import React, { useEffect, Suspense, useState } from 'react';
 import PageLoading from '../_components/_common/PageLoading';
 import { useUser } from '@clerk/nextjs';
 import { useNavigation } from '../contexts/NavigationContext';

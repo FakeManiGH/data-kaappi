@@ -2,11 +2,11 @@ import React, { useState } from 'react'
 import { useAlert } from '@/app/contexts/AlertContext'
 import { useUser } from '@clerk/nextjs'
 import CopyClipboard from '@/app/_components/_common/CopyClipboard';
-import { changeFolderLinkSharing, removeFolderPassword } from '@/app/file-requests/folders';
+import { changeFolderLinkSharing, removeFolderPassword, updateFolderName } from '@/app/file-requests/folders';
 import PageLoading from '@/app/_components/_common/PageLoading';
 import { updateFolderPassword } from '@/app/file-requests/folders';
 import { Eye, EyeOff, LockKeyhole, X } from 'lucide-react';
-import { passwordRegex } from '@/utils/Regex';
+import { folderNameRegex, passwordRegex } from '@/utils/Regex';
 
 const exampleGroups = [
     { id: 1, name: 'Group 1' },
@@ -16,7 +16,9 @@ const exampleGroups = [
 ];
 
 
-function FolderSettingsPage({ folder, setFolder, folderSettings, setFolderSettings }) {
+function FolderSettings({ folder, setFolder, settings, setSettings }) {
+    const [newFolderName, setNewFolderName] = useState(null);
+    const [nameError, setNameError] = useState(null);
     const [shareLink, setShareLink] = useState(folder.sharing.link);
     const [shareGroup, setShareGroup] = useState(folder.sharing.group);
     const [selectedGroups, setSelectedGroups] = useState([]);
@@ -27,6 +29,42 @@ function FolderSettingsPage({ folder, setFolder, folderSettings, setFolderSettin
     const [loading, setLoading] = useState(false);
     const { showAlert } = useAlert();
     const { user } = useUser();
+
+    
+    // Handle renaming
+    const handleFolderRenaming = async (e) => {
+        e.preventDefault();
+        setLoading(true);
+        const newName = e.target.folderName.value;
+
+        if (!newName || newName === folder.name) {
+            setNameError('Anna kansiolle ensin uusi nimi.');
+            setLoading(false);
+            return;
+        }
+
+        if (!folderNameRegex.test(newName)) {
+            setNameError('Kansion nimen tulee olla 2-50 merkkiä, eikä saa sisältää <, >, /, \\ -merkkejä.');
+            setLoading(false);
+            return;
+        }
+
+        try {
+            const response = await updateFolderName(user.id, folder.id, newName);
+    
+            if (response.success) {
+                setFolder({ ...folder, name: newName })
+                showAlert(response.message, 'success');
+            } else {
+                showAlert(response.message, 'error');
+            }
+        } catch (error) {
+            console.error("Error updating folder name: ", error);
+            showAlert('Kansion nimen päivittämisessä tapahtui virhe.', 'error');
+        } finally {
+            setLoading(false);
+        }
+    }
 
     // Link sharing
     const handleLinkSharing = async (e) => {
@@ -136,13 +174,55 @@ function FolderSettingsPage({ folder, setFolder, folderSettings, setFolderSettin
     if (loading) return <PageLoading />
 
     return (
-        <div className={`flex flex-col gap-4 transition-transform origin-top
-            ${folderSettings ? 'scale-y-100' : 'scale-y-0'}`}
-        >
+        <main className={`flex flex-col transition-transform origin-right
+            ${settings ? 'scale-x-100' : 'scale-x-0'}`}
+        >   
+
+            <div className='flex items-center gap-2 justify-between'>
+                <h1 className='text-3xl font-black truncate'>Kansion asetukset</h1>
+                <button 
+                    onClick={() => setSettings(false)}
+                    className='bg-red-500 text-white hover:bg-red-600 p-1 rounded-full self-end'
+                >
+                    <X />
+                </button>
+            </div>
+            
             <p className='text-xs text-orange-500'>* Muista tallentaa tallennusta vaativat muutokset.</p>    
 
 
-            <h2 className='font-semibold text-xl sm:text-2xl mb-[-10px]'>Jakaminen</h2>
+            <h2 className='font-semibold text-xl mb-[-10px]'>Nimi</h2>
+            <p className='text-sm'>Muuta kansion nimeä.</p>
+
+            <form className='flex flex-col gap-2 py-2 px-4 bg-secondary rounded-xl text-sm' onSubmit={handleFolderRenaming}>
+                <label htmlFor='folderName' className='sr-only'></label>
+                <input
+                    id='folderName'
+                    name='folderName'
+                    defaultValue={folder.name || ''}
+                    className='relative w-full py-2.5 px-3 bg-background text-sm border border-transparent outline-none focus:border-primary focus:ring-1'
+                    placeholder='Anna kansiolle nimi...'
+                />
+
+                {nameError && 
+                    <div className='flex items-center justify-between gap-4 px-3 py-2.5 rounded-lg text-white text-sm bg-red-500'>
+                        <p>{nameError}</p>
+                        <button onClick={() => setNameError('')}><X size={20} /></button>
+                    </div>
+                }
+
+                <button
+                    type='submit'
+                    className='w-full py-2 px-3 rounded-full text-white bg-primary hover:bg-primary/75 transition-colors'
+                >
+                    Tallenna
+                </button>
+            </form>
+
+            <hr />
+
+
+            <h2 className='font-semibold text-xl mb-[-10px]'>Jakaminen</h2>
             <p className='text-sm'>Jaa kansio linkillä julkisesti tai yksityisesti valitsemassasi ryhmässä.</p>
 
             <div className='flex flex-col gap-2 py-2 px-4 bg-secondary rounded-xl'>
@@ -237,7 +317,10 @@ function FolderSettingsPage({ folder, setFolder, folderSettings, setFolderSettin
                 </div>
             </div>
 
-            <h2 className='font-semibold text-xl sm:text-2xl mb-[-10px]'>Salasana</h2>
+            <hr />
+
+
+            <h2 className='font-semibold text-xl mb-[-10px]'>Salasana</h2>
             <p className='text-sm'>Anna kansion sisällölle lisäsuojaa asettamalla sille salasana. Tällöin vain kansion omistaja pääsee näkemään sisällön ilman salasanaa.</p>
 
             <div className='flex flex-col gap-2 py-2 px-4 bg-secondary rounded-xl'>
@@ -290,14 +373,14 @@ function FolderSettingsPage({ folder, setFolder, folderSettings, setFolderSettin
 
                     <button 
                         type="submit" 
-                        className="w-full py-2 px-3 mt-2 rounded-full text-white bg-primary hover:bg-primary/75  transition-colors"
+                        className="w-full py-2 px-3 mt-2 rounded-full text-white bg-primary hover:bg-primary/75 transition-colors"
                     >
                         Tallenna salasana
                     </button>
                 </form>
             </div>
-        </div>
+        </main>
     )
 }
 
-export default FolderSettingsPage
+export default FolderSettings

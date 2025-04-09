@@ -57,8 +57,13 @@ function Page() {
 
     return (
         <main>
-            <h1 className='text-4xl md:text-4xl font-bold'>Ryhmät</h1>
-            
+            <h1 className='text-4xl md:text-4xl font-black'>Ryhmät</h1>
+
+            <div 
+                className='flex items-center justify-center min-h-96 px-4 py-8 pr-4 bg-[url(/images/sharing.png)] bg-center bg-contain mr-[-1rem] md:mr-[-2rem]
+                rounded-l-full'
+            />
+
             <GroupInvites />
 
             <div className='flex flex-row items-center flex-wrap gap-2 mt-2 text-sm'>

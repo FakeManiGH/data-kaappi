@@ -67,13 +67,16 @@ function Page() {
 
   return (
     <main>
-      <h1 className='text-4xl md:text-4xl'><strong>Tallenna</strong></h1>
+      <div 
+        className='flex flex-col gap-4 items-center justify-center min-h-72 px-4 py-8 pr-4 bg-[url(/images/safe_upload.png)] bg-center bg-contain rounded-2xl'
+      >
+        <h1 className="page-title text-6xl font-black truncate"><strong>Tallenna</strong></h1>
+      </div>
+
       <p className='text-sm'>
         Talleta tiedostoja kaappiisi. Voit tallentaa useita tiedostoja kerralla ja luoda kansioita, jotta tiedostot pysyvät kätevästi järjestyksessä.
       </p>
-      <SpaceMeterBar usedSpace={userDoc?.usedSpace} totalSpace={userDoc?.totalSpace} />
-      <br />
-
+  
       <UploadForm 
         files={files} 
         setFiles={setFiles} 

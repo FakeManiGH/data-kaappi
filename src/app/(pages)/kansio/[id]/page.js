@@ -15,12 +15,12 @@ import PasswordPopup from './_components/PasswordPopup';
 import DeletePopup from './_components/DeletePopup';
 import { FilePlus, FolderPlus, Grid, List, LockKeyhole, Settings, Share2, Users2, X } from 'lucide-react';
 import MoveSelectedPopup from './_components/MoveSelectedPopup';
-import FolderSettingsPage from './_components/FolderSettingsPage';
 import { folderNameRegex } from '@/utils/Regex';
 import { updateFolderName } from '@/app/file-requests/folders';
 import { useAlert } from '@/app/contexts/AlertContext';
 import UploadFilesPopup from './_components/UploadFilesPopup';
 import FolderInfoContainer from './_components/FolderInfoContainer';
+import FolderSettings from './_components/FolderSettings';
 
 
 function Page({ params }) {
@@ -32,9 +32,7 @@ function Page({ params }) {
     const [view, setView] = useState('grid');
     const [pwdVerified, setPwdVerified] = useState(true);
     const [folder, setFolder] = useState(null);
-    const [folderSettings, setFolderSettings] = useState(false);
-    const [newFolderName, setNewFolderName] = useState(null);
-    const [nameError, setNameError] = useState(null);
+    const [settings, setSettings] = useState(false);
     const [folders, setFolders] = useState(null);
     const [files, setFiles] = useState([]);
     const [selectedObjects, setSelectedObjects] = useState([]);
@@ -79,103 +77,36 @@ function Page({ params }) {
         }
     }, [isLoaded, user, id, setCurrentIndex, navigatePage]);
 
-    // Folder name change
-    const assignNewFolderName = (e) => {
-        if (e.target.value === folder.name) {
-            setNewFolderName(null);
-        } else {
-            setNewFolderName(e.target.value);
-        }
-    }
-
-    // Handle renaming
-    const handleFolderRenaming = async () => {
-        setLoading(true);
-        const newName = newFolderName;
-
-        if (!newName) {
-            setNameError('Anna kansiolle ensin nimi.');
-        }
-
-        if (!folderNameRegex.test(newName)) {
-            setNameError('Kansion nimen tulee olla 2-50 merkkiä, eikä saa sisältää <, >, /, \\ -merkkejä.');
-        }
-
-        try {
-            const response = await updateFolderName(user.id, folder.id, newFolderName);
-    
-            if (response.success) {
-                setFolder({ ...folder, name: newName })
-                showAlert(response.message, 'success');
-            } else {
-                showAlert(response.message, 'error');
-            }
-        } catch (error) {
-            console.error("Error updating folder name: ", error);
-            showAlert('Kansion nimen päivittämisessä tapahtui virhe.', 'error');
-        } finally {
-            setLoading(false);
-        }
-    }
-
 
     if (loading) return <PageLoading />;
     if (serverError) return <ErrorView message={serverError} />;
     if (dataError) return <ContentNotFound message={dataError} />;
     if (!pwdVerified) return <div>Folder is password-protected. Please enter the password.</div>;
+    if (settings) return <FolderSettings folder={folder} setFolder={setFolder} settings={settings} setSettings={setSettings} />
 
     return (
         <main>
             <div className='flex items-center gap-2 justify-between'>
                 <Breadcrumbs folder={folder} />
             </div>
-            
-            <div className='flex items-center max-w-full gap-2 justify-between'>   
-            {folderSettings ? (
-                <div className='flex flex-col w-full'>
-                    <div className='flex items-center gap-2 flex-nowrap'>
-                        <input 
-                            defaultValue={folder.name} 
-                            onChange={assignNewFolderName} 
-                            placeholder='Anna kansiolle nimi...'
-                            className='w-full font-bold text-3xl md:text-4xl border-b border-contrast bg-transparent outline-none focus:border-primary hover:border-primary' 
-                        />
-                        {newFolderName &&
-                            <button
-                                className='text-sm px-3 py-2 rounded-full text-white bg-primary hover:bg-primary/75'
-                                onClick={handleFolderRenaming}
-                            >
-                                Tallenna
-                            </button>
-                        }
-                    </div>
 
-                    {nameError && 
-                        <div className='flex items-center justify-between gap-4 px-3 py-2.5 mt-2 rounded-lg text-white text-sm bg-red-500'>
-                            <p>{nameError}</p>
-                            <button onClick={() => setNameError('')}><X size={20} /></button>
-                        </div>
-                    }
-                </div>
-            ) : (
-                <h1 className='font-bold text-3xl md:text-4xl truncate'>{folder.name}</h1> 
-            )}
-                <button 
-                    className={`relative flex items-center flex-wrap hover:text-primary transition-all
-                        ${folderSettings ? 'rotate-[-90deg]' : 'rotate-0'}`} 
-                    title='Kansion asetukset'
-                    onClick={() => setFolderSettings(!folderSettings)}
-                >   
-                    <Settings className={folderSettings ? 'text-red-500 hover:text-red-600' : 'text-primary hover:text-primary/75'} size={28} />
-                </button>
-            </div>
-            {folderSettings ? (
-                <FolderSettingsPage folder={folder} setFolder={setFolder} folderSettings={folderSettings} setFolderSettings={setFolderSettings} />
-            ) : (
-                <>
+            <h1 className='text-3xl md:text-4xl font-black truncate'>{folder.name}</h1> 
+            
+            <div className='relative flex items-center max-w-full gap-2 justify-between'>   
                 <FolderInfoContainer files={files} folder={folder} folders={folders} />
 
-                <div className='flex items-center gap-2 justify-between flex-wrap'>
+                <button 
+                    className={`relative flex items-center flex-wrap hover:text-primary transition-all
+                        ${settings ? 'rotate-[0deg]' : 'rotate-[-90deg]'}`} 
+                    title='Kansion asetukset'
+                    onClick={() => setSettings(!settings)}
+                >   
+                    <Settings className={settings ? 'text-red-500 hover:text-red-600' : 'text-foreground hover:text-primary'} size={28} />
+                </button>
+            </div>
+            
+            <div className='flex'>
+                <div className='flex items-center gap-2 w-full justify-between flex-wrap'>
                     <nav className='flex items-center gap-1'>
                         <button 
                             onClick={() => setUploadPopup(true)} 
@@ -212,44 +143,43 @@ function Page({ params }) {
                         </button>    
                     </nav> 
                 </div>
+            </div>
 
-                {selectedObjects.length > 0 && 
-                    <FolderNavigation
-                        folders={folders}
-                        files={files}
-                        setFolders={setFolders} 
-                        setFiles={setFiles}
-                        setCreateFolder={setCreateFolder}
-                        setMovePopup={setMovePopup}
-                        selectedObjects={selectedObjects}
-                        setSelectedObjects={setSelectedObjects}
-                        setRenamePopup={setRenamePopup}
-                        setPasswordPopup={setPasswordPopup}
-                        setDeletePopup={setDeletePopup}
-                    />
-                }
+            {selectedObjects.length > 0 && 
+            <FolderNavigation
+                folders={folders}
+                files={files}
+                setFolders={setFolders} 
+                setFiles={setFiles}
+                setCreateFolder={setCreateFolder}
+                setMovePopup={setMovePopup}
+                selectedObjects={selectedObjects}
+                setSelectedObjects={setSelectedObjects}
+                setRenamePopup={setRenamePopup}
+                setPasswordPopup={setPasswordPopup}
+                setDeletePopup={setDeletePopup}
+            />
+            }
 
-                <FolderContainer 
-                    view={view}
-                    folders={folders}
-                    files={files}
-                    setFolders={setFolders} 
-                    setFiles={setFiles}
-                    setCreateFolder={setCreateFolder}
-                    selectedObjects={selectedObjects}
-                    setSelectedObjects={setSelectedObjects}
-                />
-                </>
-            )}
+            <FolderContainer 
+                view={view}
+                folders={folders}
+                files={files}
+                setFolders={setFolders} 
+                setFiles={setFiles}
+                setCreateFolder={setCreateFolder}
+                selectedObjects={selectedObjects}
+                setSelectedObjects={setSelectedObjects}
+            />
 
             {movePopup && 
-                <MoveSelectedPopup 
-                    selectedObjects={selectedObjects} 
-                    setSelectedObjects={setSelectedObjects}
-                    setFolders={setFolders}
-                    setFiles={setFiles} 
-                    setMovePopup={setMovePopup} 
-                />
+            <MoveSelectedPopup 
+                selectedObjects={selectedObjects} 
+                setSelectedObjects={setSelectedObjects}
+                setFolders={setFolders}
+                setFiles={setFiles} 
+                setMovePopup={setMovePopup} 
+            />
             }
             {createFolder && <CreateFolder folder={folder} setFolder={setFolder} folders={folders} setFolders={setFolders} setCreateFolder={setCreateFolder} />}
             {uploadPopup && <UploadFilesPopup currentFolder={folder} files={files} setFiles={setFiles} setUploadPopup={setUploadPopup} />}

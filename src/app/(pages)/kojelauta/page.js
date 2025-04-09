@@ -50,22 +50,21 @@ function Page() {
 
   return (
     <main>
-      <h1 className='text-4xl md:text-4xl'><strong>Hei, {user?.firstName}</strong></h1>
+      <h1 className='text-4xl md:text-4xl font-black'><strong>Hei, {user?.firstName}</strong></h1>
       
       <div 
         className='flex items-center justify-center min-h-96 px-4 py-8 pr-4 bg-[url(/images/clouds.png)] bg-center bg-contain mr-[-1rem] md:mr-[-2rem]
           rounded-l-full'
       >
-        <div className='flex gap-2 p-4 flex-wrap items-center justify-center bg-black/50 rounded-xl shadow-lg shadow-black/25'>
+        <div className='flex gap-2 p-4 flex-wrap items-center justify-center bg-black/50 rounded-full'>
           <SpaceMeterCircle usedSpace={userDoc?.usedSpace} totalSpace={userDoc?.totalSpace} />
-          <div className='flex flex-col gap-2 justify-center md:justify-start'>
+          <div className='flex flex-col gap-2 items-center md:items-start text-foreground'>
             <h3 className='text-xl font-bold'>Tallennustilan käyttö</h3>
-            <p className='text-sm'>Voit tarvittaessa tilata lisää tallennustilaa (<strong>tulossa</strong>).</p>
-            <Link className='flex items-center w-fit gap-2 px-3 py-2 mt-2 rounded-lg text-sm bg-navlink shadow-black/25 shadow-md 
-                cursor-not-allowed text-white transition-colors' href="#"
+            <p className='text-sm text-center md:text-start'>Jos kaapistasi loppuu tila kesken, lisätilaa on saatavilla muutamalla klikkauksella.</p>
+            <Link className='flex items-center w-fit gap-1 rounded-lg text-sm cursor-not-allowed text-primary transition-colors' href="#"
             >
               <Settings2 />
-              Hallitse tilausta
+              Hallitse tallennustilaa
             </Link>
           </div>
         </div>

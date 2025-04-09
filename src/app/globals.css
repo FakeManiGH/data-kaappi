@@ -27,6 +27,14 @@
   font-weight: 400;
 }
 
+hr {
+  border-color: #b6b6b6;
+
+  @media (prefers-color-scheme: dark) {
+    border-color: #444444;
+  }
+}
+
 body {
   position: relative;
   margin: 0;
@@ -47,11 +55,15 @@ main {
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  padding: 2rem 1rem;
+  padding: 1rem;
 
   @media screen and (min-width: 768px) {
-    padding: 2rem;
+    padding: 1rem 2rem;
   }
+}
+
+.page-title {
+  text-shadow: 2px 2px 3px black;
 }
 
 .masonry-grid {

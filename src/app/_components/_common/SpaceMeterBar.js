@@ -13,13 +13,14 @@ function SpaceMeterBar({ usedSpace, totalSpace }) {
                     {translateFileSize(usedSpace)} / {translateFileSize(totalSpace)}
                 </p>
             </div>
-            <div className="w-full bg-gradient-to-b from-secondary to-contrast h-5 overflow-hidden">
-                <span className="bg-gradient-to-b from-blue-800 via-primary to-blue-800 h-5" style={{ width: `${percentage}%` }}></span>
-            </div>
-        
-            <p className={`text-sm absolute top-[105%] left-${roundedPercentage}`}>{roundedPercentage}%</p>  
+            <div className="w-full bg-gradient-to-b from-secondary to-background h-5 overflow-hidden">
+                <span
+                    className="block bg-gradient-to-b from-blue-800 via-primary to-blue-800 h-5"
+                    style={{ width: `${percentage}%` }}
+                ></span>
+            </div> 
         </div> 
-    )
+    );
 }
 
 export default SpaceMeterBar

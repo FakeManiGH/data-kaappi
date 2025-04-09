@@ -1,13 +1,16 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { useNavigation } from '@/app/contexts/NavigationContext'
-import { BadgeCheck } from 'lucide-react'
+import { BadgeCheck, Settings2 } from 'lucide-react'
+import SpaceMeterBar from '@/app/_components/_common/SpaceMeterBar'
+import { useUserdata } from '@/app/contexts/UserdataContext'
 
 function SideNav() {
     const { navList, currentIndex } = useNavigation()
+    const { userData } = useUserdata();
 
     return (
-        <div className='flex flex-col w-64 h-full overflow-y-auto'
+        <div className='relative z-10 flex flex-col w-64 h-full overflow-y-auto'
         >
             <Link 
                 href='/' 
@@ -29,6 +32,16 @@ function SideNav() {
                     </Link>
                 ))}
             </div>
+
+            <div className='flex flex-col gap-2 p-2 bg-gradient-to-b from-secondary to-contrast rounded-lg mx-2 mt-auto mb-6'>
+                <SpaceMeterBar usedSpace={userData?.usedSpace} totalSpace={userData?.totalSpace} />
+
+                <Link href='/kojelauta' className='flex items-center gap-1 text-navlink hover:text-foreground text-sm group'>
+                    <Settings2 className='text-navlink group-hover:text-primary' size={20} />
+                    Hallitse tallennustilaa
+                </Link>
+            </div>
+            
         </div>
     )
 }
