@@ -61,7 +61,7 @@ function PasswordPopup({ file, setFile, setPasswordPopup }) {
                 shadow-lg shadow-black/25 max-h-full border border-contrast overflow-y-auto'
             >
                 <button
-                    className="absolute top-2 right-2 p-1 rounded-full text-white bg-red-500 hover:bg-red-600 transition-colors"
+                    className="absolute top-2 right-2 p-1 rounded-lg text-white bg-red-500 hover:bg-red-600 transition-colors"
                     onClick={() => setPasswordPopup(false)}
                 >
                     <X />
@@ -128,7 +128,7 @@ function PasswordPopup({ file, setFile, setPasswordPopup }) {
 
                     <button 
                         type="submit" 
-                        className="w-full py-2.5 px-3 mt-4 rounded-full bg-primary text-white 
+                        className="w-full py-2.5 px-3 mt-4 rounded-lg bg-primary text-white 
                         text-sm hover:bg-primary/75  transition-colors"
                     >
                         Tallenna

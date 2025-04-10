@@ -24,10 +24,10 @@ function Layout({ children }) {
 
   return (
     <>
-      <div className="fixed inset-y-0 w-64 hidden md:flex flex-col">
+      <div className="fixed inset-y-0 w-72 hidden md:flex flex-col">
         <SideNav />
       </div>
-      <div className='md:ml-64'>
+      <div className='md:ml-72'>
         <TopHeader />
         <Suspense fallback={<PageLoading />}>
           {children}

@@ -67,15 +67,13 @@ function Page() {
 
   return (
     <main>
-      <div 
-        className='flex flex-col gap-4 items-center justify-center min-h-72 px-4 py-8 pr-4 bg-[url(/images/safe_upload.png)] bg-center bg-contain rounded-2xl'
-      >
-        <h1 className="page-title text-6xl font-black truncate"><strong>Tallenna</strong></h1>
+      <div className='flex items-end min-h-96 p-2 bg-[url(/images/upload_hero.png)] bg-center bg-contain rounded-lg'>
+        <div className='flex flex-col gap-2 px-6 py-4 bg-black/50 rounded-lg text-white'>
+          <h1 className="page-title text-6xl font-black truncate"><strong>Tallenna</strong></h1>
+          <p className='text-sm'>Talleta tiedostoja kaappiisi.</p>
+        </div>
       </div>
 
-      <p className='text-sm'>
-        Talleta tiedostoja kaappiisi. Voit tallentaa useita tiedostoja kerralla ja luoda kansioita, jotta tiedostot pysyvät kätevästi järjestyksessä.
-      </p>
   
       <UploadForm 
         files={files} 

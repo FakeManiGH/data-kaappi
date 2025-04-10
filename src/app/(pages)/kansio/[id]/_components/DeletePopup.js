@@ -26,7 +26,7 @@ function DeletePopup({ selectedObjects, setSelectedObjects, setFolders, setFiles
             >
                 <button 
                     onClick={() => setDeletePopup(false)} 
-                    className='absolute top-2 right-2 p-1 rounded-full text-white bg-red-500 hover:bg-red-600 transition-colors'
+                    className='absolute top-2 right-2 p-1 rounded-lg text-white bg-red-500 hover:bg-red-600 transition-colors'
                 >
                     <X />
                 </button>
@@ -71,7 +71,7 @@ function DeletePopup({ selectedObjects, setSelectedObjects, setFolders, setFiles
 
                 <button 
                     onClick={() => setDeleteConfirm(true)} 
-                    className='text-white text-sm bg-red-500 mt-4 py-2.5 px-3 rounded-full hover:bg-red-600 '
+                    className='text-white text-sm bg-red-500 mt-4 py-2.5 px-3 rounded-lg hover:bg-red-600 '
                 >
                     Poista
                 </button>

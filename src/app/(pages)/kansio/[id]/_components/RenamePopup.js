@@ -119,7 +119,7 @@ function RenamePopup({ selectedObject, setFolders, setFiles, setSelectedObjects,
       >
         <button 
           onClick={() => setRenamePopup(false)} 
-          className='absolute top-2 right-2 p-1 rounded-full text-white bg-red-500 hover:bg-red-600 transition-colors'
+          className='absolute top-2 right-2 p-1 rounded-lg text-white bg-red-500 hover:bg-red-600 transition-colors'
         >
           <X />
         </button>
@@ -153,7 +153,7 @@ function RenamePopup({ selectedObject, setFolders, setFiles, setSelectedObjects,
 
           <button 
             type="submit" 
-            className="w-full mt-4 py-2.5 px-3 rounded-full bg-primary text-white 
+            className="w-full mt-4 py-2.5 px-3 rounded-lg bg-primary text-white 
               text-sm hover:bg-primary/75  transition-colors"
           >
               Tallenna

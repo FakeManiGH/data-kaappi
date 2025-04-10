@@ -28,7 +28,7 @@ function FileCardPreview({ file }) {
                     <div className='relative max-w-3xl max-h-screen'>
                         <button
                             onClick={handleClosePopup}
-                            className='absolute top-2 right-2 p-1 text-white bg-red-500 rounded-full hover:bg-red-600'
+                            className='absolute top-2 right-2 p-1 text-white bg-red-500 rounded-lg hover:bg-red-600'
                             title='Sulje'
                         >
                             <X />
@@ -55,7 +55,7 @@ function FileCardPreview({ file }) {
                     <button 
                         onClick={handleOpenPopup}
                         className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 p-2 text-white bg-primary/75 hover:bg-primary 
-                            transition-colors rounded-full'
+                            transition-colors rounded-lg'
                     >
                         <Play />
                     </button>
@@ -72,7 +72,7 @@ function FileCardPreview({ file }) {
                             />
                             <button
                                 onClick={handleClosePopup}
-                                className='absolute top-2 right-2 p-2 text-white bg-red-500 rounded-full hover:bg-red-600'
+                                className='absolute top-2 right-2 p-2 text-white bg-red-500 rounded-lg hover:bg-red-600'
                                 title='Sulje'
                             >
                                 <X />

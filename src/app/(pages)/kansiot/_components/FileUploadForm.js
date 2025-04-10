@@ -292,7 +292,7 @@ function FileUploadForm({ currentFolder, files, setFiles, setUploadPopup }) {
                         </div>
 
                         {uploadProgress[index] > 0 && 
-                        <div className='text-center w-full bg-gray-300 rounded-full dark:bg-gray-600'>
+                        <div className='text-center w-full bg-gray-300 rounded-lg dark:bg-gray-600'>
                             <div 
                                 className={`h-full text-center text-xs text-white rounded-xl ${uploadProgress[index] == 100 ? 'bg-success' : 'bg-primary'}`}
                                 style={{ width: `${uploadProgress[index]}%` }}
@@ -319,7 +319,7 @@ function FileUploadForm({ currentFolder, files, setFiles, setUploadPopup }) {
             <div className='flex items-center gap-1 mt-2'>
                 <button 
                     type="button"
-                    className='w-full px-3 py-2.5 rounded-full bg-primary text-white transition-all disabled:bg-gray-400 dark:disabled:bg-gray-600
+                    className='w-full px-3 py-2.5 rounded-lg bg-primary text-white transition-all disabled:bg-gray-400 dark:disabled:bg-gray-600
                         disabled:text-contrast hover:bg-primary/75'
                     {...(newFiles.length === 0 && { disabled: true })}
                     onClick={uploadFiles}
@@ -330,7 +330,7 @@ function FileUploadForm({ currentFolder, files, setFiles, setUploadPopup }) {
                     <button 
                         type="reset"
                         onClick={handleFormReset}
-                        className='w-full px-3 py-2.5 rounded-full bg-gray-500 hover:bg-gray-600 text-white transition-colors'
+                        className='w-full px-3 py-2.5 rounded-lg bg-gray-500 hover:bg-gray-600 text-white transition-colors'
                     >
                         Tyhjennä
                     </button>

@@ -130,7 +130,7 @@ function FolderContainer({ view, folders, files, setFolders, setFiles, setCreate
                     }
                     <input 
                         type="checkbox" 
-                        className={`absolute top-2 right-2 p-2 bg-background group-hover:block appearance-none rounded-full border 
+                        className={`absolute top-2 right-2 p-2 bg-background group-hover:block appearance-none rounded-lg border 
                             border-navlink hover:border-primary checked:border-primary checked:bg-primary checked:hover:border-navlink transition-all
                             ${selectedObjects.includes(folder) ? 'block' : 'block md:hidden'}`}
                         onChange={() => handleObjectSelect(folder)}
@@ -164,7 +164,7 @@ function FolderContainer({ view, folders, files, setFolders, setFiles, setCreate
                 >   
                     <input 
                         type="checkbox" 
-                        className={`absolute top-2 right-2 p-2 bg-background group-hover:block appearance-none rounded-full  border 
+                        className={`absolute top-2 right-2 p-2 bg-background group-hover:block appearance-none rounded-lg  border 
                             border-navlink hover:border-primary checked:border-primary checked:bg-primary checked:hover:border-navlink transition-all
                             ${selectedObjects.includes(file) ? 'block' : 'block md:hidden'}`}
                         onChange={() => handleObjectSelect(file)}
@@ -208,7 +208,7 @@ function FolderContainer({ view, folders, files, setFolders, setFiles, setCreate
                 >
                     <input 
                         type="checkbox" 
-                        className={`p-2 bg-background appearance-none rounded-full border border-navlink hover:border-primary checked:border-primary 
+                        className={`p-2 bg-background appearance-none rounded-lg border border-navlink hover:border-primary checked:border-primary 
                             checked:bg-primary checked:hover:border-navlink transition-all`}
                         onChange={() => handleObjectSelect(folder)}
                         checked={selectedObjects.includes(folder)}
@@ -242,7 +242,7 @@ function FolderContainer({ view, folders, files, setFolders, setFiles, setCreate
                     <div className='flex items-center gap-2'>
                         <input 
                             type="checkbox" 
-                            className={`p-2 bg-background appearance-none rounded-full border border-navlink hover:border-primary checked:border-primary 
+                            className={`p-2 bg-background appearance-none rounded-lg border border-navlink hover:border-primary checked:border-primary 
                                 checked:bg-primary checked:hover:border-navlink transition-all`}
                             onChange={() => handleObjectSelect(file)}
                             checked={selectedObjects.includes(file)}

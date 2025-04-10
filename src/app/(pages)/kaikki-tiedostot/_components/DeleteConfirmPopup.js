@@ -23,7 +23,7 @@ function DeleteConfirmPopup({ selectedFiles, handleDeleteFiles, setDeletePopup }
                     <Trash2 size={24} />
                     <h2 className="text-xl font-bold">Poista tiedostoja</h2>
                     <button
-                        className="p-1 text-white bg-red-500 hover:bg-red-600 rounded-full"
+                        className="p-1 text-white bg-red-500 hover:bg-red-600 rounded-lg"
                         onClick={() => setDeletePopup(false)}
                     >
                         <X size={20} />
@@ -42,7 +42,7 @@ function DeleteConfirmPopup({ selectedFiles, handleDeleteFiles, setDeletePopup }
 
                 <div className="flex items-center justify-center gap-2 p-4">
                     <button 
-                        className='block p-2 px-3 bg-red-500 text-white rounded-full hover:bg-red-600 active:bg-red-600'
+                        className='block p-2 px-3 bg-red-500 text-white rounded-lg hover:bg-red-600 active:bg-red-600'
                         onClick={() => handleDeleteFiles(selectedFiles)}
                     >
                         Kyllä, poista

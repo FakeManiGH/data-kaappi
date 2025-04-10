@@ -27,7 +27,7 @@ function Header() {
                 </div>
 
                 <div className="flex items-center gap-4">
-                    <nav aria-label="Global" className="hidden lg:block">
+                    <nav aria-label="Global" className="hidden md:block">
                         <ul className="flex items-center gap-4">
                             {publicNav && publicNav.map((item) => (
                                 <li key={item.id}>
@@ -47,7 +47,7 @@ function Header() {
                         {isLoggedIn ? (
                             <Link
                                 className="flex gap-1 items-center px-3 py-2 text-sm bg-primary text-white 
-                                    rounded-full hover:bg-primary/75 transition-colors "
+                                    rounded-lg hover:bg-primary/75 transition-colors "
                                 href="/kojelauta"
                             >   
                                 <CircleGauge />
@@ -56,7 +56,7 @@ function Header() {
                         ) : (
                             <Link
                                 className="flex gap-1 items-center px-3 py-2 text-sm bg-primary text-white 
-                                    rounded-full hover:bg-primary/75 transition-colors "
+                                    rounded-lg hover:bg-primary/75 transition-colors "
                                 href="/sign-in"
                             >   
                                 <LogIn />

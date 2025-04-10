@@ -144,7 +144,7 @@ function MoveSelectedPopup({ selectedObjects, setSelectedObjects, setFolders, se
       >
           <button 
             onClick={() => setMovePopup(false)} 
-            className='absolute top-2 right-2 p-1 rounded-full text-white bg-red-500 hover:bg-red-600 transition-colors'
+            className='absolute top-2 right-2 p-1 rounded-lg text-white bg-red-500 hover:bg-red-600 transition-colors'
           >
             <X />
           </button>
@@ -206,7 +206,7 @@ function MoveSelectedPopup({ selectedObjects, setSelectedObjects, setFolders, se
 
           <button 
               onClick={moveSelectedObjects} 
-              className='text-white text-sm bg-primary hover:bg-primary/75 mt-4 py-2.5 px-3 rounded-full
+              className='text-white text-sm bg-primary hover:bg-primary/75 mt-4 py-2.5 px-3 rounded-lg
                 '
           >
               Siirrä

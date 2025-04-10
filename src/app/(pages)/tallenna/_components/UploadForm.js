@@ -226,7 +226,7 @@ function UploadForm({ files, setFiles, fileErrors, setFileErrors, setUploadProgr
         <div className='flex items-center gap-1 mt-4'>
           <button 
             type="submit"
-            className='w-full px-3 py-2.5 rounded-full bg-primary text-white transition-all disabled:bg-secondary disabled:text-contrast 
+            className='w-full px-3 py-2.5 rounded-lg bg-primary text-white transition-all disabled:bg-secondary disabled:text-contrast 
               disabled:shadow-none hover:bg-primary/75'
             {...(files.length === 0 && { disabled: true })}
           >
@@ -236,7 +236,7 @@ function UploadForm({ files, setFiles, fileErrors, setFileErrors, setUploadProgr
             <button 
               type="reset"
               onClick={handleFormReset}
-              className='w-full px-3 py-2.5 rounded-full bg-gray-500 hover:bg-gray-600 text-white transition-colors'
+              className='w-full px-3 py-2.5 rounded-lg bg-gray-500 hover:bg-gray-600 text-white transition-colors'
             >
               Tyhjennä
             </button>

@@ -101,7 +101,7 @@ function CreateGroupPopup({ setGroups, setCreateGroup }) {
         >
             <button 
                 onClick={() => setCreateGroup(false)} 
-                className='absolute top-2 right-2 p-1 rounded-full text-white bg-red-500 hover:bg-red-600 transition-colors'
+                className='absolute top-2 right-2 p-1 rounded-lg text-white bg-red-500 hover:bg-red-600 transition-colors'
             >
                 <X />
             </button>
@@ -168,9 +168,9 @@ function CreateGroupPopup({ setGroups, setCreateGroup }) {
                         onChange={handlePasswordProtecting} 
                     />
                     <div className="relative w-11 h-6 bg-gray-400 dark:bg-gray-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 
-                        dark:peer-focus:ring-blue-800 rounded-full peer peer-checked:after:translate-x-full 
+                        dark:peer-focus:ring-blue-800 rounded-lg peer peer-checked:after:translate-x-full 
                         rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] 
-                        after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all 
+                        after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-lg after:h-5 after:w-5 after:transition-all 
                         dark:border-gray-600 peer-checked:bg-primary"></div>
                     <span className="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">Suojaa salasanalla</span>
                 </label>
@@ -207,7 +207,7 @@ function CreateGroupPopup({ setGroups, setCreateGroup }) {
 
                 <button 
                     type="submit" 
-                    className="w-full mt-4 py-2.5 px-3 rounded-full bg-primary text-white 
+                    className="w-full mt-4 py-2.5 px-3 rounded-lg bg-primary text-white 
                         text-sm hover:bg-primary/75  transition-colors"
                 >
                     Luo ryhmä

@@ -35,7 +35,7 @@ function DeletePopup({ file, setDeletePopup, setDeleted }) {
             >
                 <button 
                     onClick={() => setDeletePopup(false)} 
-                    className='absolute top-2 right-2 p-1 rounded-full text-white bg-red-500 hover:bg-red-600 transition-colors'
+                    className='absolute top-2 right-2 p-1 rounded-lg text-white bg-red-500 hover:bg-red-600 transition-colors'
                 >
                     <X />
                 </button>
@@ -45,13 +45,13 @@ function DeletePopup({ file, setDeletePopup, setDeleted }) {
 
                 <div className='flex items-center justify-center gap-1 mt-4'>
                     <button 
-                        className='px-3 py-2 rounded-full text-sm text-white bg-red-500 hover:bg-red-600'
+                        className='px-3 py-2 rounded-lg text-sm text-white bg-red-500 hover:bg-red-600'
                         onClick={handleFileDelete}
                     >
                         Kyllä, poista
                     </button>
                     <button 
-                        className='px-3 py-2 rounded-full text-sm text-white bg-gray-500 hover:bg-gray-600'
+                        className='px-3 py-2 rounded-lg text-sm text-white bg-gray-500 hover:bg-gray-600'
                         onClick={() => setDeletePopup(false)}
                     >
                         Peruuta

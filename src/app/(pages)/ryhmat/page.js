@@ -57,12 +57,12 @@ function Page() {
 
     return (
         <main>
-            <h1 className='text-4xl md:text-4xl font-black'>Ryhmät</h1>
-
-            <div 
-                className='flex items-center justify-center min-h-96 px-4 py-8 pr-4 bg-[url(/images/sharing.png)] bg-center bg-contain mr-[-1rem] md:mr-[-2rem]
-                rounded-l-full'
-            />
+            <div className='flex items-end min-h-96 p-2 bg-[url(/images/groups_hero.png)] bg-center bg-contain rounded-lg'>
+                <div className='flex flex-col gap-2 px-6 py-4 bg-black/50 rounded-lg text-white'>
+                    <h1 className="page-title text-6xl font-black truncate"><strong>Ryhmät</strong></h1>
+                    <p className='text-sm'>Luo yksityisiä tai julkisia ryhmiä, jossa jakaa tiedostoja.</p>
+                </div>
+            </div>
 
             <GroupInvites />
 
@@ -70,7 +70,7 @@ function Page() {
                 <button
                     onClick={() => setCreateGroup(true)}
                     className='flex gap-2 items-center justify-center w-fit flex-nowrap py-3 px-5 whitespace-nowrap bg-primary text-white 
-                        hover:bg-primary/75 rounded-full '
+                        hover:bg-primary/75 rounded-lg '
                 >
                     <PlusCircle size={20} />
                     Luo uusi ryhmä

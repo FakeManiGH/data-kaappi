@@ -32,7 +32,7 @@ function GroupInvites() {
                         />
                         <button
                             type='submit'
-                            className='py-2.5 px-3 bg-primary text-white hover:bg-primary/75 rounded-full whitespace-nowrap'
+                            className='py-2.5 px-3 bg-primary text-white hover:bg-primary/75 rounded-lg whitespace-nowrap'
                         >
                             Hyväksy kutsu
                         </button>

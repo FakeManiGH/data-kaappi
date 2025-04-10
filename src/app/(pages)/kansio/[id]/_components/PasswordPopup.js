@@ -63,7 +63,7 @@ function PasswordPopup({ selectedObject, setFolders, setFiles, setSelectedObject
                 shadow-lg shadow-black/25 max-h-full border border-contrast overflow-y-auto'
             >
                 <button
-                    className="absolute top-2 right-2 p-1 rounded-full text-white bg-red-500 hover:bg-red-600 transition-colors"
+                    className="absolute top-2 right-2 p-1 rounded-lg text-white bg-red-500 hover:bg-red-600 transition-colors"
                     onClick={() => setPasswordPopup(false)}
                 >
                     <X />

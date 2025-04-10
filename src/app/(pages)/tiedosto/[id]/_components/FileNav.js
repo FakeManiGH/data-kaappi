@@ -51,7 +51,7 @@ function FileNav({ file, setFile, setDeleted }) {
         <div className='relative flex flex-wrap items-center justify-end w-full'>
             <div ref={dropRef}>
                 <button 
-                    className='flex items-center w-fit gap-1 px-3 py-2 rounded-full text-sm bg-primary text-white 
+                    className='flex items-center w-fit gap-1 px-3 py-2 rounded-lg text-sm bg-primary text-white 
                         hover:bg-primary/75  transition-colors'
                     role="button"
                     onClick={() => setDropMenu(!dropMenu)}

@@ -58,7 +58,7 @@ function FilePasswordPrompt({ fileID, setFile, setPwdVerified }) {
 
                 <button 
                     type='submit'
-                    className="py-2.5 px-3 rounded-full bg-primary text-white text-sm hover:bg-primary/75 transition-colors
+                    className="py-2.5 px-3 rounded-lg bg-primary text-white text-sm hover:bg-primary/75 transition-colors
                         "
                 >
                     Avaa sisältö

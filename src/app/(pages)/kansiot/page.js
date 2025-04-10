@@ -83,21 +83,18 @@ function Page() {
 
     return (
         <main>
-            <div 
-                className='flex items-center justify-center min-h-72 px-4 py-8 pr-4 bg-[url(/images/safe_folders.png)] bg-center bg-contain rounded-2xl'
-            >
-                <h1 className="page-title text-6xl font-black truncate"><strong>Kansiot</strong></h1>
+            <div className='flex items-end min-h-96 p-2 bg-[url(/images/folders_hero.png)] bg-center bg-contain rounded-lg'>
+                <div className='flex flex-col gap-2 px-6 py-4 bg-black/50 rounded-lg text-white'>
+                    <h1 className="page-title text-6xl font-black truncate"><strong>Kansiot</strong></h1>
+                    <p className='text-sm'>Selaa kansioita ja tiedostoja.</p>
+                </div>
             </div>
-
-            <p className='text-sm'>
-                Hallitse kansioita ja tiedostojasi.
-            </p>
 
             <div className='flex items-center justify-between gap-1 flex-wrap'>
                 <nav className='flex items-center gap-1'>
                     <button 
                         onClick={() => setUploadPopup(true)}
-                        className='flex flex-1 sm:flex-none items-center justify-center w-fit whitespace-nowrap gap-2 px-3 py-2 rounded-full text-sm text-white bg-primary 
+                        className='flex flex-1 sm:flex-none items-center justify-center w-fit whitespace-nowrap gap-2 px-3 py-2 rounded-lg text-sm text-white bg-primary 
                             hover:bg-primary/75  transition-colors'
                     >
                         <FilePlus />
@@ -105,7 +102,7 @@ function Page() {
                     </button>
                     <button 
                         onClick={() => setCreateFolder(true)} 
-                        className='flex flex-1 sm:flex-none items-center justify-center w-fit whitespace-nowrap gap-2 px-3 py-2 rounded-full text-sm text-white bg-primary 
+                        className='flex flex-1 sm:flex-none items-center justify-center w-fit whitespace-nowrap gap-2 px-3 py-2 rounded-lg text-sm text-white bg-primary 
                             hover:bg-primary/75  transition-colors'
                     >
                         <FolderPlus />
@@ -116,14 +113,14 @@ function Page() {
                 <nav className='flex items-center gap-1'>
                     <button 
                         title='Ruudukko' 
-                        className={`p-2 rounded-full  hover:bg-primary hover:text-white transition-colors
+                        className={`p-2 rounded-lg  hover:bg-primary hover:text-white transition-colors
                             ${view === 'grid' ? 'bg-primary text-white' : 'text-foreground bg-transparent'}` } 
                         onClick={() => setView('grid')}>
                             <Grid />
                     </button>
                     <button 
                         title='Lista' 
-                        className={`p-2 rounded-full  hover:bg-primary hover:text-white transition-colors
+                        className={`p-2 rounded-lg  hover:bg-primary hover:text-white transition-colors
                             ${view === 'list' ? 'bg-primary text-white' : 'text-foreground bg-transparent'}` } 
                         onClick={() => setView('list')}>
                             <List />

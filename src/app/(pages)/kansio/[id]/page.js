@@ -110,7 +110,7 @@ function Page({ params }) {
                     <nav className='flex items-center gap-1'>
                         <button 
                             onClick={() => setUploadPopup(true)} 
-                            className='flex flex-1 sm:flex-none items-center justify-center w-fit whitespace-nowrap gap-2 px-3 py-2 rounded-full text-sm text-white bg-primary
+                            className='flex flex-1 sm:flex-none items-center justify-center w-fit whitespace-nowrap gap-2 px-3 py-2 rounded-lg text-sm text-white bg-primary
                                 hover:bg-primary/75  transition-colors'
                         >
                             <FilePlus />
@@ -118,7 +118,7 @@ function Page({ params }) {
                         </button>
                         <button 
                             onClick={() => setCreateFolder(true)} 
-                            className='flex flex-1 sm:flex-none items-center justify-center w-fit whitespace-nowrap gap-2 px-3 py-2 rounded-full text-sm text-white bg-primary
+                            className='flex flex-1 sm:flex-none items-center justify-center w-fit whitespace-nowrap gap-2 px-3 py-2 rounded-lg text-sm text-white bg-primary
                                 hover:bg-primary/75  transition-colors'
                         >
                             <FolderPlus />
@@ -129,14 +129,14 @@ function Page({ params }) {
                     <nav className='flex items-center gap-1'>
                         <button 
                             title='Ruudukko' 
-                            className={`p-2 rounded-full  hover:bg-primary hover:text-white transition-colors
+                            className={`p-2 rounded-lg  hover:bg-primary hover:text-white transition-colors
                                 ${view === 'grid' ? 'bg-primary text-white' : 'text-foreground bg-transparent'}` } 
                             onClick={() => setView('grid')}>
                                 <Grid />
                         </button>
                         <button 
                             title='Lista' 
-                            className={`p-2 rounded-full  hover:bg-primary hover:text-white transition-colors
+                            className={`p-2 rounded-lg  hover:bg-primary hover:text-white transition-colors
                                 ${view === 'list' ? 'bg-primary text-white' : 'text-foreground bg-transparent'}` } 
                             onClick={() => setView('list')}>
                                 <List />

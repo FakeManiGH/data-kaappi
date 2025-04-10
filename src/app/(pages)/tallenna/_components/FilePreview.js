@@ -47,7 +47,7 @@ function FilePreview({ files, folders, setNewFolder, removeFile, uploadProgress,
               <label htmlFor='folder' className='sr-only'>Valitse kansio</label>
               <button 
                 title='Luo uusi kansio' 
-                className='p-2.5 rounded-full bg-primary text-white text-sm hover:bg-primary/75'
+                className='p-2.5 rounded-lg bg-primary text-white text-sm hover:bg-primary/75'
                 onClick={() => setNewFolder(true)}
               >
                   <FolderPlus size={20} />

@@ -93,12 +93,12 @@ function DeleteConfirmPopup({ selectedObjects, setSelectedObjects, setFolders, s
                 <div className='flex items-center justify-center gap-1 mt-4 text-sm'>
                     <button 
                         onClick={handleDeletingObjects} 
-                        className='text-white bg-red-500 py-2.5 px-3 rounded-full hover:bg-red-600 '
+                        className='text-white bg-red-500 py-2.5 px-3 rounded-lg hover:bg-red-600 '
                     >
                         Kyllä, poista
                     </button>
                     <button 
-                        className='text-foreground bg-contrast py-2.5 px-3 rounded-full '
+                        className='text-foreground bg-contrast py-2.5 px-3 rounded-lg '
                         onClick={() => setDeleteConfirm(false)}
                     >
                         Peruuta
