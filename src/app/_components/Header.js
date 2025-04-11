@@ -73,30 +73,30 @@ function Header() {
                             </button>
             
                             <div
-                                className={`fixed inset-0 z-50 origin-right bg-background flex justify-center transition-transform ease-in 
+                                className={`fixed inset-0 z-50 origin-right bg-background p-2 pb-6 flex justify-center transition-transform ease-in 
                                     overflow-y-auto ${dropdown ? 'scale-x-1' : 'scale-x-0'}`}
                                 role="menu"
                             >
-                                <button className='fixed right-0 top-0 p-4 text-foreground hover:text-primary' onClick={() => setDropdown(false)}>
-                                    <X size={32} />
-                                </button>
+                                <div className='flex flex-col gap-6 w-full'>
+                                    <button className='w-fit rounded-lg self-end text-foreground hover:text-primary' onClick={() => setDropdown(false)}>
+                                        <X size={32} />
+                                    </button>
 
-                                <nav 
-                                    className="flex flex-col py-6 gap-2 mt-12 sm:mt-0" 
-                                    role="menu"
-                                >
-                                    {publicNav && publicNav.map((item) => (
+                                    <nav className='flex flex-col gap-1'>
+                                        {publicNav && publicNav.map((item) => (
                                         <Link
                                             href={item.path}
                                             key={item.id}
-                                            className={`flex items-center w-full gap-6 p-3 text-sm last:pb-6 hover:text-primary group ${currentIndex === item.path ? 'text-primary' : 'text-navlink'}`}
+                                            className={`flex items-center gap-6 p-3 group hover:bg-primary hover:text-white rounded-lg transition-colors
+                                            ${currentIndex === item.path ? 'bg-primary text-white' : 'bg-contrast'}`}
                                             onClick={() => setDropdown(false)}
-                                        >   
-                                            <item.icon className={`group-hover:text-primary ${currentIndex === item.path && 'text-primary'}`} />
-                                            <p>{item.name}</p>
+                                        >
+                                            <item.icon />
+                                            <p className='text-sm'>{item.name}</p>
                                         </Link>
-                                    ))}
-                                </nav>
+                                        ))}
+                                    </nav>
+                                </div>
                             </div>
                         </div>
                     </div>

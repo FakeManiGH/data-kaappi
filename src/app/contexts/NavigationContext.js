@@ -34,9 +34,9 @@ export const NavigationProvider = ({ children }) => {
         },
         {
             id: 4,
-            name: 'Kaikki tiedostot',
+            name: 'Selaa',
             icon: Images,
-            path: '/kaikki-tiedostot'
+            path: '/selaa'
         },
         {
             id: 5,

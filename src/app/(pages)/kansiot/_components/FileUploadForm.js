@@ -240,8 +240,8 @@ function FileUploadForm({ currentFolder, files, setFiles, setUploadPopup }) {
                 <label
                     htmlFor="dropzone-file"
                     className={`flex flex-col items-center w-full max-w-full justify-center h-72 rounded-xl
-                    cursor-pointer border-2 border-dashed hover:border-primary bg-background transition-all
-                    ${isDragging ? 'border-primary' : 'border-contrast'}`}
+                    cursor-pointer border-2 border-dashed border-primary hover:border-primary/75 bg-background transition-all
+                    ${isDragging ? 'bg-contrast' : 'bg-background'}`}
 
                 >
                     <div className="flex flex-col max-w-full items-center justify-center p-4 text-center pt-5 pb-6">
@@ -316,17 +316,17 @@ function FileUploadForm({ currentFolder, files, setFiles, setUploadPopup }) {
 
 
             {/* Buttons */}
-            <div className='flex items-center gap-1 mt-2'>
-                <button 
-                    type="button"
-                    className='w-full px-3 py-2.5 rounded-lg bg-primary text-white transition-all disabled:bg-gray-400 dark:disabled:bg-gray-600
-                        disabled:text-contrast hover:bg-primary/75'
-                    {...(newFiles.length === 0 && { disabled: true })}
-                    onClick={uploadFiles}
-                >
-                    Tallenna
-                </button>
-                {newFiles.length > 0 &&
+            {newFiles.length > 0 && !uploading &&
+                <div className='flex items-center gap-1 mt-2'>
+                    <button 
+                        type="button"
+                        className='w-full px-3 py-2.5 rounded-lg bg-primary text-white transition-all hover:bg-primary/75'
+                        {...(newFiles.length === 0 && { disabled: true })}
+                        onClick={uploadFiles}
+                    >
+                        Tallenna
+                    </button>
+
                     <button 
                         type="reset"
                         onClick={handleFormReset}
@@ -334,8 +334,8 @@ function FileUploadForm({ currentFolder, files, setFiles, setUploadPopup }) {
                     >
                         Tyhjennä
                     </button>
-                }
-            </div>
+                </div>
+            }
         </form>
     )
 }

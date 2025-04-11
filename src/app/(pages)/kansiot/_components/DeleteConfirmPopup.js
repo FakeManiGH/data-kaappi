@@ -86,7 +86,7 @@ function DeleteConfirmPopup({ selectedObjects, setSelectedObjects, setFolders, s
             <div className='relative flex flex-col w-full max-w-xl rounded-xl p-4 mt-2 z-50 bg-gradient-to-br from-contrast to-secondary 
                 shadow-lg shadow-black/25 max-h-full border border-contrast overflow-y-auto'
             >
-                <h2 className="text-2xl md:text-3xl mb-6 text-center font-bold">Vahvista poistaminen</h2>
+                <h2 className="text-2xl md:text-3xl mb-2 text-center font-bold">Vahvista poistaminen</h2>
                 <p className='text-center text-sm'>Haluatko varmasti poistaa valitut kohteet?</p>
                 <p className='text-center text-sm'>Poistettuja kohteita ei voi palauttaa.</p>
 

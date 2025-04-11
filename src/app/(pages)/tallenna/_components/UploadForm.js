@@ -7,9 +7,11 @@ import { useUser } from '@clerk/nextjs';
 import { app, db } from '@/../firebaseConfig';
 import { getStorage, getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
 import { doc, increment, Timestamp, runTransaction } from "firebase/firestore";
+import PopupLoader from '@/app/_components/_common/PopupLoader';
 
 function UploadForm({ files, setFiles, fileErrors, setFileErrors, setUploadProgress, setUserDoc }) {
   const [isDragging, setIsDragging] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const dragCounter = React.useRef(0);
   const { showAlert } = useAlert();
   const { user } = useUser();
@@ -73,6 +75,13 @@ function UploadForm({ files, setFiles, fileErrors, setFileErrors, setUploadProgr
 
   // Upload files
   const uploadFiles = async (files) => {
+    if (uploading) {
+      showAlert('Tallennus kesken...', 'info');
+      return;
+    }
+
+    setUploading(true);
+
     const uploadPromises = files.map(async (file, index) => {
       const fileID = generateRandomString(11);
       const storageRef = ref(storage, `file-base/${user.id}/${fileID}`);
@@ -158,6 +167,8 @@ function UploadForm({ files, setFiles, fileErrors, setFileErrors, setUploadProgr
               console.error('Error saving file data or updating Firestore:', error);
               setFileErrors((prevErrors) => [...prevErrors, error.message]);
               reject(error);
+            } finally {
+              setUploading(false);
             }
           }
         );
@@ -201,8 +212,8 @@ function UploadForm({ files, setFiles, fileErrors, setFileErrors, setUploadProgr
           <label
             htmlFor="dropzone-file"
             className={`flex flex-col items-center w-full max-w-full justify-center h-72 rounded-xl
-              cursor-pointer border-2 border-dashed hover:border-primary bg-background transition-all
-              ${isDragging ? 'border-primary' : 'border-contrast'}`}
+              cursor-pointer border-2 border-dashed border-primary hover:border-primary/75 bg-background transition-all
+              ${isDragging ? 'bg-contrast' : 'bg-background'}`}
 
           >
             <div className="flex flex-col max-w-full items-center justify-center p-4 text-center pt-5 pb-6">
@@ -243,6 +254,8 @@ function UploadForm({ files, setFiles, fileErrors, setFileErrors, setUploadProgr
           }
         </div>
       </form>
+
+      {uploading && <PopupLoader />}
     </div>
   );
 }

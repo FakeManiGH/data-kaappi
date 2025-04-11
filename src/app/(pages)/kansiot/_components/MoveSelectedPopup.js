@@ -144,7 +144,7 @@ function MoveSelectedPopup({ selectedObjects, setSelectedObjects, setFolders, se
             <X />
           </button>
 
-          <h2 className="text-2xl md:text-3xl mb-6 text-center font-bold">Siirrä kohteet</h2>
+          <h2 className="text-2xl md:text-3xl mb-2 text-center font-bold">Siirrä kohteet</h2>
           
           <ul className='flex flex-col gap-1 text-sm'>
             {selectedObjects.map((object) => {

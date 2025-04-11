@@ -53,7 +53,7 @@ function Page() {
       <h1 className='text-4xl md:text-4xl font-black'><strong>Hei, {user?.firstName}</strong></h1>
       
       <div 
-        className='flex items-center justify-center min-h-96 px-4 py-8 pr-4 bg-[url(/images/dashboard_hero.png)] bg-center bg-contain rounded-lg'>
+        className='flex items-center justify-center min-h-96 p-4 bg-[url(/images/dashboard_hero.png)] bg-center bg-contain rounded-lg'>
         <div className='flex gap-2 p-4 flex-wrap items-center justify-center bg-black/50 rounded-xl text-white'>
           <SpaceMeterCircle usedSpace={userDoc?.usedSpace} totalSpace={userDoc?.totalSpace} />
           <div className='flex flex-col gap-4 items-center md:items-start text-white'>
@@ -68,7 +68,7 @@ function Page() {
         </div>
       </div>
 
-      <div className='grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-8 gap-2 mt-2'>
+      <div className='grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-8 gap-2'>
           {filteredList.map((item) => (
             <Link 
               href={item.path}

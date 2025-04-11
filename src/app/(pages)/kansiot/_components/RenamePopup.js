@@ -123,7 +123,7 @@ function RenamePopup({ selectedObject, setFolders, setFiles, setSelectedObjects,
         >
           <X />
         </button>
-        <h2 className="text-2xl md:text-3xl mb-6 text-center font-bold">Nimeä uudelleen</h2>
+        <h2 className="text-2xl md:text-3xl mb-2 text-center font-bold">Nimeä uudelleen</h2>
         <p className='text-sm'>Nimeä kohde uudelleen. Merkit &lt;, &gt;, \ ja / on kielletty.</p>
         <form className="flex flex-col mt-4" onSubmit={selectedObject.docType === 'folder' ? handleFolderNameChange : handleFileNameChange}>
           <div>

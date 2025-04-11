@@ -83,8 +83,8 @@ function Page() {
 
     return (
         <main>
-            <div className='flex items-end min-h-96 p-2 bg-[url(/images/folders_hero.png)] bg-center bg-contain rounded-lg'>
-                <div className='flex flex-col gap-2 px-6 py-4 bg-black/50 rounded-lg text-white'>
+            <div className='flex items-end min-h-72 p-2 bg-[url(/images/folders_hero.png)] bg-center bg-contain rounded-lg'>
+                <div className='flex flex-col gap-2 px-6 py-4 w-full md:w-fit bg-black/50 rounded-lg text-white'>
                     <h1 className="page-title text-6xl font-black truncate"><strong>Kansiot</strong></h1>
                     <p className='text-sm'>Selaa kansioita ja tiedostoja.</p>
                 </div>

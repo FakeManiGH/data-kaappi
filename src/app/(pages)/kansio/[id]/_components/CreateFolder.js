@@ -73,7 +73,7 @@ function CreateFolder({ folder, setFolder, folders, setFolders, setCreateFolder 
         >
           <X />
         </button>
-        <h2 className="text-2xl md:text-3xl mb-6 text-center font-bold">Luo uusi kansio</h2>
+        <h2 className="text-2xl md:text-3xl mb-2 text-center font-bold">Luo uusi kansio</h2>
         <p className='text-sm'>Luo uusi kansio kaappiisi. Merkit &lt;, &gt;, \ ja / on kielletty.</p>
         <form className="flex flex-col mt-4" onSubmit={handleCreateFolder}>
           <label htmlFor="folderName" className="block text-sm font-bold">Kansion nimi</label>

@@ -15,9 +15,6 @@ function Page() {
   const { showAlert } = useAlert()
   const [fileState, setFileState] = useState({
     files: [],
-    filteredFiles: [],
-    filter: 'all',
-    filtered: false,
     searchedFiles: [],
     searched: false,
     sortedFiles: [],
@@ -31,7 +28,7 @@ function Page() {
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
   const [scrollDelta, setScrollDelta] = useState(0);
-  const scrollThreshold = 225 // Hide from top
+  const scrollThreshold = 425 // Hide from top
   const sensitivityThreshold = 20 // Sensitivity
 
 
@@ -95,22 +92,28 @@ function Page() {
       }
     }
 
-    fetchFiles()
-    setCurrentIndex('/kaikki-tiedostot')
+    fetchFiles();
+    setCurrentIndex('/selaa');
   }, [isLoaded, user, setCurrentIndex, setFileState, navigatePage])
 
   if (fileState.loading) return <PageLoading />
     
   return (
     <main>
-      <h1 className='text-4xl md:text-4xl'><strong>Kaikki tiedostot</strong></h1>
-      <FileNav fileState={fileState} setFileState={setFileState} />
+      <div className='flex items-end min-h-72 p-2 bg-[url(/images/browse_hero.png)] bg-center bg-contain rounded-lg'>
+        <div className='flex flex-col gap-2 px-6 py-4 w-full md:w-fit bg-black/50 rounded-lg text-white'>
+          <h1 className="page-title text-6xl font-black truncate"><strong>Selaa</strong></h1>
+          <p className='text-sm'>Selaa kuvia ja muita media-tiedostojasi.</p>
+        </div>
+      </div>
+      
       <div 
-        className={`sticky top-0 flex flex-col z-10 py-2 gap-2 duration-300 
+        className={`sticky top-0 flex z-10 py-2 gap-2 duration-300 
           ${isVisible ? 'translate-y-0' : '-translate-y-full'}
-          ${isSticky ? 'w-full bg-background' : ' bg-transparent'}`}
-      >
+          ${isSticky ? 'bg-background' : ' bg-transparent'}`}
+      > 
         <SearchBar fileState={fileState} setFileState={setFileState} />
+        <FileNav fileState={fileState} setFileState={setFileState} />
       </div>  
       <FileContainer fileState={fileState} setFileState={setFileState} />
     </main>

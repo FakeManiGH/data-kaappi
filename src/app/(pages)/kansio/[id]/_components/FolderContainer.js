@@ -92,18 +92,7 @@ function FolderContainer({ view, folders, files, setFolders, setFiles, setCreate
     if (!folders.length && !files.length) {
         return (
             <div className="flex flex-col h-72 items-center justify-center text-sm gap-4">
-                <h2 className="text-xl text-contrast">Ei kansioita tai tiedostoja...</h2>
-                <div className="flex gap-2">
-                    <button onClick={() => setCreateFolder(true)} className='flex gap-1 items-center text-primary hover:text-primary/75 transition-colors'>
-                        <FolderPlus size={20} className='text-primary' />
-                        Luo kansio
-                    </button>
-                    <p>tai</p>
-                    <Link href='/tallenna' className='flex gap-1 items-center text-primary hover:text-primary/75 transition-colors'>
-                        <FilePlus size={20} className='text-primary' />
-                        Lisää tiedosto
-                    </Link>
-                </div>
+                <h2 className="text-xl text-gray-400 dark:text-gray-600">Ei kansioita tai tiedostoja...</h2>
             </div>
         );
     }
@@ -117,7 +106,7 @@ function FolderContainer({ view, folders, files, setFolders, setFiles, setCreate
                     onTouchEnd={() => handleTouchEnd(folder)}
                     className={`relative flex items-center justify-center p-2 rounded-lg transition-colors border group  overflow-hidden
                         ${selectedObjects.includes(folder) ? 'border-primary' : 'border-transparent'}
-                        ${dragOverFolder === folder.id ? 'bg-primary' : 'bg-secondary'}`}
+                        ${dragOverFolder === folder.id ? 'bg-primary' : 'bg-gradient-to-br from-secondary to-contrast'}`}
                 >   
                     {isDragging && 
                         <span
@@ -159,7 +148,7 @@ function FolderContainer({ view, folders, files, setFolders, setFiles, setCreate
                     draggable
                     onDragStart={() => handleDragStart(file)}
                     onDragEnd={() => handleDragEnd(file)}
-                    className={`relative flex items-center justify-center p-2 rounded-lg bg-secondary transition-colors group border overflow-hidden
+                    className={`relative flex items-center justify-center p-2 rounded-lg bg-gradient-to-br from-secondary to-contrast transition-colors group border overflow-hidden
                          ${selectedObjects.includes(file) ? 'border-primary' : 'border-transparent'}`}
                 >   
                     <input 

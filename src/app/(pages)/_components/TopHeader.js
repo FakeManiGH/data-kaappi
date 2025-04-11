@@ -1,5 +1,5 @@
 "use client"
-import { AlignJustify, X } from 'lucide-react'
+import { AlignJustify, Home, X } from 'lucide-react'
 import Image from 'next/image'
 import { UserButton } from '@clerk/nextjs';
 import React, { useState, useEffect, useRef } from 'react'
@@ -11,26 +11,6 @@ function TopHeader() {
   const { navList, currentIndex } = useNavigation()
   const dropdownRef = useRef(null)
 
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setDropdown(false)
-      }
-    }
-
-    // Prevent scrolling when dropdown is active
-    if (dropdown) {
-      document.body.style.overflow = 'hidden'
-    } else {
-      document.body.style.overflow = '' // Restore default scrolling
-    }
-
-    document.addEventListener('mousedown', handleClickOutside)
-    return () => {
-      document.body.style.overflow = '' // Clean up on unmount
-      document.removeEventListener('mousedown', handleClickOutside)
-    }
-  }, [dropdown])
 
   return (
     <header 
@@ -47,28 +27,36 @@ function TopHeader() {
 
         {/* Dropdown */}
           <div
-            className={`fixed inset-0 z-50 origin-left bg-background flex justify-center transition-transform ease-in overflow-y-auto
+            className={`fixed inset-0 z-50 origin-left bg-background flex p-2 pb-6 transition-transform ease-in overflow-y-auto
               ${dropdown ? 'scale-x-1' : 'scale-x-0'}`}
             role="menu"
           > 
-            <button className='fixed right-0 top-0 p-4 text-foreground hover:text-primary' onClick={() => setDropdown(false)}>
-              <X size={32} />
-            </button>
 
-            <nav className='flex flex-col py-6 gap-2 mt-12 sm:mt-0'>
-              {navList && navList.map((item) => (
-                <Link
-                  href={item.path}
-                  key={item.id}
-                  className={`flex items-center w-full gap-6 p-3 last:pb-6 group hover:text-foreground
-                    ${currentIndex === item.path ? 'text-foreground' : 'text-navlink'}`}
-                  onClick={() => setDropdown(false)}
-                >
-                  <item.icon className={`group-hover:text-primary ${currentIndex === item.path && 'text-primary'}`} />
-                  <p className='text-sm'>{item.name}</p>
+            <div className='flex flex-col gap-6 w-full'>
+              <button className='w-fit rounded-lg self-end text-foreground hover:text-primary' onClick={() => setDropdown(false)}>
+                <X size={32} />
+              </button>
+
+              <nav className='flex flex-col gap-1'>
+                <Link href='/' className='flex items-center gap-6 p-3 text-sm rounded-lg bg-contrast hover:bg-primary hover:text-white'>
+                  <Home />
+                  Etusivu
                 </Link>
-              ))}
-            </nav>
+
+                {navList && navList.map((item) => (
+                  <Link
+                    href={item.path}
+                    key={item.id}
+                    className={`flex items-center gap-6 p-3 group hover:bg-primary hover:text-white rounded-lg transition-colors
+                      ${currentIndex === item.path ? 'bg-primary text-white' : 'bg-contrast'}`}
+                    onClick={() => setDropdown(false)}
+                  >
+                    <item.icon />
+                    <p className='text-sm'>{item.name}</p>
+                  </Link>
+                ))}
+              </nav>
+            </div>
           </div>
       </div>
 

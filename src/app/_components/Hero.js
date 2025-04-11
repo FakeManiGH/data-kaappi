@@ -9,7 +9,7 @@ function Hero() {
             <div 
                 className="flex flex-col gap-6 px-4 py-4 mt-4 mx-auto max-w-3xl"
             >
-                <h1 className='text-5xl font-extrabold text-white'>Datakaappi</h1>
+                <h1 className='text-5xl font-extrabold text-foreground'>Datakaappi</h1>
 
                 <p className="text-2xl font-semibold">
                     Säilytä ja jaa tärkeimmät tiedostosi turvallisesti ja helposti.

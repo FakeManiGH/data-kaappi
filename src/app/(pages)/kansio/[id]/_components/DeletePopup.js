@@ -31,7 +31,7 @@ function DeletePopup({ selectedObjects, setSelectedObjects, setFolders, setFiles
                     <X />
                 </button>
 
-                <h2 className="text-2xl md:text-3xl mb-6 text-center font-bold">Poista kohteet</h2>
+                <h2 className="text-2xl md:text-3xl mb-2 text-center font-bold">Poista kohteet</h2>
                 
                 <ul className='flex flex-col gap-2 text-sm'>
                     {selectedObjects.map(object => (

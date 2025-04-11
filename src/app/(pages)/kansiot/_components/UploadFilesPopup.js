@@ -16,7 +16,7 @@ function UploadFilesPopup({ files, setFiles, setUploadPopup }) {
                     <X />
                 </button>
 
-                <h2 className="text-2xl md:text-3xl mb-6 text-center font-bold">Tallenna tiedostoja</h2>
+                <h2 className="text-2xl md:text-3xl mb-2 text-center font-bold">Tallenna tiedostoja</h2>
                 <p className='text-sm'>Lisää tiedostoja kaappiisi.</p>
                 
                 <FileUploadForm files={files} setFiles={setFiles} setUploadPopup={setUploadPopup} />

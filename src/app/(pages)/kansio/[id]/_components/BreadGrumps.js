@@ -5,8 +5,8 @@ import React from 'react';
 function Breadcrumbs({ folder }) {
     return (
         <nav aria-label="Breadcrumb" className='flex items-center gap-2 text-sm'>
-            <Link href='/kansiot' className='flex items-center gap-1 text-primary hover:text-primary/75 transition-colors'>
-                <Home size={18} /> 
+            <Link href='/kansiot' className='flex items-center gap-1 hover:text-primary transition-colors'>
+                <img src='/icons/folder.png' className='w-5 h-5 object-contain' />
                 Kansiot
             </Link>
 
@@ -22,7 +22,7 @@ function Breadcrumbs({ folder }) {
                 </>
             }
 
-            <p className='font-semibold'>{folder.name}</p>
+            <p className='text-navlink'>{folder.name}</p>
         </nav>
     );
 }
