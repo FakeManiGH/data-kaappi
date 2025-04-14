@@ -13,6 +13,7 @@ import { collection, getDocs, limit, orderBy, query, startAfter, where } from 'f
 import { db } from '../../../../firebaseConfig'
 import { transformFileDataPublic } from '@/utils/DataTranslation'
 
+
 function Page() {
   const { setCurrentIndex, navigatePage } = useNavigation()
   const { user, isLoaded } = useUser();

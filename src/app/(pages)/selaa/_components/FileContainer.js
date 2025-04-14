@@ -7,6 +7,7 @@ import { useAlert } from '@/app/contexts/AlertContext';
 import { translateFileSize, cleanDataType } from '@/utils/DataTranslation';
 import DeleteConfirmPopup from './DeleteConfirmPopup';
 import { useUser } from '@clerk/nextjs';
+import Lightbox from '@/app/_components/_lightbox/Lightbox';
 
 function FileContainer({ fileState, setFileState, contentLoading }) {
   const [deletePopup, setDeletePopup] = useState(false);
@@ -85,6 +86,8 @@ function FileContainer({ fileState, setFileState, contentLoading }) {
           </div>
         ))}
       </div>
+
+      <Lightbox files={displayFiles} />
     </>
   );
 }
