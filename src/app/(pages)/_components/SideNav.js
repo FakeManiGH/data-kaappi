@@ -14,7 +14,7 @@ function SideNav() {
         >
             <Link 
                 href='/' 
-                className='px-4 py-[18px] flex items-center gap-2 mb-1 rounded-br-lg text-foreground hover:text-primary transition-colors'
+                className='p-4 flex items-center gap-2 mb-1 rounded-br-lg text-foreground hover:text-primary transition-colors'
             >
                 <Image src='/logo.svg' alt="Logo" width={40} height={40} />
                 <strong>Datakaappi</strong>

@@ -14,7 +14,6 @@ import CreateFolder from './_components/CreateFolder';
 
 function Page() {
   const { user } = useUser();
-  const [userDoc, setUserDoc] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const isLoaded = user !== undefined;
@@ -31,18 +30,8 @@ function Page() {
     const getUserData = async () => {
       if (isLoaded && user) {
         try {
-          const [userDocResponse, foldersResponse] = await Promise.all([
-            getUserDocument(user.id),
-            getUserFolders(user.id)
-          ]);
-
-          if (userDocResponse.success) {
-            setUserDoc(userDocResponse.document);
-          } else {
-            throw new Error(userDocResponse.message || "Käyttäjätietojen hakemisessa tapahtui virhe.");
-          }
-
-          if (foldersResponse.success) {
+          const response = await getUserFolders(user.id);
+          if (response.success) {
             setFolders(foldersResponse.folders);
           } else {
             throw new Error(foldersResponse.message || "Kansiotietojen hakemisessa tapahtui virhe.")
@@ -67,10 +56,10 @@ function Page() {
 
   return (
     <main>
-      <div className='flex items-end min-h-72 p-2 bg-[url(/images/upload_hero.png)] bg-center bg-contain rounded-lg'>
-        <div className='flex flex-col gap-2 px-6 py-4 w-full md:w-fit bg-black/50 rounded-lg text-white'>
-          <h1 className="page-title text-6xl font-black truncate"><strong>Tallenna</strong></h1>
-          <p className='text-sm'>Talleta tiedostoja kaappiisi.</p>
+      <div className='flex items-end min-h-72 bg-[url(/images/upload_hero.png)] bg-center bg-contain rounded-lg overflow-hidden'>
+        <div className='flex flex-col gap-2 px-6 py-4 w-full bg-black/50 text-white'>
+          <h1 className="text-3xl font-black truncate">Tallenna</h1>
+          <p className='text-sm'>Lisää tiedostoja kaappiisi.</p>
         </div>
       </div>
 
@@ -81,7 +70,6 @@ function Page() {
         fileErrors={fileErrors}
         setFileErrors={setFileErrors}
         setUploadProgress={setUploadProgress}
-        setUserDoc={setUserDoc}
       />
 
       <FilePreview 

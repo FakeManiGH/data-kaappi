@@ -57,10 +57,10 @@ function Page() {
 
     return (
         <main>
-            <div className='flex items-end min-h-72 p-2 bg-[url(/images/groups_hero.png)] bg-center bg-contain rounded-lg'>
-                <div className='flex flex-col gap-2 px-6 py-4 w-full md:w-fit bg-black/50 rounded-lg text-white'>
-                    <h1 className="page-title text-6xl font-black truncate"><strong>Ryhmät</strong></h1>
-                    <p className='text-sm'>Luo yksityisiä tai julkisia ryhmiä, jossa jakaa tiedostoja.</p>
+            <div className='flex items-end min-h-72 bg-[url(/images/groups_hero.png)] bg-center bg-contain rounded-lg overflow-hidden'>
+                <div className='flex flex-col gap-2 px-6 py-4 w-full bg-black/50 text-white'>
+                    <h1 className="text-3xl font-black truncate">Ryhmät</h1>
+                    <p className='text-sm'>Luo yksityisiä tai julkisia jako-ryhmiä.</p>
                 </div>
             </div>
 

@@ -1,10 +1,15 @@
 "use server"
 import { getStorage, ref, deleteObject } from "firebase/storage";
-import { doc, setDoc, deleteDoc, getDoc, updateDoc, orderBy, collection, query, where, getDocs, limit, increment, runTransaction } from "firebase/firestore";
+import { 
+    doc, setDoc, deleteDoc, getDoc, updateDoc, orderBy, collection, query, where, getDocs, limit, increment, 
+    runTransaction, startAfter 
+} from "firebase/firestore";
 import { db } from '@/../firebaseConfig';
 import bcrypt from 'bcrypt';
 import { fileNameRegex, passwordRegex } from "@/utils/Regex";
 import { transformFileDataPrivate, transformFileDataPublic } from "@/utils/DataTranslation";
+import { traceId } from "next/dist/trace/shared";
+import { trace } from "next/dist/trace";
 
 // Config
 const storage = getStorage();
@@ -89,6 +94,69 @@ export const getUserBaseFiles = async (userID) => {
         return { success: false, message: 'Tiedostojen hakemisessa tapahtui virhe, yritä uudelleen.' }
     }
 }
+
+// Get initial files for browse
+export const getUserBrowsingFilesFirst = async (userID) => {
+    try {
+        if (!userID) {
+            return { success: false, message: 'Käyttäjätietoja ei löytynyt.' };
+        }
+
+        let q = query(
+            collection(db, "files"),
+            where("userID", "==", userID),
+            orderBy("uploadedAt", "asc"),
+            limit(2)
+        );
+
+        const querySnapshot = await getDocs(q);
+
+        // Get last document
+        const lastVisible = querySnapshot.docs[querySnapshot.docs.length-1];
+
+        // Map the documents
+        const files = querySnapshot.docs.map((doc) => doc.data());
+        const publicFiles = files.map((file) => transformFileDataPublic(file));
+
+        return { success: true, files: publicFiles, last: lastVisible };
+    } catch (error) {
+        console.error("Error fetching new patch of files: ", error);
+        return { success: false, message: 'Tiedostojen hakemisessa tapahtui virhe. Yritä uudelleen.' };
+    }
+};
+
+// Get further files for browse
+export const getUserBrowsingFilesSecondary = async (userID, lastDoc) => {
+    try {
+        if (!userID) {
+            return { success: false, message: 'Käyttäjätietoja ei löytynyt.' };
+        }
+
+        let q = query(
+            collection(db, "files"),
+            where("userID", "==", userID),
+            orderBy("uploadedAt", "asc"),
+            startAfter(lastDoc),
+            limit(2)
+        );
+
+        const querySnapshot = await getDocs(q);
+
+        // Get last document
+        const lastVisible = querySnapshot.docs[querySnapshot.docs.length-1];
+
+        // Map the documents to file data
+        const files = querySnapshot.docs.map((doc) => doc.data());
+        const publicFiles = files.map((file) => transformFileDataPublic(file));
+
+        return { success: true, files: publicFiles, last: lastVisible };
+    } catch (error) {
+        console.error("Error fetching new patch of files: ", error);
+        return { success: false, message: 'Tiedostojen hakemisessa tapahtui virhe. Yritä uudelleen.' };
+    }
+};
+
+
 
 
 // PASSWORD VERIFICATION

@@ -7,7 +7,7 @@ import { app, db } from '@/../firebaseConfig';
 import { getStorage, getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
 import { doc, increment, Timestamp, runTransaction } from "firebase/firestore";
 import { getFileIcon } from '@/utils/GetFileIcon';
-import { cleanDataType, transformFileDataPublic, translateFileSize } from '@/utils/DataTranslation';
+import { cleanDataType, simplifyFileType, transformFileDataPublic, translateFileSize } from '@/utils/DataTranslation';
 import { generateRandomString } from '@/utils/GenerateRandomString';
 
 function FileUploadForm({ currentFolder, setFiles, setUploadPopup }) {
@@ -131,6 +131,7 @@ function FileUploadForm({ currentFolder, setFiles, setUploadPopup }) {
                                 fileID,
                                 fileName: file.name,
                                 fileSize: parseFloat(file.size),
+                                fileBase: simplifyFileType(file.type),
                                 fileType: file.type,
                                 fileUrl: downloadURL,
                                 folderID: currentFolder ? currentFolder.id : null,

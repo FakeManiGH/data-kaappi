@@ -8,6 +8,7 @@ import { app, db } from '@/../firebaseConfig';
 import { getStorage, getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
 import { doc, increment, Timestamp, runTransaction } from "firebase/firestore";
 import PopupLoader from '@/app/_components/_common/PopupLoader';
+import { simplifyFileType } from '@/utils/DataTranslation';
 
 function UploadForm({ files, setFiles, fileErrors, setFileErrors, setUploadProgress, setUserDoc }) {
   const [isDragging, setIsDragging] = useState(false);
@@ -111,6 +112,7 @@ function UploadForm({ files, setFiles, fileErrors, setFileErrors, setUploadProgr
                 fileID,
                 fileName: file.name,
                 fileSize: parseFloat(file.size),
+                fileBase: simplifyFileType(file.type),
                 fileType: file.type,
                 fileUrl: downloadURL,
                 folderID: file.folderID || null,

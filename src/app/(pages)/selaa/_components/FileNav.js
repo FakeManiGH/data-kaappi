@@ -89,14 +89,14 @@ function FileNav({ fileState, setFileState }) {
         <div ref={dropDown} className='flex items-center gap-1'> 
             <div>
                 <button 
-                    className='flex items-center w-fit gap-1 px-3 py-2 rounded-lg text-sm bg-primary text-white whitespace-nowrap
-                            transition-colors hover:bg-primary/75'
+                    className='flex items-center w-fit gap-1 text-sm text-foreground hover:text-primary whitespace-nowrap transition-colors'
                     role="button"
                     onClick={() => {setDropMenu(!dropMenu)}}
                 >
                     <ListStart size={24} />
                     {translateSort(fileState.sortedBy)}
                 </button>
+
                 {dropMenu && (
                     <div
                         className="absolute z-20 mt-2 rounded-lg end-0 sm:max-w-64 w-full pb-2 divide-y divide-contrast overflow-hidden border border-contrast bg-background shadow-lg shadow-black/25"

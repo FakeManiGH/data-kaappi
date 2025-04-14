@@ -126,10 +126,10 @@ function FolderNavigation({ folders, files, selectedObjects, setSelectedObjects,
             <div className='flex items-center gap-1'>
                 <button
                     onClick={() => setSelectedObjects([])}
-                    className='flex items-center w-fit gap-1 px-3 py-2 rounded-lg border border-navlink text-sm text-foreground 
-                        hover:border-primary group transition-colors'
+                    className='flex items-center w-fit gap-1 rounded-lg px-3 font-medium text-sm text-foreground 
+                        hover:text-primary transition-colors'
                 >
-                    <X size={20} className='group-hover:text-primary transition-colors' />
+                    <X size={20} />
                     {selectedObjects.length} valittu
                 </button>
                 <button

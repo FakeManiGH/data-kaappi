@@ -8,7 +8,7 @@ import { translateFileSize, cleanDataType } from '@/utils/DataTranslation';
 import DeleteConfirmPopup from './DeleteConfirmPopup';
 import { useUser } from '@clerk/nextjs';
 
-function FileContainer({ fileState, setFileState }) {
+function FileContainer({ fileState, setFileState, contentLoading }) {
   const [deletePopup, setDeletePopup] = useState(false);
   const [touchStartTime, setStartTouchTime] = useState(null);
   const [activeFileId, setActiveFileId] = useState(null); // Track the active file for options
@@ -18,8 +18,6 @@ function FileContainer({ fileState, setFileState }) {
   // Determine which files to display
   const displayFiles = fileState.searched
     ? fileState.searchedFiles
-    : fileState.filtered
-    ? fileState.filteredFiles
     : fileState.sorted
     ? fileState.sortedFiles
     : fileState.files;
@@ -40,7 +38,7 @@ function FileContainer({ fileState, setFileState }) {
   return (
     <>
       {/* No files */}
-      {!fileState.files.length && (
+      {!fileState.files.length && !contentLoading && (
         <div className="flex flex-col gap-4 items-center justify-center h-96">
           <p className="text-xl text-gray-400 dark:text-gray-600">Ei tiedostoja...</p>
         </div>

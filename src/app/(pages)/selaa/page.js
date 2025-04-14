@@ -7,12 +7,23 @@ import { useNavigation } from '@/app/contexts/NavigationContext'
 import { useAlert } from '@/app/contexts/AlertContext'
 import PageLoading from '@/app/_components/_common/PageLoading'
 import SearchBar from './_components/SearchBar'
-import { getUserFiles } from '@/app/file-requests/files'
+import SimpleLoading from '@/app/_components/_common/SimpleLoading'
+import { ChevronDown } from 'lucide-react'
+import { collection, getDocs, limit, orderBy, query, startAfter, where } from 'firebase/firestore'
+import { db } from '../../../../firebaseConfig'
+import { transformFileDataPublic } from '@/utils/DataTranslation'
 
 function Page() {
   const { setCurrentIndex, navigatePage } = useNavigation()
-  const { user, isLoaded } = useUser()
-  const { showAlert } = useAlert()
+  const { user, isLoaded } = useUser();
+  const { showAlert } = useAlert();
+  const observerRef = useRef(null);
+  const hasFetchedFiles = useRef(false);
+  const [pageLoading, setPageLoading] = useState(true);
+  const [fetchError, setFetchError] = useState(null);
+  const [contentLoading, setContentLoading] = useState(false);
+  const [lastDoc, setLastDoc] = useState(null);
+  const [hasMore, setHasMore] = useState(true);
   const [fileState, setFileState] = useState({
     files: [],
     searchedFiles: [],
@@ -20,17 +31,63 @@ function Page() {
     sortedFiles: [],
     sortedBy: 'date-desc', 
     sorted: false,
-    view: 'grid',
-    loading: true,
   })
 
+  useEffect(() => {
+    if (isLoaded && user) {
+      if (!hasFetchedFiles.current) {
+        fetchFiles();
+        hasFetchedFiles.current = true;
+      }
+      setCurrentIndex('/selaa');
+      setPageLoading(false);
+    } else {
+      navigatePage('/sign-in');
+    }
+  }, [isLoaded, user, setCurrentIndex, navigatePage]);
+
+  // Files from Firebase
+  const fetchFiles = async () => {
+    if (contentLoading) return;
+    setContentLoading(true);
+    try {
+      let q = query(
+        collection(db, "files"),
+        where("userID", "==", user.id),
+        where("fileBase", "==", "media"),
+        orderBy("uploadedAt", "desc"),
+        limit(20)
+      );
+
+      if (lastDoc) q = query(q, startAfter(lastDoc));
+
+      const querySnapshot = await getDocs(q);
+      const lastVisible = querySnapshot.docs[querySnapshot.docs.length-1];
+
+      const files = querySnapshot.docs.map((doc) => doc.data());
+      const publicFiles = files.map((file) => transformFileDataPublic(file));
+
+      setLastDoc(lastVisible);
+      setHasMore(publicFiles.length === 2)
+      setFileState((prevState) => ({
+        ...prevState,
+        files: [...prevState.files, ...publicFiles]
+      }));
+    } catch (error) {
+      console.error("Error fetching new patch of files: ", error);
+    } finally {
+      setContentLoading(false);
+    }
+  }
+
+
+  // PAGE SCROLL / SEARCH STICKY
   const [isSticky, setIsSticky] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
   const [scrollDelta, setScrollDelta] = useState(0);
   const scrollThreshold = 425 // Hide from top
   const sensitivityThreshold = 20 // Sensitivity
-
 
   useEffect(() => {
     const handleScroll = () => {
@@ -70,39 +127,14 @@ function Page() {
     }
   }, [lastScrollY, scrollThreshold, sensitivityThreshold, scrollDelta])
 
-  useEffect(() => {
-    const fetchFiles = async () => {
-      if (isLoaded && user) {
-        try {
-          const userFiles = await getUserFiles(user.id)
 
-          setFileState(prevState => ({
-            ...prevState,
-            files: userFiles,
-            filteredFiles: userFiles,
-            loading: false,
-          }))
-
-        } catch (error) {
-          showAlert('Tiedostojen hakeminen epäonnistui. Yritä uudelleen.', 'error')
-          setFileState(prevState => ({ ...prevState, loading: false }))
-        }
-      } else {
-        navigatePage('/sign-in')
-      }
-    }
-
-    fetchFiles();
-    setCurrentIndex('/selaa');
-  }, [isLoaded, user, setCurrentIndex, setFileState, navigatePage])
-
-  if (fileState.loading) return <PageLoading />
+  if (pageLoading) return <PageLoading />
     
   return (
     <main>
-      <div className='flex items-end min-h-72 p-2 bg-[url(/images/browse_hero.png)] bg-center bg-contain rounded-lg'>
-        <div className='flex flex-col gap-2 px-6 py-4 w-full md:w-fit bg-black/50 rounded-lg text-white'>
-          <h1 className="page-title text-6xl font-black truncate"><strong>Selaa</strong></h1>
+      <div className='flex items-end min-h-72 bg-[url(/images/browse_hero.png)] bg-center bg-contain rounded-lg overflow-hidden'>
+        <div className='flex flex-col gap-2 px-6 py-4 w-full bg-black/50 text-white'>
+          <h1 className="text-3xl font-black truncate">Selaa mediaa</h1>
           <p className='text-sm'>Selaa kuvia ja muita media-tiedostojasi.</p>
         </div>
       </div>
@@ -115,7 +147,22 @@ function Page() {
         <SearchBar fileState={fileState} setFileState={setFileState} />
         <FileNav fileState={fileState} setFileState={setFileState} />
       </div>  
-      <FileContainer fileState={fileState} setFileState={setFileState} />
+      <FileContainer 
+        fileState={fileState} 
+        setFileState={setFileState} 
+        contentLoading={contentLoading}
+      />
+
+      {!contentLoading && hasMore &&
+        <button 
+          className='flex items-center gap-1 px-3 py-2 bg-primary text-white text-sm self-center rounded-lg' 
+          onClick={() => fetchFiles()}
+        >
+          <ChevronDown />
+          Näytä lisää...
+        </button>
+      }
+      {contentLoading && <SimpleLoading />}
     </main>
   )
 }
