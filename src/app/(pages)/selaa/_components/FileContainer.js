@@ -1,13 +1,12 @@
 import React, { useState } from 'react';
-import { getFileIcon } from '@/utils/GetFileIcon';
 import { DownloadCloud, FilePlus, Share2, Trash2, LockKeyhole, Fullscreen, Expand, Group } from 'lucide-react';
 import Link from 'next/link';
-import { getCardPreview } from '@/utils/FilePreview';
 import { useAlert } from '@/app/contexts/AlertContext';
-import { translateFileSize, cleanDataType } from '@/utils/DataTranslation';
-import DeleteConfirmPopup from './DeleteConfirmPopup';
+import { translateFileSize } from '@/utils/DataTranslation';
 import { useUser } from '@clerk/nextjs';
 import Lightbox from '@/app/_components/_lightbox/Lightbox';
+import FileBrowsePreview from '@/app/_components/_common/FileBrowsePreview';
+import { getFileIcon } from '@/utils/GetFileIcon';
 
 function FileContainer({ fileState, setFileState, contentLoading }) {
   const [deletePopup, setDeletePopup] = useState(false);
@@ -16,13 +15,18 @@ function FileContainer({ fileState, setFileState, contentLoading }) {
   const { showAlert } = useAlert();
   const { user } = useUser();
 
-  // Determine which files to display
+  // LIGHT BOX
+  const [openLight, setOpenLight] = useState(false);
+  const [clickedFile, setClickedFile] = useState(null);
+
+  // FILES TO DISPLAY
   const displayFiles = fileState.searched
     ? fileState.searchedFiles
     : fileState.sorted
     ? fileState.sortedFiles
     : fileState.files;
 
+  // FILE SELECTION (Mobile)
   const handleTouchStart = (fileId) => {
     setStartTouchTime(Date.now());
     setActiveFileId(null); // Reset active file on new touch
@@ -35,6 +39,7 @@ function FileContainer({ fileState, setFileState, contentLoading }) {
     }
     setStartTouchTime(null);
   };
+
 
   return (
     <>
@@ -50,7 +55,7 @@ function FileContainer({ fileState, setFileState, contentLoading }) {
           <div
             key={file.id}
             style={{ touchAction: 'scroll' }} 
-            className="masonry-item bg-background overflow-hidden  group"
+            className="masonry-item bg-background overflow-hidden group"
             onTouchStart={() => handleTouchStart(file.id)}
             onTouchEnd={() => handleTouchEnd(file.id)}
             title={file.name + '|' + translateFileSize(file.size)}
@@ -73,21 +78,36 @@ function FileContainer({ fileState, setFileState, contentLoading }) {
             </div>
 
             <div
-              className={`absolute top-0 flex items-center justify-between w-full scale-y-0 origin-top group-hover:scale-y-100 text-white bg-black/75
-                      transition-all overflow-hidden
-                      ${activeFileId === file.id ? 'scale-y-100' : 'scale-y-0'}`}
+              className={`absolute top-0 flex items-center justify-between w-full text-white bg-black/35
+                transition-all overflow-hidden scale-y-100 p-1`}
             >
-              <Link href={`/tiedosto/${file.id}`} className="w-full p-2 truncate text-base hover:text-primary">
+              <Link href={`/tiedosto/${file.id}`} className="truncate text-base hover:text-primary">
                 {file.name}
               </Link>
+              
+              <div className='flex items-center gap-1'>
+                {file.folder &&
+                  <Link href={`/kansio/${file.folder}`} className='hover:rotate-12 transition-transform'>
+                    <img src='/icons/folder.png' className='w-6 h-6 object-contain' />
+                  </Link>
+                }
+                <img src={getFileIcon(file.type)} className='h-5 w-5 object-contain' />
+              </div>
             </div>
 
-            <div className="align-middle">{getCardPreview({ file })}</div>
+            <div 
+              className="align-middle cursor-zoom-in"
+              onClick={() => {setClickedFile(file), setOpenLight(true)}}
+            >
+              <FileBrowsePreview file={file} />
+            </div>
           </div>
         ))}
       </div>
 
-      <Lightbox files={displayFiles} />
+      {fileState.files.length && !contentLoading &&
+        <Lightbox files={displayFiles} setFile={clickedFile} open={openLight} setOpen={setOpenLight} />
+      }
     </>
   );
 }

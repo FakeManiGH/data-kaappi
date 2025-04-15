@@ -74,7 +74,7 @@ function Page() {
               href={item.path}
               key={item.id}
               className="flex items-center justify-center gap-1 p-4 rounded-lg text-sm 
-                bg-primary shadow-black/25 shadow-md text-white hover:bg-primary/75 transition-colors"
+                bg-primary text-white hover:bg-primary/75 transition-colors"
               >
                 <item.icon />
                 <p className="whitespace-nowrap">{item.name}</p>

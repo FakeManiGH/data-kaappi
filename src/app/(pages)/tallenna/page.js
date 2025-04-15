@@ -32,9 +32,9 @@ function Page() {
         try {
           const response = await getUserFolders(user.id);
           if (response.success) {
-            setFolders(foldersResponse.folders);
+            setFolders(response.folders);
           } else {
-            throw new Error(foldersResponse.message || "Kansiotietojen hakemisessa tapahtui virhe.")
+            throw new Error(response.message || "Kansiotietojen hakemisessa tapahtui virhe.")
           }
         } catch (error) {
           console.error("Error fetching user document:", error);

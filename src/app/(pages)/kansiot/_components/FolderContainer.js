@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { ArrowRightLeft, FilePlus, FolderPlus, FolderX, GripVertical, Group, LockKeyhole, Pen, Pencil, Settings, Share2, Trash2, X } from 'lucide-react';
 import DownloadBtn from './DownloadBtn';
 import Link from 'next/link';
-import { translateFileSize } from '@/utils/DataTranslation';
+import { cleanDataType, translateFileSize } from '@/utils/DataTranslation';
 import { getFileIcon } from '@/utils/GetFileIcon';
 import { useAlert } from '@/app/contexts/AlertContext';
 import { moveFileToFolder } from '@/app/file-requests/files';

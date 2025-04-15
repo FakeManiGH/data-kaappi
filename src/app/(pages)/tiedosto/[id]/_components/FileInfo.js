@@ -53,7 +53,7 @@ function FileInfo({ file, folder }) {
   ];
 
   return (
-    <div className="flex flex-col w-full p-4 rounded-lg bg-contrast shadow-lg shadow-black/25">
+    <div className="flex flex-col w-full p-4 rounded-lg bg-secondary">
       <ul className="flex flex-col text-sm">
         {fileInfoFields.map((field, index) => (
           <li

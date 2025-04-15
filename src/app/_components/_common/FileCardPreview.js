@@ -55,7 +55,7 @@ function FileCardPreview({ file }) {
                     <button 
                         onClick={handleOpenPopup}
                         className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 p-2 text-white bg-primary/75 hover:bg-primary 
-                            transition-colors rounded-lg'
+                            transition-colors rounded-full'
                     >
                         <Play />
                     </button>

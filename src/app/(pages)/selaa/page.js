@@ -126,7 +126,7 @@ function Page() {
       window.removeEventListener('scroll', handleScroll);
       window.removeEventListener('scroll', handleMenuBackground);
     }
-  }, [lastScrollY, scrollThreshold, sensitivityThreshold, scrollDelta])
+  }, [lastScrollY, scrollThreshold, sensitivityThreshold, scrollDelta]);
 
 
   if (pageLoading) return <PageLoading />

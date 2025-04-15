@@ -1,14 +1,11 @@
 "use client"
 import React, { useEffect, useState, use } from 'react'
-import Link from 'next/link'
-import { ArrowLeftSquare, ScanEye, User2, Share2, LockKeyholeOpen, ArrowLeftCircle, Eye, UserCircle, UserRoundCheck, Home, CircleGauge } from 'lucide-react'
 import FileInfo from './_components/FileInfo'
 import FileNav from './_components/FileNav'
 import PageLoading from '@/app/_components/_common/PageLoading'
 import { useNavigation } from '@/app/contexts/NavigationContext'
 import { useAlert } from '@/app/contexts/AlertContext'
 import { useUser } from '@clerk/nextjs'
-import FileLivePreview from './_components/FileLivePreview';
 import DownloadBtn from './_components/DownloadBtn';
 import ContentNotFound from '@/app/_components/_common/ContentNotFound'
 import { getFilePageInfo } from '@/app/file-requests/files'
@@ -28,7 +25,6 @@ function Page({ params }) {
     const [loading, setLoading] = useState(true);
     const { user, isLoaded } = useUser();
     const { showAlert } = useAlert();
-    const [livePreview, setLivePreview] = useState(false);
 
     useEffect(() => {
         const getFile = async () => {
@@ -71,21 +67,17 @@ function Page({ params }) {
     
     return (
         <main>
-            <div className='flex flex-col overflow-hidden'>
-                <h1 className='text-4xl md:text-4xl truncate'><strong>{file.name}</strong></h1>
-                <p className='flex items-center gap-1 text-md'><UserRoundCheck size={20} /> {file.user.name}</p>
+            <div className='relative w-full flex items-center gap-2 justify-between'>
+                <h1 className="text-3xl font-black truncate">{file.name}</h1>
+
+                {isLoaded && user?.id === file.user.id && 
+                    <FileNav file={file} setFile={setFile} setDeleted={setDeleted} />
+                }
             </div>
 
-            {isLoaded && user?.id === file.user.id && 
-                <FileNav file={file} setFile={setFile} setDeleted={setDeleted} />
-            }
-
             <FilePagePreview file={file} />
-            <FileInfo file={file} folder={folder} setFile={setFile} setLivePreview={setLivePreview} />
+            <FileInfo file={file} folder={folder} setFile={setFile} />
             <DownloadBtn url={file.url} fileName={file.name} buttonStyle="mt-2 py-3 md:max-w-[50%]" />
-
-            {livePreview && <FileLivePreview file={file} setLivePreview={setLivePreview} />}
-            {}
         </main>
     )
 }

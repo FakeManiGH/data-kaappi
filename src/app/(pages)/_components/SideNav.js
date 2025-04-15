@@ -26,7 +26,7 @@ function SideNav() {
                         href={item.path} 
                         key={item.id} 
                         className={`flex items-center text-sm font-light group gap-2 p-3 px-5 rounded-r-lg w-full hover:bg-primary hover:text-white transition-colors 
-                            ${currentIndex === item.path ? 'bg-primary text-white' : 'bg-contrast'}`}
+                            ${currentIndex === item.path ? 'bg-primary text-white' : 'bg-sky-100 dark:bg-contrast'}`}
                     >     
                         <item.icon />
                         <p>{item.name}</p>
@@ -34,7 +34,7 @@ function SideNav() {
                 ))}
             </div>
 
-            <div className='flex flex-col gap-2 p-4 bg-contrast rounded-r-lg mt-auto mb-6'>
+            <div className='flex flex-col gap-2 p-4 bg-sky-100 dark:bg-contrast rounded-r-lg mt-auto mb-6'>
                 <SpaceMeterBar usedSpace={userData?.usedSpace} totalSpace={userData?.totalSpace} />
             </div>
             

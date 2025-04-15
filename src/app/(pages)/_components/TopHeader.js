@@ -38,7 +38,7 @@ function TopHeader() {
               </button>
 
               <nav className='flex flex-col gap-1'>
-                <Link href='/' className='flex items-center gap-6 p-3 text-sm rounded-lg bg-contrast hover:bg-primary hover:text-white'>
+                <Link href='/' className='flex items-center gap-6 p-3 text-sm rounded-lg bg-sky-100 dark:bg-contrast hover:bg-primary hover:text-white'>
                   <Home />
                   Etusivu
                 </Link>
@@ -48,7 +48,7 @@ function TopHeader() {
                     href={item.path}
                     key={item.id}
                     className={`flex items-center gap-6 p-3 group hover:bg-primary hover:text-white rounded-lg transition-colors
-                      ${currentIndex === item.path ? 'bg-primary text-white' : 'bg-contrast'}`}
+                      ${currentIndex === item.path ? 'bg-primary text-white' : 'bg-sky-100 dark:bg-contrast'}`}
                     onClick={() => setDropdown(false)}
                   >
                     <item.icon />

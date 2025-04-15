@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
 import { X, ZoomIn, ZoomOut } from 'lucide-react'
-import { getFullSizePreview } from '@/utils/FilePreview'
 
 function FileLivePreview({ file, setLivePreview }) {
     const [zoom, setZoom] = useState(1);

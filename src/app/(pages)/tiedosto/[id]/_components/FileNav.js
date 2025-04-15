@@ -6,7 +6,7 @@ import DeletePopup from './DeletePopup'
 import RenamePopup from './RenamePopup'
 
 function FileNav({ file, setFile, setDeleted }) {
-    const { dropRef } = useRef();
+    const dropRef = useRef(null);
     const [dropMenu, setDropMenu] = useState(false);
     const [sharePopup, setSharePopup] = useState(false);
     const [passwordPopup, setPasswordPopup] = useState(false);
@@ -25,7 +25,7 @@ function FileNav({ file, setFile, setDeleted }) {
                 document.removeEventListener('mousedown', handleClickOutside);
             };
         }
-    }), [dropMenu];
+    }), [];
 
     const handleRenamePopup = () => {
         setDropMenu(false);
@@ -48,16 +48,15 @@ function FileNav({ file, setFile, setDeleted }) {
     }
 
     return (
-        <div className='relative flex flex-wrap items-center justify-end w-full'>
+        <div className='flex flex-wrap items-center justify-end'>
             <div ref={dropRef}>
                 <button 
-                    className='flex items-center w-fit gap-1 px-3 py-2 rounded-lg text-sm bg-primary text-white 
-                        hover:bg-primary/75  transition-colors'
+                    className='flex items-center gap-1 p-2 rounded-lg text-sm bg-primary text-white 
+                        hover:bg-primary/75 transition-colors'
                     role="button"
                     onClick={() => setDropMenu(!dropMenu)}
                 >
                     <Settings size={24} />
-                    Toiminnot
                 </button>
 
                 {dropMenu && (
