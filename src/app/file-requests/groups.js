@@ -90,5 +90,80 @@ export const getUserGroups = async (userID) => {
     }
 }
 
+// get private group infromation
+export const getPrivateGroupInformation = async (userID, groupID) => {
+    try {
+        if (!userID) {
+            throw new Error("Käyttäjätietoja ei löytynyt.");
+        }
+
+        if (!groupID) {
+            throw new Error("Ryhmätietoja ei löytynyt.");
+        }
+
+        // Get data
+        const groupRef = doc(db, "groups", groupID);
+        const groupSnap = await getDoc(groupRef);
+
+        if (!groupSnap.exists()) {
+            return { success: false, message: `Ryhmää ${groupID} ei löytynyt.` }
+        }
+
+        // Assign data
+        const groupData = groupSnap.data();
+
+        if (!Array.isArray(groupData.groupMembers)) {
+            throw new Error("Ryhmän jäsenetietoja ei voitu lukea.");
+        }
+
+        if (!groupData.groupMembers.includes(userID)) {
+            return { success: false, message: `Ryhmän ${groupID} jäsenyyttä ei löytynyt.` }
+        }
+
+        if (groupData.pwdProtected && groupData.userID !== userID) {
+            return { success: true, password: true }
+        }
+
+        // Public data
+        const group = transformGroupDataPublic(groupData);
+
+        return { success: true, group: group }
+
+    } catch (error) {
+        console.error("Error fetching group information: " + error);
+        return { success: false, message: error.message || 'Virhe ryhmätietojen hakemisesa, yritä uudelleen.' }
+    }
+}
+
+
+
+
+// PASSWORD
+// Validate group password
+export const validateGroupPassword = async (groupID, password) => {
+    try {
+        const groupRef = doc(db, "groups", groupID);
+        const groupSnap = await getDoc(groupRef);
+
+        if (!groupSnap.exists()) {
+            return { success: false, message: `Ryhmää ${groupID} ei löytynyt.` }
+        }
+
+        const groupTemp = groupSnap.data();
+        const valid = await bcrypt.compare(password, groupTemp.pwd);
+
+        if (valid) {
+            const group = transformGroupDataPublic(groupTemp)
+            return { success: true, group: group }
+        } else { 
+            return { success: false, message: 'Voi ei! Virheellinen salasana.'}
+        }
+
+    } catch (error) {
+        console.error("Error verifying password: " + error);
+        return { success: false, message: 'Salasanan vahvistuksessa tapahtui virhe, yritä uudelleen.'}
+    }
+}
+
 
 

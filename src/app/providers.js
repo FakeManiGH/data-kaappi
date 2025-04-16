@@ -5,6 +5,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import { NavigationProvider } from './contexts/NavigationContext';
 import { dark } from "@clerk/themes";
 import { UserdataProvider } from './contexts/UserdataContext';
+import { fiFI } from '@clerk/localizations';
 
 export function Providers({ children }) {
   const [theme, setTheme] = useState(dark);
@@ -29,6 +30,7 @@ export function Providers({ children }) {
   return (
     <AlertProvider>
     <ClerkProvider 
+      localization={fiFI}
       signInFallbackRedirectUrl='/kojelauta'
       signUpFallbackRedirectUrl='/tervetuloa'
       appearance={

@@ -13,7 +13,7 @@ function GroupInvites() {
             <div className='flex items-center gap-2 justify-between cursor-pointer group' onClick={() => setOpen(!open)} >
                 <h2 className='text-base font-semibold'>Saitko kutsun rymään?</h2>
                 <button type='button' onClick={() => setOpen(!open)}>
-                   {open ? <ChevronUpCircle className='text-red-500 hover:text-red-600 group-hover:text-red-600' /> : <ChevronDownCircle className='text-primary hover:text-primary/75 group-hover:text-primary/75' />}
+                   {open ? <ChevronUpCircle className='text-red-500 hover:text-red-600 group-hover:text-red-600' /> : <ChevronDownCircle className='text-foreground hover:text-primary group-hover:text-primary' />}
                 </button>
             </div>
 

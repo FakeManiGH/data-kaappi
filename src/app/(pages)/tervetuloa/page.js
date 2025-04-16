@@ -6,7 +6,6 @@ import PageLoading from '@/app/_components/_common/PageLoading'
 import { useNavigation } from '@/app/contexts/NavigationContext'
 import { CloudUpload, Plus } from 'lucide-react'
 import Link from 'next/link'
-import NavigationGrid from '@/app/_components/_common/NavigationGrid'
 
 function page() {
     const { user, isSignedIn, isLoaded } = useUser()
@@ -39,7 +38,6 @@ function page() {
         <main>
             <p className='md:text-lg'>Hei, {user?.fullName}</p>
             <h1 className="text-4xl font-extrabold sm:text-4xl">Tervetuloa käyttämään <strong className='text-primary'>Datakaappi</strong> pilvipalvelua!</h1>
-            <NavigationGrid />
         </main>
     )
 }
