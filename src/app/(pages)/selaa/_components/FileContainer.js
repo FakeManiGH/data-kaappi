@@ -87,11 +87,14 @@ function FileContainer({ fileState, setFileState, contentLoading }) {
               
               <div className='flex items-center gap-1'>
                 {file.folder &&
-                  <Link href={`/kansio/${file.folder}`} className='hover:rotate-12 transition-transform'>
+                  <Link 
+                    href={`/kansio/${file.folder}`} 
+                    className='contrast-75 hover:contrast-100 hover:rotate-12 transition-all'
+                    title='Näytä kansio'
+                  >
                     <img src='/icons/folder.png' className='w-6 h-6 object-contain' />
                   </Link>
                 }
-                <img src={getFileIcon(file.type)} className='h-5 w-5 object-contain' />
               </div>
             </div>
 

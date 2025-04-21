@@ -8,7 +8,8 @@ function GroupContainer({ groups }) {
             {groups.map(group => (
                 <Link href={`ryhma/${group.id}`} 
                     key={group.id} 
-                    className='relative flex flex-col rounded-lg aspect-square group overflow-hidden border border-contrast bg-secondary shadow-lg shadow-black/25'
+                    className='relative flex flex-col rounded-lg aspect-square group overflow-hidden border border-contrast bg-secondary'
+                    title={group.desc}
                 >
                     <img src={group.logo ? group.logo : 'icons/group.png'} alt={`Linkki ryhmään ${group.name}`} className='w-full h-full object-cover' />
 

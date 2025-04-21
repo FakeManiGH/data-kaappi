@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useAlert } from '@/app/contexts/AlertContext'
 import { useUser } from '@clerk/nextjs'
 import CopyClipboard from '@/app/_components/_common/CopyClipboard';
@@ -7,28 +7,43 @@ import PageLoading from '@/app/_components/_common/PageLoading';
 import { updateFolderPassword } from '@/app/file-requests/folders';
 import { Eye, EyeOff, LockKeyhole, X } from 'lucide-react';
 import { folderNameRegex, passwordRegex } from '@/utils/Regex';
-
-const exampleGroups = [
-    { id: 1, name: 'Group 1' },
-    { id: 2, name: 'Group 2' },
-    { id: 3, name: 'Group 3' },
-    { id: 4, name: 'Group 4' },
-];
+import { getUserGroups } from '@/app/file-requests/groups';
+import PopupLoader from '@/app/_components/_common/PopupLoader';
 
 
 function FolderSettings({ folder, setFolder, settings, setSettings }) {
-    const [newFolderName, setNewFolderName] = useState(null);
     const [nameError, setNameError] = useState(null);
     const [shareLink, setShareLink] = useState(folder.sharing.link);
     const [shareGroup, setShareGroup] = useState(folder.sharing.group);
     const [selectedGroups, setSelectedGroups] = useState([]);
-    const [availableGroups, setAvailableGroups] = useState(exampleGroups);
+    const [availableGroups, setAvailableGroups] = useState(null);
     const [showPassword, setShowPassword] = useState(false);
     const [passwordErr, setPasswordErr] = useState(null);
-    const [error, setError] = useState(null);
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
+    const [apiLoading, setApiLoading] = useState(false);
     const { showAlert } = useAlert();
     const { user } = useUser();
+
+
+    useEffect(() => {
+        const fetchUserGroups = async () => {
+            try {
+                const response = await getUserGroups(user.id);
+                if (response.success) {
+                    setAvailableGroups(response.groups);
+                } else {
+                    showAlert(response.message || 'Virhe ryhmien hakemisessa, päivitä sivu ja yritä uudelleen.', 'error');
+                }
+            } catch (error) {
+                console.error("Error fetching user groups: " + error);
+                showAlert('Virhe ryhmien hakemisessa, päivitä sivu ja yritä uudelleen.', 'error');
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        fetchUserGroups();
+    },[showAlert, user]);
 
     
     // Handle renaming
@@ -68,7 +83,7 @@ function FolderSettings({ folder, setFolder, settings, setSettings }) {
 
     // Link sharing
     const handleLinkSharing = async (e) => {
-        setLoading(true);
+        setApiLoading(true);
         try {
             const newShareValue = e.target.checked;
             const response = await changeFolderLinkSharing(user.id, folder.id, newShareValue);
@@ -90,7 +105,7 @@ function FolderSettings({ folder, setFolder, settings, setSettings }) {
             console.error("Error changing file sharing: " + error);
             showAlert('Tiedoston jakamisasetusten muuttamisessa tapahtui virhe, yritä uudelleen.', 'error');
         } finally {
-            setLoading(false);
+            setApiLoading(false);
         }
     };
 
@@ -174,6 +189,7 @@ function FolderSettings({ folder, setFolder, settings, setSettings }) {
     if (loading) return <PageLoading />
 
     return (
+        <>
         <main className={`flex flex-col transition-transform origin-right
             ${settings ? 'scale-x-100' : 'scale-x-0'}`}
         >   
@@ -182,204 +198,211 @@ function FolderSettings({ folder, setFolder, settings, setSettings }) {
                 <h1 className='text-3xl font-black truncate'>Kansion asetukset</h1>
                 <button 
                     onClick={() => setSettings(false)}
-                    className='bg-red-500 text-white hover:bg-red-600 p-1 rounded-lg self-end'
+                    className='text-red-500 hover:text-red-600 self-end'
                 >
-                    <X />
+                    <X size={32} />
                 </button>
             </div>
             
             <p className='text-xs text-orange-500'>* Muista tallentaa tallennusta vaativat muutokset.</p>    
 
+            <section className='flex flex-col gap-4 bg-gradient-to-b from-contrast via-secondary to-contrast p-4 rounded-lg'>
+                <h2 className='font-semibold text-2xl'>Nimi</h2>
+                <p className='text-sm'>Muuta kansion nimeä. Nimen tulee olla 2-50 merkkiä pitkä ja se ei saa sisältää &lt;, &gt;, / tai \ merkkiä.</p>
 
-            <h2 className='font-semibold text-xl mb-[-10px]'>Nimi</h2>
-            <p className='text-sm'>Muuta kansion nimeä.</p>
+                <form className='flex flex-col gap-2 text-sm' onSubmit={handleFolderRenaming}>
+                    <label htmlFor='folderName' className='sr-only'></label>
+                    <input
+                        id='folderName'
+                        name='folderName'
+                        defaultValue={folder.name || ''}
+                        className='relative w-full py-2.5 px-3 bg-background text-sm border border-transparent outline-none focus:border-primary focus:ring-1'
+                        placeholder='Anna kansiolle nimi...'
+                    />
 
-            <form className='flex flex-col gap-2 py-2 px-4 bg-secondary rounded-xl text-sm' onSubmit={handleFolderRenaming}>
-                <label htmlFor='folderName' className='sr-only'></label>
-                <input
-                    id='folderName'
-                    name='folderName'
-                    defaultValue={folder.name || ''}
-                    className='relative w-full py-2.5 px-3 bg-background text-sm border border-transparent outline-none focus:border-primary focus:ring-1'
-                    placeholder='Anna kansiolle nimi...'
-                />
-
-                {nameError && 
-                    <div className='flex items-center justify-between gap-4 px-3 py-2.5 rounded-lg text-white text-sm bg-red-500'>
-                        <p>{nameError}</p>
-                        <button onClick={() => setNameError('')}><X size={20} /></button>
-                    </div>
-                }
-
-                <button
-                    type='submit'
-                    className='w-full py-2 px-3 rounded-lg text-white bg-primary hover:bg-primary/75 transition-colors'
-                >
-                    Tallenna
-                </button>
-            </form>
-
-            <hr />
-
-
-            <h2 className='font-semibold text-xl mb-[-10px]'>Jakaminen</h2>
-            <p className='text-sm'>Jaa kansio linkillä julkisesti tai yksityisesti valitsemassasi ryhmässä.</p>
-
-            <div className='flex flex-col gap-2 py-2 px-4 bg-secondary rounded-xl'>
-                <div className='flex flex-col gap-2'>
-                    <label className='flex items-center cursor-pointer w-fit'>
-                        <input 
-                            type="checkbox" 
-                            value="" 
-                            className="sr-only peer" 
-                            checked={shareLink}
-                            onChange={handleLinkSharing} 
-                        />
-                        <div className="relative w-11 h-6 bg-gray-400 dark:bg-gray-500 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 
-                            dark:peer-focus:ring-blue-800 rounded-lg peer peer-checked:after:translate-x-full 
-                            rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] 
-                            after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-lg after:h-5 after:w-5 after:transition-all 
-                            dark:border-gray-600 peer-checked:bg-primary"></div>
-                        <span className="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">Jaa linkki</span>
-                    </label>
-
-                    {shareLink && (
-                    <>
-                        <CopyClipboard content={folder.sharing.url} />
-
-                        <p className='text-sm text-red-500'>
-                            <strong>Huom!</strong> Osoite on julkinen ja kaikki osoitteen tietävät pääsevät näkemään kansion sisällön. 
-                            Jaa linkkiä harkiten ja aseta tarvittaessa salasana.
-                        </p>
-                    </>
-                    )}
-                </div>
-
-                {/* TO DO */}
-                <div className='flex flex-col gap-2 mt-2'>
-                    <label className='flex items-center cursor-pointer w-fit'>
-                        <input 
-                            type="checkbox" 
-                            value="" 
-                            className="sr-only peer" 
-                            checked={shareGroup}
-                            onChange={handleGroupSharing} 
-                        />
-                        <div className="relative w-11 h-6 bg-gray-400 dark:bg-gray-500 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 
-                            dark:peer-focus:ring-blue-800 rounded-lg peer peer-checked:after:translate-x-full 
-                            rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] 
-                            after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-lg after:h-5 after:w-5 after:transition-all 
-                            dark:border-gray-600 peer-checked:bg-primary"></div>
-                        <span className="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">Jaa ryhmässä</span>
-                    </label>
-
-                    {shareGroup && (
-                        <form className='flex flex-col gap-2'>
-                            <div>
-                                <label htmlFor="groupSelect" className="block text-sm font-medium text-gray-700 dark:text-gray-400">Valitse ryhmät</label>
-                                <select
-                                    id="groupSelect"
-                                    className="w-full py-2.5 px-3 bg-background text-sm border border-transparent outline-none focus:border-primary focus:ring-1"
-                                    onChange={handleSelectGroup}
-                                    value=""
-                                >
-                                    <option value="" disabled>Valitse ryhmä</option>
-                                    {availableGroups.map(group => (
-                                        <option key={group.id} value={group.id}>{group.name}</option>
-                                    ))}
-                                </select>
-                            </div>
-
-                            <div className="flex items-center flex-wrap gap-2">
-                                {selectedGroups.map(group => (
-                                    <div key={group.id} className="flex items-center text-foreground px-3 py-1 border border-primary rounded-lg">
-                                        <span>{group.name}</span>
-                                        <button
-                                            type="button"
-                                            className="ml-2 text-foreground hover:text-gray-700 dark:hover:text-gray-400"
-                                            onClick={() => handleRemoveGroup(group.id)}
-                                            title='Poista jako ryhmässä'
-                                        >
-                                            <X size={16} />
-                                        </button>
-                                    </div>
-                                ))}
-                            </div>
-                            <button 
-                                type="submit" 
-                                className="w-full py-2.5 px-3 rounded-lg bg-gradient-to-br from-primary to-blue-800 text-white 
-                                text-sm hover:bg-primary/75  transition-colors"
-                            >
-                                Tallenna
-                            </button>
-                        </form>
-                    )}
-                </div>
-            </div>
-
-            <hr />
-
-
-            <h2 className='font-semibold text-xl mb-[-10px]'>Salasana</h2>
-            <p className='text-sm'>Anna kansion sisällölle lisäsuojaa asettamalla sille salasana. Tällöin vain kansion omistaja pääsee näkemään sisällön ilman salasanaa.</p>
-
-            <div className='flex flex-col gap-2 py-2 px-4 bg-secondary rounded-xl'>
-                {folder.passwordProtected && (
-                    <div className="flex items-center justify-between gap-2 p-2 mb-4 border-b border-dashed border-navlink">
-                        <div className='flex items-center gap-2 w-full '>
-                            <LockKeyhole className='text-success' size={20} />
-                            <p className="text-sm font-bold">Tiedosto on suojattu salasanalla.</p>
-                        </div>
-
-                        <button 
-                            onClick={removePassword} 
-                            className='text-sm font-semibold text-red-500 hover:text-red-600 whitespace-nowrap'
-                            title='Poista salasana käytöstä'
-                        >
-                            Poista
-                        </button>
-                    </div>
-                )}
-
-                <form className="flex flex-col text-sm" onSubmit={savePassword}>
-                    <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Aseta salasana</label>
-                    <div className='relative'>
-                        <input
-                            id="password"
-                            name="password"
-                            type={showPassword ? 'text' : 'password'}
-                            className="relative w-full py-2.5 px-3 bg-background text-sm border border-transparent outline-none focus:border-primary focus:ring-1 pe-12"
-                            placeholder="Kirjoita salasana..."
-                        />
-                        <span className="flex items-center absolute inset-y-0 end-0 px-4">
-                            <button 
-                                className="text-navlink hover:text-primary" 
-                                type="button"
-                                onClick={changeVisibility}
-                            >
-                                {showPassword ? <Eye size={20} /> : <EyeOff size={20} />}
-                            </button>
-                        </span>
-                    </div>
-
-                    {passwordErr &&
-                        <div className='flex items-center gap-2 px-3 py-2 mt-2 rounded-md justify-between bg-red-500'>
-                            <p className='text-white text-sm'>{passwordErr}</p>
-                            <button className='text-white' onClick={() => setPasswordErr(null)}>
-                                <X />
-                            </button>
+                    {nameError && 
+                        <div className='flex items-center justify-between gap-4 px-3 py-2.5 rounded-lg text-white text-sm bg-red-500'>
+                            <p>{nameError}</p>
+                            <button onClick={() => setNameError('')}><X size={20} /></button>
                         </div>
                     }
 
-                    <button 
-                        type="submit" 
-                        className="w-full py-2 px-3 mt-2 rounded-lg text-white bg-primary hover:bg-primary/75 transition-colors"
+                    <button
+                        type='submit'
+                        className='w-full py-2 px-3 rounded-lg text-white bg-primary hover:bg-primary/75 transition-colors'
                     >
-                        Tallenna salasana
+                        Tallenna
                     </button>
                 </form>
-            </div>
+            </section>
+
+            
+            {/* SHARING */}
+            <section className='flex flex-col gap-4 bg-gradient-to-b from-contrast via-secondary to-contrast p-4 rounded-lg mt-2'>
+                <h2 className='font-semibold text-2xl'>Jakaminen</h2>
+                <p className='text-sm'>Jaa kansio linkillä julkisesti tai yksityisesti valitsemassasi ryhmässä.</p>
+
+                <div className='flex flex-col gap-2'>
+                    <div className='flex flex-col gap-2'>
+                        <label className='flex items-center cursor-pointer w-fit'>
+                            <input 
+                                type="checkbox" 
+                                value="" 
+                                className="sr-only peer" 
+                                checked={shareLink}
+                                onChange={handleLinkSharing} 
+                            />
+                            <div className="relative w-11 h-6 bg-gray-400 dark:bg-gray-500 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 
+                                dark:peer-focus:ring-blue-800 rounded-lg peer peer-checked:after:translate-x-full 
+                                rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] 
+                                after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-lg after:h-5 after:w-5 after:transition-all 
+                                dark:border-gray-600 peer-checked:bg-primary"></div>
+                            <span className="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">Jaa linkki</span>
+                        </label>
+
+                        {shareLink && (
+                        <>
+                            <CopyClipboard content={folder.sharing.url} />
+
+                            <p className='text-sm text-red-500'>
+                                <strong>Huom!</strong> Osoite on julkinen ja kaikki osoitteen tietävät pääsevät näkemään kansion sisällön. 
+                                Jaa linkkiä harkiten ja aseta tarvittaessa salasana.
+                            </p>
+                        </>
+                        )}
+                    </div>
+
+                    {/* TO DO */}
+                    <div className='flex flex-col gap-2 mt-2'>
+                        <label className='flex items-center cursor-pointer w-fit'>
+                            <input 
+                                type="checkbox" 
+                                value="" 
+                                className="sr-only peer" 
+                                checked={shareGroup}
+                                onChange={handleGroupSharing} 
+                            />
+                            <div className="relative w-11 h-6 bg-gray-400 dark:bg-gray-500 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 
+                                dark:peer-focus:ring-blue-800 rounded-lg peer peer-checked:after:translate-x-full 
+                                rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] 
+                                after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-lg after:h-5 after:w-5 after:transition-all 
+                                dark:border-gray-600 peer-checked:bg-primary"></div>
+                            <span className="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">Jaa ryhmässä</span>
+                        </label>
+
+                        {shareGroup && (
+                            <form className='flex flex-col gap-2'>
+                                <div>
+                                    <label htmlFor="groupSelect" className="block text-sm font-medium text-gray-700 dark:text-gray-400">Valitse ryhmät</label>
+                                    <select
+                                        id="groupSelect"
+                                        className="w-full py-2.5 px-3 bg-background text-sm border border-transparent outline-none focus:border-primary focus:ring-1"
+                                        onChange={handleSelectGroup}
+                                        value=""
+                                    >
+                                        <option value="" disabled>Valitse ryhmä</option>
+                                        {availableGroups.map(group => (
+                                            <option key={group.id} value={group.id}>{group.name}</option>
+                                        ))}
+                                    </select>
+                                </div>
+
+                                <div className="flex items-center flex-wrap gap-2">
+                                    {selectedGroups.map(group => (
+                                        <div key={group.id} className="flex items-center text-foreground px-3 py-1 border border-primary rounded-lg">
+                                            <span>{group.name}</span>
+                                            <button
+                                                type="button"
+                                                className="ml-2 text-foreground hover:text-gray-700 dark:hover:text-gray-400"
+                                                onClick={() => handleRemoveGroup(group.id)}
+                                                title='Poista jako ryhmässä'
+                                            >
+                                                <X size={16} />
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
+                                <button 
+                                    type="submit" 
+                                    className="w-full py-2 px-3 rounded-lg bg-gradient-to-br from-primary to-blue-800 text-white 
+                                    text-sm hover:bg-primary/75  transition-colors"
+                                >
+                                    Tallenna
+                                </button>
+                            </form>
+                        )}
+                    </div>
+                </div>
+            </section>
+
+            
+            {/* PASSWORD */}
+            <section className='flex flex-col gap-4 bg-gradient-to-b from-contrast via-secondary to-contrast p-4 rounded-lg mt-2'>
+                <h2 className='font-semibold text-2xl mb-[-10px]'>Salasana</h2>
+                <p className='text-sm'>Anna kansion sisällölle lisäsuojaa asettamalla sille salasana. Tällöin vain kansion omistaja pääsee näkemään sisällön ilman salasanaa.</p>
+
+                <div className='flex flex-col gap-2'>
+                    {folder.passwordProtected && (
+                        <div className="flex items-center justify-between gap-2 p-2 mb-4 border-b border-dashed border-navlink">
+                            <div className='flex items-center gap-2 w-full '>
+                                <LockKeyhole className='text-success' size={20} />
+                                <p className="text-sm font-bold">Tiedosto on suojattu salasanalla.</p>
+                            </div>
+
+                            <button 
+                                onClick={removePassword} 
+                                className='text-sm font-semibold text-red-500 hover:text-red-600 whitespace-nowrap'
+                                title='Poista salasana käytöstä'
+                            >
+                                Poista
+                            </button>
+                        </div>
+                    )}
+
+                    <form className="flex flex-col text-sm" onSubmit={savePassword}>
+                        <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Aseta salasana</label>
+                        <div className='relative'>
+                            <input
+                                id="password"
+                                name="password"
+                                type={showPassword ? 'text' : 'password'}
+                                className="relative w-full py-2.5 px-3 bg-background text-sm border border-transparent outline-none focus:border-primary focus:ring-1 pe-12"
+                                placeholder="Kirjoita salasana..."
+                            />
+                            <span className="flex items-center absolute inset-y-0 end-0 px-4">
+                                <button 
+                                    className="text-navlink hover:text-primary" 
+                                    type="button"
+                                    onClick={changeVisibility}
+                                >
+                                    {showPassword ? <Eye size={20} /> : <EyeOff size={20} />}
+                                </button>
+                            </span>
+                        </div>
+
+                        {passwordErr &&
+                            <div className='flex items-center gap-2 px-3 py-2 mt-2 rounded-md justify-between bg-red-500'>
+                                <p className='text-white text-sm'>{passwordErr}</p>
+                                <button className='text-white' onClick={() => setPasswordErr(null)}>
+                                    <X />
+                                </button>
+                            </div>
+                        }
+
+                        <button 
+                            type="submit" 
+                            className="w-full py-2 px-3 mt-2 rounded-lg text-white bg-primary hover:bg-primary/75 transition-colors"
+                        >
+                            Tallenna salasana
+                        </button>
+                    </form>
+                </div>
+            </section>
         </main>
+
+        {/* Loader for changes */}
+        {apiLoading && <PopupLoader />}
+        </>
     )
 }
 

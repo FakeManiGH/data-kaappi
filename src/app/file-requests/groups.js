@@ -120,12 +120,12 @@ export const getPrivateGroupInformation = async (userID, groupID) => {
             return { success: false, message: `Ryhmän ${groupID} jäsenyyttä ei löytynyt.` }
         }
 
-        if (groupData.pwdProtected && groupData.userID !== userID) {
-            return { success: true, password: true }
-        }
-
         // Public data
         const group = transformGroupDataPublic(groupData);
+
+        if (groupData.pwdProtected && groupData.userID !== userID) {
+            return { success: true, password: true, group: group }
+        }
 
         return { success: true, group: group }
 

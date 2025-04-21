@@ -54,7 +54,7 @@ function Page() {
       
       <div 
         className='flex items-center justify-center min-h-80 p-4 bg-[url(/images/dashboard_hero.png)] bg-center bg-contain rounded-lg'>
-        <div className='flex gap-2 p-4 flex-wrap items-center justify-center bg-black/50 rounded-xl text-white'>
+        <div className='flex gap-2 p-4 flex-wrap items-center justify-center bg-black/50 backdrop-blur-md rounded-xl text-white'>
           <SpaceMeterCircle usedSpace={userDoc?.usedSpace} totalSpace={userDoc?.totalSpace} />
           <div className='flex flex-col gap-4 items-center md:items-start text-white'>
             <h3 className='text-xl font-bold'>Tallennustilan käyttö</h3>

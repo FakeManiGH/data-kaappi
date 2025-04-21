@@ -40,7 +40,7 @@ function Lightbox({ files, setFile, open, setOpen }) {
 
     return (
         <div className={`fixed z-50 inset-0 flex flex-col items-center justify-center p-1 bg-background origin-top transition-all
-            ${open ? 'scale-100 opacity-100' : 'scale-0 opacity-0'}`}
+            ${open ? 'scale-y-100 opacity-100' : 'scale-y-0 opacity-0'}`}
         >
             <div className='flex items-center gap-2 justify-between w-full pb-1'>
                 <Link href={`/tiedosto/${selectedFile?.id}`} className='px-2 text-lg hover:text-primary'>{selectedFile?.name}</Link>
