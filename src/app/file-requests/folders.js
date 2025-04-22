@@ -1,6 +1,6 @@
 "use server"
 import { getStorage, ref, deleteObject } from "firebase/storage";
-import { doc, setDoc, deleteDoc, getDoc, updateDoc, orderBy, collection, query, where, getDocs, limit, increment, Timestamp, runTransaction } from "firebase/firestore";
+import { doc, setDoc, deleteDoc, getDoc, updateDoc, orderBy, collection, query, where, getDocs, limit, increment, Timestamp, runTransaction, arrayUnion } from "firebase/firestore";
 import { db } from '@/../firebaseConfig';
 import bcrypt from 'bcrypt';
 import { folderNameRegex, passwordRegex } from "@/utils/Regex";
@@ -633,6 +633,97 @@ export const changeFolderLinkSharing = async (userID, folderID, shareValue) => {
         return { success: false, message: 'Kansion jako-asetusten muuttaminen epäonnistui, yritä uudelleen.'}
     }
 } 
+
+// Folder group sharing
+export const updateFolderGroupSharingStatus = async (userID, folderID, groupIDarray) => {
+    try {
+        if (!userID || !folderID) {
+            return { success: false, message: 'Pyynnöstä puuttuu kriittisiä tietoja. Yritä uudelleen.' };
+        }
+
+        // Validate folder
+        const folderRef = doc(db, "folders", folderID);
+        const folderSnap = await getDoc(folderRef);
+
+        if (!folderSnap.exists()) {
+            return { success: false, message: `Kansiota ${folderID} ei löytynyt.` };
+        }
+
+        const folder = folderSnap.data();
+
+        if (userID !== folder.userID) {
+            return { success: false, message: 'Sinulla ei ole tarvittavia oikeuksia kansioon.' };
+        }
+
+        // Handle empty groupIDarray
+        if (!groupIDarray || groupIDarray.length === 0) {
+            console.log("No groups provided. Disabling group sharing.");
+            await updateDoc(folderRef, { groupShare: false, shareGroups: [] });
+            return { success: true, message: 'Kansion jako ryhmissä poistettu.' };
+        }
+
+        // Validate groups in parallel
+        const validationResults = await Promise.all(
+            groupIDarray.map(async (groupID) => {
+                try {
+                    if (groupID.length !== 11) {
+                        return { groupID, valid: false, error: `Virheellinen ryhmä ${groupID}.` };
+                    }
+
+                    const groupRef = doc(db, "groups", groupID);
+                    const groupSnap = await getDoc(groupRef);
+
+                    if (!groupSnap.exists()) {
+                        return { groupID, valid: false, error: `Ryhmää ${groupID} ei löytynyt.` };
+                    }
+
+                    const group = groupSnap.data();
+
+                    if (!group.members || !group.members.includes(userID)) {
+                        return { groupID, valid: false, error: `Et ole ryhmän ${groupID} jäsen.` };
+                    }
+
+                    return { groupID, valid: true };
+                } catch (error) {
+                    console.error(`Error validating group ${groupID}:`, error);
+                    return { groupID, valid: false, error: `Virhe ryhmän ${groupID} käsittelyssä.` };
+                }
+            })
+        );
+
+        // Separate valid groups and errors
+        const validGroups = validationResults.filter((result) => result.valid).map((result) => result.groupID);
+        const groupErrors = validationResults.filter((result) => !result.valid).map((result) => result.error);
+
+        // No valid groups?
+        if (validGroups.length === 0) {
+            console.log(`User ${userID} is not a member of any valid groups.`);
+            return { success: false, message: 'Ei kelvollisia ryhmiä, missä jakaa kansio.', errors: groupErrors };
+        }
+
+        // Update folder groupSharing with valid groups
+        try {
+            await updateDoc(folderRef, {
+                groupShare: true,
+                shareGroups: arrayUnion(...validGroups),
+            });
+
+            console.log(`Folder ${folderID} updated with group sharing enabled and groups: ${validGroups}`);
+            return {
+                success: true,
+                message: 'Kansion jako ryhmissä päivitetty onnistuneesti.',
+                validGroups,
+                errors: groupErrors,
+            };
+        } catch (error) {
+            console.error("Error updating folder group sharing: ", error);
+            return { success: false, message: 'Kansion ryhmäjakamisen muutokset epäonnistuivat. Yritä uudelleen.' };
+        }
+    } catch (error) {
+        console.error(`Error sharing folder ${folderID} in groups ${groupIDarray}: ${error}`);
+        return { success: false, message: 'Kansion jakaminen ryhmissä epäonnistui. Yritä uudelleen.' };
+    }
+};
 
 
 

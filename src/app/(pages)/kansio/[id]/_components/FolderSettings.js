@@ -133,6 +133,9 @@ function FolderSettings({ folder, setFolder, settings, setSettings }) {
         }
     };
 
+    //TODO: GROUP SHARING CALL
+
+
     // Change password visibility
     const changeVisibility = () => setShowPassword(!showPassword);
 
