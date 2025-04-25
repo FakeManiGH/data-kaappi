@@ -3,8 +3,8 @@ import { getStorage, ref, deleteObject } from "firebase/storage";
 import { doc, setDoc, deleteDoc, getDoc, updateDoc, orderBy, collection, query, where, getDocs, limit, increment, Timestamp, runTransaction, arrayUnion } from "firebase/firestore";
 import { db } from '@/../firebaseConfig';
 import bcrypt from 'bcrypt';
-import { folderNameRegex, passwordRegex } from "@/utils/Regex";
-import { transformFileDataPublic, transformFolderDataPrivate, transformFolderDataPublic } from "@/utils/DataTranslation";
+import { folderNameRegex, groupIdRegex, passwordRegex } from "@/utils/Regex";
+import { transformFileDataPublic, transformFolderDataPrivate, transformFolderDataPublic, transformGroupDataPublic } from "@/utils/DataTranslation";
 import { generateRandomString } from "@/utils/GenerateRandomString";
 
 
@@ -157,6 +157,10 @@ export const getUserBaseFolders = async (userID) => {
 // Get Folder and content
 export const getFolderContent = async (userID, folderID) => {
     try {
+        if (!userID || !folderID) {
+            return { success: false, message: 'Tarvittavia tietoja ei löytynyt.' }
+        }
+
         // Check folder existence
         const folderRef = doc(db, "folders", folderID);
         const folderSnap = await getDoc(folderRef);
@@ -168,14 +172,9 @@ export const getFolderContent = async (userID, folderID) => {
         const folderTemp = folderSnap.data();
 
         // Verify access rights
-        const isUnauthorized = !folderTemp.linkShare && folderTemp.groupShare && userID !== folderTemp.userID;
+        const isUnauthorized = !folderTemp.linkShare && !folderTemp.groupShare && userID !== folderTemp.userID;
         if (isUnauthorized) {
             return { success: false, message: 'Sinulla ei ole oikeutta tähän sisältöön.' };
-        }
-
-        // Handle password protection
-        if (folderTemp.pwdProtected && userID !== folderTemp.userID) {
-            return { success: true, protected: true };
         }
 
         // Fetch subfolders (if exists)
@@ -213,6 +212,11 @@ export const getFolderContent = async (userID, folderID) => {
         const folders = foldersTemp.map(folder => transformFolderDataPublic(folder));
         const files = filesTemp.map(file => transformFileDataPublic(file));
 
+        // Password protection
+        if (folderTemp.pwdProtected && userID !== folderTemp.userID) {
+            return { success: true, folder, folders, files, password };
+        }
+
         return { success: true, folder, folders, files };
     } catch (error) {
         console.error("Error fetching folder content: ", error);
@@ -242,20 +246,67 @@ export const getUserFolders = async (userID) => {
     }
 }
 
-
-// Get Public FolderInfo (folderID)
-export const getPublicFolderInfo = async (folderID) => {
+// Get folders shareGroups info
+export const getFolderShareGroupsInfo = async (groupIdArray, batchSize = 10) => {
     try {
-        const folderRef = doc(db, 'folders', folderID);
-        const docSnap = await getDoc(folderRef);
-        const data = docSnap.data();
-        const folder = transformFolderDataPublic(data)
-        return folder;
+        if (!groupIdArray || !Array.isArray(groupIdArray)) {
+            return { success: false, message: 'Puutteellinen tai virheellinen pyyntötieto.', errors: [] };
+        }
+
+        if (groupIdArray.length === 0) {
+            return { success: true, message: 'Kansiota ei ole jaettu ryhmissä.', groups: [], errors: [] };
+        }
+
+        const groupValidationResults = [];
+
+        // Process the groupIdArray in batches
+        for (let i = 0; i < groupIdArray.length; i += batchSize) {
+            const batch = groupIdArray.slice(i, i + batchSize);
+
+            const batchResults = await Promise.all(
+                batch.map(async (groupID) => {
+                    try {
+                        if (!groupIdRegex.test(groupID)) {
+                            return { groupID, valid: false, error: `Virheellinen ryhmätunnus ${groupID}` };
+                        }
+
+                        const groupRef = doc(db, "groups", groupID);
+                        const groupSnap = await getDoc(groupRef);
+
+                        if (!groupSnap.exists()) {
+                            return { groupID, valid: false, error: `Ryhmää ${groupID} ei löytynyt.` };
+                        }
+
+                        const groupTemp = groupSnap.data();
+                        const group = transformGroupDataPublic(groupTemp);
+
+                        return { group, valid: true };
+                    } catch (error) {
+                        console.error(`Error validating group id ${groupID}: ${error}`);
+                        return { groupID, valid: false, error: `Virhe vahvistettaessa ryhmää ${groupID}` };
+                    }
+                })
+            );
+
+            groupValidationResults.push(...batchResults);
+        }
+
+        // Separate valid groups and errors
+        const validGroups = groupValidationResults.filter((result) => result.valid).map((result) => result.group);
+        const groupErrors = groupValidationResults.filter((result) => !result.valid).map((result) => result.error);
+
+        // No valid groups?
+        if (validGroups.length === 0) {
+            return { success: false, message: 'Kansiota ei ole jaettu kelvollisiin ryhmiin.', errors: groupErrors };
+        }
+
+        return { success: true, groups: validGroups, errors: groupErrors };
     } catch (error) {
-        console.error("Error fetching folder data: ", error);
-        throw error;
+        console.error("Error fetching share group data: ", error);
+        return { success: false, message: 'Kansion ryhmässä jakamisen tietojen hakemisessa tapahtui virhe, päivitä sivu.', errors: [] };
     }
-}
+};
+
 
 
 
@@ -659,7 +710,7 @@ export const updateFolderGroupSharingStatus = async (userID, folderID, groupIDar
         if (!groupIDarray || groupIDarray.length === 0) {
             console.log("No groups provided. Disabling group sharing.");
             await updateDoc(folderRef, { groupShare: false, shareGroups: [] });
-            return { success: true, message: 'Kansion jako ryhmissä poistettu.' };
+            return { success: true, message: 'Kansiota ei jaeta enää ryhmissä.' };
         }
 
         // Validate groups in parallel
@@ -679,7 +730,7 @@ export const updateFolderGroupSharingStatus = async (userID, folderID, groupIDar
 
                     const group = groupSnap.data();
 
-                    if (!group.members || !group.members.includes(userID)) {
+                    if (!group.groupMembers || !group.groupMembers.includes(userID)) {
                         return { groupID, valid: false, error: `Et ole ryhmän ${groupID} jäsen.` };
                     }
 
@@ -711,8 +762,7 @@ export const updateFolderGroupSharingStatus = async (userID, folderID, groupIDar
             console.log(`Folder ${folderID} updated with group sharing enabled and groups: ${validGroups}`);
             return {
                 success: true,
-                message: 'Kansion jako ryhmissä päivitetty onnistuneesti.',
-                validGroups,
+                message: 'Kansion jakamista ryhmissä muutettu onnistuneesti.',
                 errors: groupErrors,
             };
         } catch (error) {

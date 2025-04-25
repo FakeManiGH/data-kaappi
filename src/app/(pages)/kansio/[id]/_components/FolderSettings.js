@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useAlert } from '@/app/contexts/AlertContext'
 import { useUser } from '@clerk/nextjs'
 import CopyClipboard from '@/app/_components/_common/CopyClipboard';
-import { changeFolderLinkSharing, removeFolderPassword, updateFolderName } from '@/app/file-requests/folders';
+import { changeFolderLinkSharing, removeFolderPassword, updateFolderGroupSharingStatus, updateFolderName } from '@/app/file-requests/folders';
 import PageLoading from '@/app/_components/_common/PageLoading';
 import { updateFolderPassword } from '@/app/file-requests/folders';
 import { Eye, EyeOff, LockKeyhole, X } from 'lucide-react';
@@ -11,12 +11,13 @@ import { getUserGroups } from '@/app/file-requests/groups';
 import PopupLoader from '@/app/_components/_common/PopupLoader';
 
 
-function FolderSettings({ folder, setFolder, settings, setSettings }) {
+function FolderSettings({ folder, setFolder, shareGroups, setShareGroups,  settings, setSettings }) {
     const [nameError, setNameError] = useState(null);
     const [shareLink, setShareLink] = useState(folder.sharing.link);
-    const [shareGroup, setShareGroup] = useState(folder.sharing.group);
     const [selectedGroups, setSelectedGroups] = useState([]);
-    const [availableGroups, setAvailableGroups] = useState(null);
+    const [currentSelected, setCurrentSelected] = useState(null)
+    const [availableGroups, setAvailableGroups] = useState([]);
+    const [shareErrors, setShareErrors] = useState(null);
     const [showPassword, setShowPassword] = useState(false);
     const [passwordErr, setPasswordErr] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -24,13 +25,17 @@ function FolderSettings({ folder, setFolder, settings, setSettings }) {
     const { showAlert } = useAlert();
     const { user } = useUser();
 
-
     useEffect(() => {
         const fetchUserGroups = async () => {
             try {
                 const response = await getUserGroups(user.id);
                 if (response.success) {
-                    setAvailableGroups(response.groups);
+                    const normalizedShareGroups = new Set(shareGroups.map(group => String(group.id))); // Normilize id's
+                    const available = response.groups.filter(group => !normalizedShareGroups.has(String(group.id))); // Not yet shared
+                    const selected = response.groups.filter(group => normalizedShareGroups.has(String(group.id))); // Already shared
+    
+                    setAvailableGroups(available);
+                    setSelectedGroups(selected);
                 } else {
                     showAlert(response.message || 'Virhe ryhmien hakemisessa, päivitä sivu ja yritä uudelleen.', 'error');
                 }
@@ -40,20 +45,20 @@ function FolderSettings({ folder, setFolder, settings, setSettings }) {
             } finally {
                 setLoading(false);
             }
-        }
-
+        };
+    
         fetchUserGroups();
-    },[showAlert, user]);
+    }, [shareGroups]);
 
     
-    // Handle renaming
+    // Save new folder name
     const handleFolderRenaming = async (e) => {
         e.preventDefault();
         setLoading(true);
         const newName = e.target.folderName.value;
 
         if (!newName || newName === folder.name) {
-            setNameError('Anna kansiolle ensin uusi nimi.');
+            showAlert('Anna kansiolle ensin uusi nimi.', 'info');
             setLoading(false);
             return;
         }
@@ -81,7 +86,7 @@ function FolderSettings({ folder, setFolder, settings, setSettings }) {
         }
     }
 
-    // Link sharing
+    // Link sharing status change
     const handleLinkSharing = async (e) => {
         setApiLoading(true);
         try {
@@ -109,37 +114,62 @@ function FolderSettings({ folder, setFolder, settings, setSettings }) {
         }
     };
 
-    // Group sharing
-    const handleGroupSharing = async (e) => {
-        setShareGroup(e.target.checked);
-    }
-
-    // Select group
-    const handleSelectGroup = (e) => {
-        const groupId = parseInt(e.target.value);
-        const group = availableGroups.find(g => g.id === groupId);
-        if (group) {
-            setSelectedGroups([...selectedGroups, group]);
-            setAvailableGroups(availableGroups.filter(g => g.id !== groupId));
-        }
+    // Set current selected group (select element)
+    const handleCurrentSelected = (e) => {
+        setCurrentSelected(e.target.value);
     };
+
+    // Add new selected group
+    const handleAddGroup = () => {
+        const group = availableGroups?.find(g => g.id === currentSelected);
+        if (group) {
+            setSelectedGroups((prevSelected) => [...prevSelected, group]);
+            setAvailableGroups(prevAvailable => prevAvailable.filter(g => g.id !== currentSelected));
+        }
+    }
 
     // Remove selected group
     const handleRemoveGroup = (groupId) => {
-        const group = selectedGroups.find(g => g.id === groupId);
+        const group = selectedGroups?.find(g => g.id === groupId);
         if (group) {
             setSelectedGroups(selectedGroups.filter(g => g.id !== groupId));
             setAvailableGroups([...availableGroups, group]);
         }
     };
 
-    //TODO: GROUP SHARING CALL
+    // Save groupSharing status (api call)
+    const changeFolderGroupSharing = async (e) => {
+        setApiLoading(true);
+        e.preventDefault();
+        const groupIdArray = selectedGroups.map(group => group.id); 
+
+        try {
+            const response = await updateFolderGroupSharingStatus(user.id, folder.id, groupIdArray);
+            if (response.success) {
+                showAlert(response.message || 'Kansion jakamisen tilaa muutettu onnistuneesti.', 'success');
+                if (response.errors) {
+                    setShareErrors(response.errors);
+                }
+                setShareGroups(selectedGroups);
+            } else {
+                showAlert(response.message || 'Jakamisen tilan muuttaminen epäonnistui, yritä uudelleen.', 'error');
+                if (response.errors) {
+                    setShareErrors(response.errors);
+                }
+            }
+        } catch (error) {
+            console.error("Error changing folder group sharing status: " + error);
+            showAlert("Jakamisen tilan muuttaminen epäonnistui, yritä uudelleen.")
+        } finally {
+            setApiLoading(false);
+        }
+    }
 
 
     // Change password visibility
     const changeVisibility = () => setShowPassword(!showPassword);
 
-    // Save folder password
+    // Save password
     const savePassword = async (e) => {
         e.preventDefault()
         const newPassword = e.target.password.value;
@@ -169,7 +199,7 @@ function FolderSettings({ folder, setFolder, settings, setSettings }) {
         }
     }
 
-    // Remove password in use
+    // Remove password
     const removePassword = async () => {
         setLoading(true);
         try {
@@ -193,7 +223,7 @@ function FolderSettings({ folder, setFolder, settings, setSettings }) {
 
     return (
         <>
-        <main className={`flex flex-col transition-transform origin-right
+        <main className={`flex flex-col transition-transform origin-right max-w-5xl mx-auto
             ${settings ? 'scale-x-100' : 'scale-x-0'}`}
         >   
 
@@ -209,7 +239,7 @@ function FolderSettings({ folder, setFolder, settings, setSettings }) {
             
             <p className='text-xs text-orange-500'>* Muista tallentaa tallennusta vaativat muutokset.</p>    
 
-            <section className='flex flex-col gap-4 bg-gradient-to-b from-contrast via-secondary to-contrast p-4 rounded-lg'>
+            <section className='flex flex-col gap-4 bg-contrast p-4 rounded-lg'>
                 <h2 className='font-semibold text-2xl'>Nimi</h2>
                 <p className='text-sm'>Muuta kansion nimeä. Nimen tulee olla 2-50 merkkiä pitkä ja se ei saa sisältää &lt;, &gt;, / tai \ merkkiä.</p>
 
@@ -219,12 +249,12 @@ function FolderSettings({ folder, setFolder, settings, setSettings }) {
                         id='folderName'
                         name='folderName'
                         defaultValue={folder.name || ''}
-                        className='relative w-full py-2.5 px-3 bg-background text-sm border border-transparent outline-none focus:border-primary focus:ring-1'
+                        className='relative w-full py-2.5 px-3 rounded-md bg-background text-sm border border-transparent outline-none focus:border-primary focus:ring-1'
                         placeholder='Anna kansiolle nimi...'
                     />
 
                     {nameError && 
-                        <div className='flex items-center justify-between gap-4 px-3 py-2.5 rounded-lg text-white text-sm bg-red-500'>
+                        <div className='flex items-center justify-between gap-2 px-3 py-2 rounded-md text-white text-sm bg-red-500'>
                             <p>{nameError}</p>
                             <button onClick={() => setNameError('')}><X size={20} /></button>
                         </div>
@@ -232,21 +262,22 @@ function FolderSettings({ folder, setFolder, settings, setSettings }) {
 
                     <button
                         type='submit'
-                        className='w-full py-2 px-3 rounded-lg text-white bg-primary hover:bg-primary/75 transition-colors'
+                        className='w-fit py-2 px-3 rounded-lg text-white bg-primary hover:bg-primary/75 transition-colors'
                     >
-                        Tallenna
+                        Tallenna nimi
                     </button>
                 </form>
             </section>
 
             
             {/* SHARING */}
-            <section className='flex flex-col gap-4 bg-gradient-to-b from-contrast via-secondary to-contrast p-4 rounded-lg mt-2'>
+            <section className='flex flex-col gap-4 bg-contrast p-2 rounded-lg mt-2'>
                 <h2 className='font-semibold text-2xl'>Jakaminen</h2>
                 <p className='text-sm'>Jaa kansio linkillä julkisesti tai yksityisesti valitsemassasi ryhmässä.</p>
 
-                <div className='flex flex-col gap-2'>
-                    <div className='flex flex-col gap-2'>
+                <div className='flex flex-col gap-2 '>
+                    <div className='flex flex-col gap-2 p-2 bg-gradient-to-r from-contrast to-neutral-400 dark:to-neutral-700 rounded-lg'>
+                        <h3 className='text-lg font-semibold'>Linkin jakaminen</h3>
                         <label className='flex items-center cursor-pointer w-fit'>
                             <input 
                                 type="checkbox" 
@@ -255,10 +286,10 @@ function FolderSettings({ folder, setFolder, settings, setSettings }) {
                                 checked={shareLink}
                                 onChange={handleLinkSharing} 
                             />
-                            <div className="relative w-11 h-6 bg-gray-400 dark:bg-gray-500 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 
-                                dark:peer-focus:ring-blue-800 rounded-lg peer peer-checked:after:translate-x-full 
+                            <div className="relative w-11 h-6 bg-gray-400 dark:bg-gray-600 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 
+                                dark:peer-focus:ring-blue-800 rounded-full peer peer-checked:after:translate-x-full 
                                 rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] 
-                                after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-lg after:h-5 after:w-5 after:transition-all 
+                                after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all 
                                 dark:border-gray-600 peer-checked:bg-primary"></div>
                             <span className="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">Jaa linkki</span>
                         </label>
@@ -267,7 +298,7 @@ function FolderSettings({ folder, setFolder, settings, setSettings }) {
                         <>
                             <CopyClipboard content={folder.sharing.url} />
 
-                            <p className='text-sm text-red-500'>
+                            <p className='text-xs text-orange-500'>
                                 <strong>Huom!</strong> Osoite on julkinen ja kaikki osoitteen tietävät pääsevät näkemään kansion sisällön. 
                                 Jaa linkkiä harkiten ja aseta tarvittaessa salasana.
                             </p>
@@ -275,72 +306,84 @@ function FolderSettings({ folder, setFolder, settings, setSettings }) {
                         )}
                     </div>
 
-                    {/* TO DO */}
-                    <div className='flex flex-col gap-2 mt-2'>
-                        <label className='flex items-center cursor-pointer w-fit'>
-                            <input 
-                                type="checkbox" 
-                                value="" 
-                                className="sr-only peer" 
-                                checked={shareGroup}
-                                onChange={handleGroupSharing} 
-                            />
-                            <div className="relative w-11 h-6 bg-gray-400 dark:bg-gray-500 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 
-                                dark:peer-focus:ring-blue-800 rounded-lg peer peer-checked:after:translate-x-full 
-                                rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] 
-                                after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-lg after:h-5 after:w-5 after:transition-all 
-                                dark:border-gray-600 peer-checked:bg-primary"></div>
-                            <span className="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">Jaa ryhmässä</span>
-                        </label>
 
-                        {shareGroup && (
-                            <form className='flex flex-col gap-2'>
-                                <div>
-                                    <label htmlFor="groupSelect" className="block text-sm font-medium text-gray-700 dark:text-gray-400">Valitse ryhmät</label>
+                    {/* Group sharing */}
+                    <div className='flex flex-col gap-2 mt-2 p-2 bg-gradient-to-r from-contrast to-neutral-400 dark:to-neutral-700 rounded-lg'>
+                        <h3 className='text-lg font-semibold'>Ryhmässä jakaminen</h3>
+                        <form className='flex flex-col gap-2' onSubmit={changeFolderGroupSharing}>
+                            <div>
+                                <label htmlFor="groupSelect" className="block text-sm font-medium text-gray-700 dark:text-gray-400">Lisää ryhmä:</label>
+                                <span className='flex items-center gap-1'>
                                     <select
                                         id="groupSelect"
-                                        className="w-full py-2.5 px-3 bg-background text-sm border border-transparent outline-none focus:border-primary focus:ring-1"
-                                        onChange={handleSelectGroup}
-                                        value=""
+                                        className="w-full py-2.5 px-3 rounded-md bg-background text-sm border border-transparent outline-none focus:border-primary focus:ring-1"
+                                        onChange={handleCurrentSelected}
+                                        defaultValue=""
                                     >
                                         <option value="" disabled>Valitse ryhmä</option>
                                         {availableGroups.map(group => (
                                             <option key={group.id} value={group.id}>{group.name}</option>
                                         ))}
                                     </select>
-                                </div>
-
+                                    <button 
+                                        type='button'
+                                        className="w-fit h-fit px-3 py-2 rounded-lg text-white bg-primary text-sm hover:bg-primary/75 transition-colors"
+                                        onClick={handleAddGroup}
+                                    >
+                                        Lisää
+                                    </button>
+                                </span>
+                            </div>
+                            
+                            <div>
+                                <p htmlFor="groupSelect" className="block text-sm font-medium text-gray-700 dark:text-gray-400">Jaettu ryhmissä:</p>
                                 <div className="flex items-center flex-wrap gap-2">
                                     {selectedGroups.map(group => (
-                                        <div key={group.id} className="flex items-center text-foreground px-3 py-1 border border-primary rounded-lg">
+                                        <div key={group.id} className="flex items-center text-white px-2 py-1 bg-black rounded-md">
                                             <span>{group.name}</span>
                                             <button
                                                 type="button"
-                                                className="ml-2 text-foreground hover:text-gray-700 dark:hover:text-gray-400"
+                                                className="ml-2 text-white hover:text-red-500"
                                                 onClick={() => handleRemoveGroup(group.id)}
-                                                title='Poista jako ryhmässä'
+                                                title='Poista ryhmässä jakaminen'
                                             >
-                                                <X size={16} />
+                                                <X size={20} />
                                             </button>
                                         </div>
                                     ))}
+
+                                    {!selectedGroups.length &&
+                                        <p className='text-sm px-3'>Ei ryhmiä</p>
+                                    }
                                 </div>
-                                <button 
-                                    type="submit" 
-                                    className="w-full py-2 px-3 rounded-lg bg-gradient-to-br from-primary to-blue-800 text-white 
-                                    text-sm hover:bg-primary/75  transition-colors"
-                                >
-                                    Tallenna
-                                </button>
-                            </form>
-                        )}
+                            </div>
+
+                            {shareErrors && shareErrors.length > 0 &&
+                                shareErrors.map((error, index) => (
+                                    <div className='flex items-center justify-between gap-2 px-3 py-2 rounded-md text-white text-sm bg-red-500' key={index}>
+                                        <p>{error}</p>
+                                        <button onClick={() => setShareErrors(shareErrors.filter((_, i) => i !== index))}>
+                                            <X size={20} />
+                                        </button>
+                                    </div>
+                                ))
+                            }
+
+                            <button 
+                                type="submit" 
+                                className="w-fit py-2 px-3 rounded-lg text-white bg-primary hover:bg-primary/75 
+                                    text-sm transition-colors"
+                            >
+                                Tallenna muutokset
+                            </button>
+                        </form>
                     </div>
                 </div>
             </section>
 
             
             {/* PASSWORD */}
-            <section className='flex flex-col gap-4 bg-gradient-to-b from-contrast via-secondary to-contrast p-4 rounded-lg mt-2'>
+            <section className='flex flex-col gap-4 bg-contrast p-4 rounded-lg mt-2'>
                 <h2 className='font-semibold text-2xl mb-[-10px]'>Salasana</h2>
                 <p className='text-sm'>Anna kansion sisällölle lisäsuojaa asettamalla sille salasana. Tällöin vain kansion omistaja pääsee näkemään sisällön ilman salasanaa.</p>
 
@@ -369,7 +412,7 @@ function FolderSettings({ folder, setFolder, settings, setSettings }) {
                                 id="password"
                                 name="password"
                                 type={showPassword ? 'text' : 'password'}
-                                className="relative w-full py-2.5 px-3 bg-background text-sm border border-transparent outline-none focus:border-primary focus:ring-1 pe-12"
+                                className="relative w-full py-2.5 px-3 rounded-md bg-background text-sm border border-transparent outline-none focus:border-primary focus:ring-1 pe-12"
                                 placeholder="Kirjoita salasana..."
                             />
                             <span className="flex items-center absolute inset-y-0 end-0 px-4">
@@ -384,7 +427,7 @@ function FolderSettings({ folder, setFolder, settings, setSettings }) {
                         </div>
 
                         {passwordErr &&
-                            <div className='flex items-center gap-2 px-3 py-2 mt-2 rounded-md justify-between bg-red-500'>
+                            <div className='flex items-center justify-between gap-2 px-3 py-2 mt-2 rounded-md text-white text-sm bg-red-500'>
                                 <p className='text-white text-sm'>{passwordErr}</p>
                                 <button className='text-white' onClick={() => setPasswordErr(null)}>
                                     <X />
@@ -394,7 +437,7 @@ function FolderSettings({ folder, setFolder, settings, setSettings }) {
 
                         <button 
                             type="submit" 
-                            className="w-full py-2 px-3 mt-2 rounded-lg text-white bg-primary hover:bg-primary/75 transition-colors"
+                            className="w-fit py-2 px-3 mt-2 rounded-lg text-white bg-primary hover:bg-primary/75 transition-colors"
                         >
                             Tallenna salasana
                         </button>

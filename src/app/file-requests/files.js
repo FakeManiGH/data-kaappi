@@ -415,7 +415,7 @@ export const moveFileToFolder = async (userID, fileID, folderID) => {
                 }
 
                 // Prevent same folder transfer
-                if (toFolder.folderID === fromFolder.folderID) {
+                if (toFolder.folderID == fromFolder.folderID) {
                     return { success: false, message: `Tiedosto on jo kansiossa ${toFolder.folderName}.` }
                 };
 

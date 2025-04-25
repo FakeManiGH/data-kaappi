@@ -1,5 +1,5 @@
 import { getFileIcon } from '@/utils/GetFileIcon'
-import { CircleMinus, SquareMinus, TriangleAlert, X } from 'lucide-react'
+import { CircleMinus, SquareMinus, TriangleAlert, Users2, X } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
 import DeleteConfirmPopup from './DeleteConfirmPopup';
 
@@ -40,7 +40,23 @@ function DeletePopup({ selectedObjects, setSelectedObjects, setFolders, setFiles
                                 {object.docType === 'folder' && object.fileCount > 0 && 
                                     <div className='relative flex items-center group'>
                                         <button><TriangleAlert size={20} className='text-orange-500' /></button>
-                                        <p className='absolute scale-x-0 origin-left transition-transform top-[-5px] left-full ml-1 z-50 bg-white text-black whitespace-nowrap p-1 group-hover:scale-x-100'>Kansio sisältää tiedostoja.</p>
+                                        <p 
+                                            className='absolute scale-x-0 origin-left transition-transform top-[-5px] left-full ml-1 z-50 rounded-md bg-white 
+                                            text-black whitespace-nowrap p-1 group-hover:scale-x-100'
+                                        >
+                                            Kansio sisältää tiedostoja.
+                                        </p>
+                                    </div>
+                                }
+                                {object.docType === 'folder' && object.sharing.groups.length > 0 && 
+                                    <div className='relative flex items-center group'>
+                                        <button><Users2 size={20} className='text-orange-500' /></button>
+                                        <p 
+                                            className='absolute scale-x-0 origin-left transition-transform top-[-5px] left-full ml-1 z-50 rounded-md bg-white 
+                                            text-black whitespace-nowrap p-1 group-hover:scale-x-100'
+                                        >
+                                            Kansio on jaettu ryhmässä.
+                                        </p>
                                     </div>
                                 }
                                 <img src={object.docType === 'folder' ? '/icons/folder.png' : getFileIcon(object.type)} alt='Kansio tai tiedosto' className="w-7 h-auto" />

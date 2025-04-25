@@ -5,7 +5,7 @@ import ErrorView from '@/app/(pages)/_components/ErrorView';
 import ContentNotFound from '@/app/_components/_common/ContentNotFound';
 import PageLoading from '@/app/_components/_common/PageLoading';
 import { useNavigation } from '@/app/contexts/NavigationContext';
-import { getFolderContent } from '@/app/file-requests/folders';
+import { getFolderContent, getFolderShareGroupsInfo } from '@/app/file-requests/folders';
 import Breadcrumbs from './_components/BreadGrumps';
 import FolderContainer from './_components/FolderContainer';
 import FolderNavigation from './_components/FolderNavigation';
@@ -15,8 +15,6 @@ import PasswordPopup from './_components/PasswordPopup';
 import DeletePopup from './_components/DeletePopup';
 import { FilePlus, FolderPlus, Grid, List, LockKeyhole, Settings, Share2, Users2, X } from 'lucide-react';
 import MoveSelectedPopup from './_components/MoveSelectedPopup';
-import { folderNameRegex } from '@/utils/Regex';
-import { updateFolderName } from '@/app/file-requests/folders';
 import { useAlert } from '@/app/contexts/AlertContext';
 import UploadFilesPopup from './_components/UploadFilesPopup';
 import FolderInfoContainer from './_components/FolderInfoContainer';
@@ -35,6 +33,7 @@ function Page({ params }) {
     const [settings, setSettings] = useState(false);
     const [folders, setFolders] = useState(null);
     const [files, setFiles] = useState([]);
+    const [shareGroups, setShareGroups] = useState([]);
     const [selectedObjects, setSelectedObjects] = useState([]);
     const [movePopup, setMovePopup] = useState(false);
     const [createFolder, setCreateFolder] = useState(false);
@@ -49,26 +48,37 @@ function Page({ params }) {
         const getFolder = async () => {
             try {
                 const response = await getFolderContent(user.id, id);
-
                 if (response.success) {
-                    if (response.protected) {
-                        setPwdVerified(false);
-                        return;
-                    }
                     setFolder(response.folder);
                     setFolders(response.folders);
                     setFiles(response.files);
+    
+                    // Fetch share group info
+                    if (response.folder.sharing.groups.length > 0) {
+                        try {
+                            const shareGroupsResponse = await getFolderShareGroupsInfo(response.folder.sharing.groups);
+                            if (shareGroupsResponse.success) {
+                                setShareGroups(shareGroupsResponse.groups);
+                            } else {
+                                console.error("Error fetching share groups:", shareGroupsResponse.errors);
+                                showAlert(shareGroupsResponse.message || 'Virhe ryhmien jakamistietojen hakemisessa.', 'error');
+                            }
+                        } catch (error) {
+                            console.error("Error fetching folder share groups info:", error);
+                            showAlert('Virhe ryhmien jakamistietojen hakemisessa.', 'error');
+                        }
+                    }
                 } else {
                     setDataError(response.message);
                 }
             } catch (error) {
-                console.error("Error fetching folder data: " + error);
-                setServerError('Tietojen hakemisessa tapahti virhe: ' + error);
+                console.error("Error fetching folder data:", error);
+                setServerError('Tietojen hakemisessa tapahtui virhe: ' + error);
             } finally {
                 setLoading(false);
             }
         };
-
+    
         if (isLoaded && user) {
             setCurrentIndex('/kansiot');
             getFolder();
@@ -78,11 +88,19 @@ function Page({ params }) {
     }, [isLoaded, user, id, setCurrentIndex, navigatePage]);
 
 
-    if (loading) return <PageLoading />;
-    if (serverError) return <ErrorView message={serverError} />;
-    if (dataError) return <ContentNotFound message={dataError} />;
-    if (!pwdVerified) return <div>Folder is password-protected. Please enter the password.</div>;
-    if (settings) return <FolderSettings folder={folder} setFolder={setFolder} settings={settings} setSettings={setSettings} />
+    if (loading) return <PageLoading />
+    if (serverError) return <ErrorView message={serverError} />
+    if (dataError) return <ContentNotFound message={dataError} />
+    if (settings) return (
+        <FolderSettings 
+            folder={folder} 
+            setFolder={setFolder} 
+            shareGroups={shareGroups} 
+            setShareGroups={setShareGroups}
+            settings={settings} 
+            setSettings={setSettings} 
+        />
+    )
 
     return (
         <main>
@@ -93,7 +111,7 @@ function Page({ params }) {
             <h1 className='text-3xl md:text-4xl font-black truncate'>{folder.name}</h1> 
             
             <div className='relative flex items-center max-w-full gap-2 justify-between'>   
-                <FolderInfoContainer files={files} folder={folder} folders={folders} />
+                <FolderInfoContainer files={files} folder={folder} folders={folders} shareGroups={shareGroups} />
 
                 <button 
                     className={`relative flex items-center flex-wrap hover:text-primary transition-all

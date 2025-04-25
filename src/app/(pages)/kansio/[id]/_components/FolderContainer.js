@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FilePlus, FolderPlus, GripVertical, Group, LockKeyhole, Share2 } from 'lucide-react';
+import { FilePlus, FolderPlus, GripVertical, Group, LockKeyhole, Share2, Users2 } from 'lucide-react';
 import Link from 'next/link';
 import { cleanDataType, translateFileSize } from '@/utils/DataTranslation';
 import { getFileIcon } from '@/utils/GetFileIcon';
@@ -132,9 +132,9 @@ function FolderContainer({ view, folders, files, setFolders, setFiles, setCreate
                     </Link>
 
                     <div className='absolute top-2 left-2 flex flex-col gap-1 text-success'>
-                        {folder.passwordProtected && <LockKeyhole size={16} />}
-                        {folder.sharing.link && <Share2 size={16} />}
-                        {folder.sharing.group && <Group size={16} />}
+                        {folder.passwordProtected && <p title='Suojattu salasanalla'><LockKeyhole size={18} /></p>}
+                        {folder.sharing.link && <p title='Jaettu linkillä'><Share2 size={18} /></p>}
+                        {folder.sharing.groups.length > 0 && <p title='Ryhmä jaettu'><Users2 size={18} /></p>}
                     </div>
                 </div>
             ))}
@@ -177,9 +177,9 @@ function FolderContainer({ view, folders, files, setFolders, setFiles, setCreate
                     </div>
 
                     <div className='absolute top-2 left-2 flex flex-col gap-1 text-success'>
-                        {file.passwordProtected && <LockKeyhole size={16} />}
-                        {file.linkShare && <Share2 size={16} />}
-                        {file.groupShare && <Group size={16} />}
+                        {file.passwordProtected && <p title='Suojattu salasanalla'><LockKeyhole size={18} /></p>}
+                        {file.linkShare && <p title='Jaettu linkillä'><Share2 size={18} /></p>}
+                        {file.groupShare && <p title='Ryhmä jaettu'><Users2 size={18} /></p>}
                     </div>
                 </div>
             ))}
@@ -214,9 +214,9 @@ function FolderContainer({ view, folders, files, setFolders, setFiles, setCreate
                     <p className='text-sm text-navlink' title={`${folder.fileCount} tiedostoa`}>({folder.fileCount})</p>
 
                     <div className='flex items-center gap-1 text-success'>
-                        {folder.passwordProtected && <LockKeyhole size={16} />}
-                        {folder.sharing.link && <Share2 size={16} />}
-                        {folder.sharing.group && <Group size={16} />}
+                        {folder.passwordProtected && <p title='Suojattu salasanalla'><LockKeyhole size={18} /></p>}
+                        {folder.sharing.link && <p title='Jaettu linkillä'><Share2 size={18} /></p>}
+                        {folder.sharing.groups.length > 0 && <p title='Ryhmä jaettu'><Users2 size={18} /></p>}
                     </div>
                 </li>
             ))}
@@ -247,9 +247,9 @@ function FolderContainer({ view, folders, files, setFolders, setFiles, setCreate
                                 
                     <div className='flex items-center gap-2 text-xs whitespace-nowrap'>
                         <div className='flex items-center gap-1 text-success'>
-                            {file.passwordProtected && <LockKeyhole size={16} />}
-                            {file.linkShare && <Share2 size={16} />}
-                            {file.groupShare && <Group size={16} />}
+                            {file.passwordProtected && <p title='Suojattu salasanalla'><LockKeyhole size={18} /></p>}
+                            {file.linkShare && <p title='Jaettu linkillä'><Share2 size={18} /></p>}
+                            {file.groupShare && <p title='Ryhmä jaettu'><Users2 size={18} /></p>}
                         </div>
                         
                         <p className='text-navlink'>{cleanDataType(file.type)}</p>

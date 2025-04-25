@@ -3,7 +3,7 @@ import { ChevronDown, ChevronDownCircle, ChevronUp, ChevronUpCircle } from 'luci
 import Link from 'next/link';
 import React, { useState, useRef, useEffect } from 'react'
 
-function FolderInfoContainer({ files, folder, folders }) {
+function FolderInfoContainer({ files, folder, folders, shareGroups }) {
     const [open, setOpen] = useState(false);
     const totalSize = files.reduce((acc, file) => acc + (file.size || 0), 0);
     const infoRef = useRef();
@@ -28,7 +28,7 @@ function FolderInfoContainer({ files, folder, folders }) {
                 onClick={() => setOpen(!open)}
                 className={`flex items-center gap-1 ${open ? 'text-red-500 hover:text-red-600' : 'text-foreground hover:text-primary'}`}
             >
-                <p className='font-semibold'>Kansion tiedot</p>
+                <p className='font-semibold'>Tietoa kansiosta</p>
                 {open ? <ChevronUp /> : <ChevronDown />}
             </button>
 
@@ -53,17 +53,15 @@ function FolderInfoContainer({ files, folder, folders }) {
 
                     <li className='flex items-center gap-2 justify-between border-b border-dotted border-gray-400 dark:border-gray-600'>
                         <p>Jaettu ryhmässä:</p>
-                        <p className='text-navlink'>{folder.sharing.group ? (
-                            folder.sharing.groups.map(group => (
-                                <ul className='flex items-center gap-2'>
-                                    <li key={group?.id}>
-                                        <Link className='text-primary hover:text-priamry/75' href={`ryhma/${group.id}`}>{group.name}</Link>
-                                    </li>
-                                </ul>
+                        <ul className='flex items-center gap-2'>
+                            {shareGroups && shareGroups.length > 0 ? (shareGroups.map(group => (
+                                <li key={group.id}>
+                                    <Link className='text-primary hover:text-priamry/75' href={`ryhma/${group.id}`}>{group.name}</Link>
+                                </li>
                             ))) : (
-                                <span>Ei jaettu</span>
+                                <li>Ei jaettu</li>
                             )}
-                        </p>
+                        </ul>
                     </li>
 
                     <li className='flex items-center gap-2 justify-between border-b border-dotted border-gray-400 dark:border-gray-600'>
