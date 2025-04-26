@@ -8,7 +8,7 @@ import PopupLoader from '@/app/_components/_common/PopupLoader';
 import { moveFolderInFolder } from '@/app/file-requests/folders';
 import { moveFileToFolder } from '@/app/file-requests/files';
 
-function MoveSelectedPopup({ selectedObjects, setSelectedObjects, setFolders, setFiles, setMovePopup }) {
+function MoveSelectedPopup({ selectedObjects, setSelectedObjects, folder, setFolders, setFiles, setMovePopup }) {
   const [allFolders, setAllFolders] = useState(null);
   const [targetID, setTargetID] = useState(null);
   const [transferErrors, setTransferErrors] = useState([]);
@@ -67,6 +67,12 @@ function MoveSelectedPopup({ selectedObjects, setSelectedObjects, setFolders, se
   
     if (!targetID) {
       showAlert('Valitse kohdekansio ennen siirtoa.', 'info');
+      setLoading(false);
+      return;
+    }
+
+    if (targetID === folder.id) {
+      showAlert('Siirrettävät kohteet ovat jo tässä kansiossa.', 'info');
       setLoading(false);
       return;
     }
@@ -197,12 +203,19 @@ function MoveSelectedPopup({ selectedObjects, setSelectedObjects, setFolders, se
             value={targetID || ''} // Prioritize preferredFolder
           > 
             <option value="" disabled>Valitse kansio</option>
-            <option value="kansiot" className='font-bold'>&#9656; Kansiot</option> 
-            {allFolders.map((folder) => (
-              <option key={folder.id} value={folder.id}>{folder.name}</option>
+            <option value="kansiot" className='font-thin'>Kansiot</option> 
+            {allFolders.map((f) => (
+              <option 
+                key={f.id} 
+                value={f.id}
+                className={f.id === folder.id ? 'font-bold' : 'font-thin'}
+              >
+                {folder.name}
+              </option>
             ))}
           </select>
           <label htmlFor='folder' className='sr-only'>Valitse kansio</label>
+          <p className='text-xs text-orange-500 mt-1'>- Nykyinen kansio on korostettu.</p>
 
           <button 
               onClick={moveSelectedObjects} 

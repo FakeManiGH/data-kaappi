@@ -361,78 +361,100 @@ export const moveFileToFolder = async (userID, fileID, folderID) => {
             return { success: false, message: 'Käyttäjätietoja ei löytynyt.' };
         }
 
-        await runTransaction(db, async (transaction) => {
-            const fileRef = doc(db, "files", fileID);
-            const fileSnap = await transaction.get(fileRef);
+        // Fetch file data
+        const fileRef = doc(db, "files", fileID);
+        const fileSnap = await getDoc(fileRef);
 
-            if (!fileSnap.exists()) {
-                return { success: false, message: 'Siirrettävää tiedostoa ei löydy.' }
+        if (!fileSnap.exists()) {
+            return { success: false, message: 'Siirrettävää tiedostoa ei löydy.' };
+        }
+
+        const file = fileSnap.data();
+
+        if (userID !== file.userID) {
+            return { success: false, message: `Ei siirto-oikeutta tiedostoon ${file.fileName}.` };
+        }
+
+        // Fetch target folder data
+        const toFolderRef = doc(db, "folders", folderID);
+        const toFolderSnap = await getDoc(toFolderRef);
+
+        if (!toFolderSnap.exists()) {
+            // If target folder doesn't exist, handle removing from current folder
+            if (file.folderID) {
+                const fromFolderRef = doc(db, "folders", file.folderID);
+                const fromFolderSnap = await getDoc(fromFolderRef);
+
+                if (fromFolderSnap.exists()) {
+                    const fromFolder = fromFolderSnap.data();
+
+                    if (userID !== fromFolder.userID) {
+                        return { success: false, message: `Ei oikeuksia kansioon ${fromFolder.folderName}.` };
+                    }
+
+                    if (fromFolder.fileCount <= 0) {
+                        return { success: false, message: `Kansion ${fromFolder.folderName} tiedostomäärä ei voi olla negatiivinen.` };
+                    }
+                }
             }
 
-            const file = fileSnap.data();
+            // Proceed with transaction to remove folder association
+            await runTransaction(db, async (transaction) => {
+                transaction.update(fileRef, { folderID: null });
 
-            if (userID !== file.userID) {
-                return { success: false, message: `Ei siirto-oikeutta tiedostoon ${file.fileName}.` }
-            }
-
-            // Handle target folder
-            const toFolderRef = doc(db, "folders", folderID);
-            const toFolderSnap = await transaction.get(toFolderRef);
-
-            if (!toFolderSnap.exists()) {
-                transaction.update(fileRef, {
-                    folderID: null,
-                });
-        
                 if (file.folderID) {
                     const fromFolderRef = doc(db, "folders", file.folderID);
                     transaction.update(fromFolderRef, { fileCount: increment(-1) });
                 }
-    
-                return { success: true };
-            }
+            });
 
-            const toFolder = toFolderSnap.data();
+            return { success: true, message: "Tiedosto siirretty juurikansioon." };
+        }
 
-            if (userID !== toFolder.userID) {
-                return { success: false, message: `Ei oikeuksia kansioon ${toFolder.folderName}.` }
-            }
+        const toFolder = toFolderSnap.data();
 
-            // Handle from folder (if applicable)
-            const fromFolderID = file.folderID;
-            if (fromFolderID) {
-                const fromFolderRef = doc(db, "folders", fromFolderID);
-                const fromFolderSnap = await transaction.get(fromFolderRef);
+        if (userID !== toFolder.userID) {
+            return { success: false, message: `Ei oikeuksia kansioon ${toFolder.folderName}.` };
+        }
 
-                if (!fromFolderSnap.exists()) {
-                    return { success: false, message: `Kansiota ${fromFolderID} ei löydy.` }
-                }
+        // Handle "from folder" logic
+        const fromFolderID = String(file.folderID); // Normalize to string
+        const normalizedFolderID = String(folderID); // Normalize to string
 
+        if (fromFolderID && fromFolderID === normalizedFolderID) {
+            return { success: false, message: `Tiedosto on jo kansiossa ${toFolder.folderName}.` };
+        }
+
+        if (fromFolderID) {
+            const fromFolderRef = doc(db, "folders", fromFolderID);
+            const fromFolderSnap = await getDoc(fromFolderRef);
+
+            if (fromFolderSnap.exists()) {
                 const fromFolder = fromFolderSnap.data();
 
                 if (userID !== fromFolder.userID) {
-                    return { success: false, message: `Ei oikeuksia kansioon ${fromFolder.folderName}.` }
+                    return { success: false, message: `Ei oikeuksia kansioon ${fromFolder.folderName}.` };
                 }
 
-                // Prevent same folder transfer
-                if (toFolder.folderID == fromFolder.folderID) {
-                    return { success: false, message: `Tiedosto on jo kansiossa ${toFolder.folderName}.` }
-                };
-
-                // Prevent negative fileCount
                 if (fromFolder.fileCount <= 0) {
-                    return { success: false, message: `Kansion ${fromFolder.folderName} tiedostomäärä ei voi olla negatiivinen.` }
+                    return { success: false, message: `Kansion ${fromFolder.folderName} tiedostomäärä ei voi olla negatiivinen.` };
                 }
-
-                // Decrement file count in the "from folder"
-                transaction.update(fromFolderRef, { fileCount: increment(-1) });
             }
+        }
 
+        // Perform the transaction to move the file
+        await runTransaction(db, async (transaction) => {
             // Update the file's folderID
             transaction.update(fileRef, { folderID });
 
             // Increment file count in the "to folder"
             transaction.update(toFolderRef, { fileCount: increment(1) });
+
+            // Decrement file count in the "from folder" if applicable
+            if (fromFolderID) {
+                const fromFolderRef = doc(db, "folders", fromFolderID);
+                transaction.update(fromFolderRef, { fileCount: increment(-1) });
+            }
         });
 
         // Log the successful operation

@@ -194,6 +194,7 @@ function Page({ params }) {
             <MoveSelectedPopup 
                 selectedObjects={selectedObjects} 
                 setSelectedObjects={setSelectedObjects}
+                folder={folder}
                 setFolders={setFolders}
                 setFiles={setFiles} 
                 setMovePopup={setMovePopup} 

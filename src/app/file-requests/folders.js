@@ -172,10 +172,13 @@ export const getFolderContent = async (userID, folderID) => {
         const folderTemp = folderSnap.data();
 
         // Verify access rights
-        const isUnauthorized = !folderTemp.linkShare && !folderTemp.groupShare && userID !== folderTemp.userID;
-        if (isUnauthorized) {
-            return { success: false, message: 'Sinulla ei ole oikeutta tähän sisältöön.' };
+        if (!folderTemp.linkShare && !folderTemp.shareGroups.length && userID !== folderTemp.userID) {
+            return { success: false, message: 'Ei tarvittavia oikeuksia kansion sisältöön.' }
         }
+
+
+        // TODO (Group rights, link share rights)
+
 
         // Fetch subfolders (if exists)
         let foldersTemp = [];
