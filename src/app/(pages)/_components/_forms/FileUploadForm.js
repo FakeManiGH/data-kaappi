@@ -10,7 +10,7 @@ import { getFileIcon } from '@/utils/GetFileIcon';
 import { cleanDataType, simplifyFileType, transformFileDataPublic, translateFileSize } from '@/utils/DataTranslation';
 import { generateRandomString } from '@/utils/GenerateRandomString';
 
-function FileUploadForm({ folders, setNewFolderPopup }) {
+function FileUploadForm({ folders, currentFolder }) {
     const [isDragging, setIsDragging] = useState(false);
     const [newFiles, setNewFiles] = useState([]);
     const [fileErrors, setFileErrors] = useState([]);
@@ -190,7 +190,7 @@ function FileUploadForm({ folders, setNewFolderPopup }) {
                             } catch (error) {
                                 console.error('Error saving file data or updating Firestore:', error);
     
-                                // Delete the uploaded file from Firebase Storage if Firestore transaction fails
+                                // Delete the uploaded file if Firestore transaction fails
                                 await deleteObject(storageRef).catch((deleteError) => {
                                     console.error('Error deleting file from storage:', deleteError);
                                 });
@@ -226,7 +226,6 @@ function FileUploadForm({ folders, setNewFolderPopup }) {
             while (activeUploads > 0 || uploadQueue.length > 0) {
                 await new Promise((resolve) => setTimeout(resolve, 100)); // Wait for all uploads to finish
             }
-            setFiles((prevFiles) => [...prevFiles, ...uploadedFiles]);
             setNewFiles([]);
             showAlert('Tiedostot tallennettu onnistuneesti.', 'success');
             setUploadPopup(false);

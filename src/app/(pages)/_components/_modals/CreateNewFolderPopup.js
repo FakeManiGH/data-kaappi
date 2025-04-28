@@ -8,7 +8,7 @@ import { transformFolderDataPublic } from '@/utils/DataTranslation'
 import { folderNameRegex } from '@/utils/Regex'
 import PopupLoader from '@/app/_components/_common/PopupLoader'
 
-function CreateFolder({ setNewFolderPopup, folders, setFolders }) {
+function CreateNewFolder({ setNewFolderPopup, folders, setFolders }) {
   const [apiLoading, setApiLoading] = useState(false);
   const [nameError, setNameError] = useState(null);
   const { showAlert } = useAlert()
@@ -42,7 +42,7 @@ function CreateFolder({ setNewFolderPopup, folders, setFolders }) {
         const response = await createFolder(folderUser, folderName)
         if (response.success) {
           setFolders((prevFolders) => [...prevFolders, response.folder]);
-          showAlert(response.message || 'Uusi kansio luotu onnistuneesti.', 'success');
+          showAlert('Uusi kansio luotu onnistuneesti.', 'success');
           e.target.reset();
           setNewFolderPopup(false);
         } else {
@@ -50,7 +50,7 @@ function CreateFolder({ setNewFolderPopup, folders, setFolders }) {
         }
 
       } catch (error) {
-        console.error("Error creating folder: ", error);
+        console.error("Error creating a new folder: ", error);
         showAlert('Kansion luonti epäonnistui. Yritä uudelleen.', 'error');
   
       } finally {
@@ -106,4 +106,4 @@ function CreateFolder({ setNewFolderPopup, folders, setFolders }) {
   )
 }
 
-export default CreateFolder
+export default CreateNewFolder

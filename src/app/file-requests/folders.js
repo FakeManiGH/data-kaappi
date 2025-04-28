@@ -4,7 +4,7 @@ import { doc, setDoc, deleteDoc, getDoc, updateDoc, orderBy, collection, query, 
 import { db } from '@/../firebaseConfig';
 import bcrypt from 'bcrypt';
 import { folderNameRegex, groupIdRegex, passwordRegex } from "@/utils/Regex";
-import { transformFileDataPublic, transformFolderDataPrivate, transformFolderDataPublic, transformGroupDataPublic } from "@/utils/DataTranslation";
+import { transformFileDataPublic, transformFolderDataPublic, transformGroupDataPublic } from "@/utils/DataTranslation";
 import { generateRandomString } from "@/utils/GenerateRandomString";
 import { parse } from "date-fns";
 
@@ -32,10 +32,9 @@ export const createFolder = async (user, folderName) => {
             docType: 'folder',
             folderID: folderID,
             folderName: folderName,
-            parentFolderName: null,
+            parentName: null,
             parentID: null,
             fileCount: parseInt(0),
-            subFolders: parseInt(0),
             userID: user.id,
             userName: user.name,
             userEmail: user.email,
@@ -52,7 +51,7 @@ export const createFolder = async (user, folderName) => {
 
         const publicFolder = transformFolderDataPublic(newFolder);
         console.log(`New base-folder ${folderName} created with ID ${folderID}.`);
-        return { success: true, folder: publicFolder, message: 'Kansio luotu onnistuneesti.' }
+        return { success: true, folder: publicFolder }
     } catch (error) {
         console.error("Error creating folder: ", error);
         return { success: false, message: 'Kansion luomisessa tapahtui virhe, yritä uudelleen.' }
@@ -95,7 +94,7 @@ export const createSubfolder = async (user, parentFolder, folderName) => {
                 docType: 'folder',
                 folderID,
                 folderName,
-                parentFolderName: parentFolder.name,
+                parentName: parentFolder.name,
                 parentID: parentFolder.id,
                 fileCount: 0,
                 userID: user.id, 
@@ -308,37 +307,31 @@ export const getFolderShareGroupsInfo = async (groupIdArray, batchSize = 10) => 
 
 
 // UPDATE
-// Update folder file count
-export const updateFolderFileCount = async (folderID, incrementBy) => {
-    const folderRef = doc(db, 'folders', folderID);
-    try {
-        await updateDoc(folderRef, { fileCount: increment(incrementBy) });
-    } catch (error) {
-        console.error("Error updating folder file count: ", error);
-    }
-}
-
 // Update folder name
 export const updateFolderName = async (userID, folderID, newName) => {
     try {
-        // Original data
+        if (!userID || !folderID || !newName) {
+            return { success: false, message: 'Pyynnöstä puuttuu tietoja.' }
+        }
+
+        // Name validation
+        if (!folderNameRegex.test(newName)) {
+            return { success: false, message: 'Kansion nimen tulee olla 2-50 merkkiä pitkä, eikä se saa sisältää <, >, /, \\ merkkejä.' }
+        }
+
+        // Data
         const folderRef = doc(db, 'folders', folderID);
         const docSnap = await getDoc(folderRef);
 
         if (!docSnap.exists()) {
-            throw new Error("Virhe, kansiota ei löytynyt.");
+            return { success: false, message: `Kansiota ${folderID} ei löytynyt.` }
         }
 
         const originalFolder = docSnap.data();
 
         // Authorization
         if (userID !== originalFolder.userID) {
-            throw new Error("Luvaton muutospyyntö.");
-        }
-
-        // Data validation
-        if (!folderNameRegex.test(newName)) {
-            throw new Error("Virheellinen kansion nimi. Nimen tulee olla 2-50 merkkiä pitkä, eikä se saa sisältää <, >, /, \\ merkkejä.");
+            return { success: false, message: 'Ei tarvittavia oikeuksia tiedostoon.' }
         }
 
         // Update 
@@ -350,7 +343,7 @@ export const updateFolderName = async (userID, folderID, newName) => {
     }
 };
 
-// Set/update folder password
+// Set or update folder password
 export const updateFolderPassword = async (userID, folderID, password) => {
     try {
         // Original
@@ -599,7 +592,7 @@ export const moveFolderInFolder = async (userID, folderID, toFolderID) => {
             if (!toFolderID) {
                 transaction.update(folderRef, {
                     parentID: null,
-                    parentFolderName: null,
+                    parentName: null,
                 });
         
                 if (folderData.parentID) {
@@ -639,7 +632,7 @@ export const moveFolderInFolder = async (userID, folderID, toFolderID) => {
             // Update folder's parent
             transaction.update(folderRef, {
                 parentID: toFolderID,
-                parentFolderName: toFolderData.folderName,
+                parentName: toFolderData.folderName,
             });
         });
   

@@ -5,9 +5,9 @@ import { useNavigation } from '@/app/contexts/NavigationContext';
 import { getUserFolders } from '@/app/file-requests/folders';
 import PageLoading from '@/app/_components/_common/PageLoading';
 import ErrorView from '../_components/ErrorView';
-import CreateFolder from '../_components/_modals/CreateNewFolderPopup';
-import FileUploadForm from './_components/FileUploadForm';
+import FileUploadForm from '../_components/_forms/FileUploadForm';
 import ContentNotFound from '@/app/_components/_common/ContentNotFound';
+import CreateNewFolder from '../_components/_modals/CreateNewFolderPopup';
 
 
 function Page() {
@@ -61,7 +61,7 @@ function Page() {
 
       <FileUploadForm folders={folders} setNewFolderPopup={setNewFolderPopup} />
       
-      {newFolderPopup && <CreateFolder setNewFolderPopup={setNewFolderPopup} folders={folders} setFolders={setFolders} />}
+      {newFolderPopup && <CreateNewFolder setNewFolderPopup={setNewFolderPopup} folders={folders} setFolders={setFolders} />}
     </main>
   );
 }

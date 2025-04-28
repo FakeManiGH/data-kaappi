@@ -7,7 +7,7 @@ import {
 import { db } from '@/../firebaseConfig';
 import bcrypt from 'bcrypt';
 import { fileNameRegex, passwordRegex } from "@/utils/Regex";
-import { transformFileDataPrivate, transformFileDataPublic } from "@/utils/DataTranslation";
+import { transformFileDataPublic } from "@/utils/DataTranslation";
 import { traceId } from "next/dist/trace/shared";
 import { trace } from "next/dist/trace";
 
@@ -191,24 +191,28 @@ export const verifyFilePassword = async (fileID, password) => {
 // Update file name
 export const updateFileName = async (userID, fileID, newName) => {
     try {
-        // Original data
+        if (!userID || !fileID || !newName) {
+            return { success: false, message: 'Pyynnöstä puuttuu tietoja.' }
+        }
+
+        // Name validation
+        if (!fileNameRegex.test(newName)) {
+            return { success: false, message: 'Tiedoston nimen tulee olla 1-75 merkkiä pitkä, eikä se saa sisältää <, >, /, \\ -merkkejä.' }
+        }
+
+        // Data
         const fileRef = doc(db, 'files', fileID);
         const docSnap = await getDoc(fileRef);
 
         if (!docSnap.exists()) {
-            throw new Error("Tiedostoa ei löytynyt.");
+           return { success: false, message: `Tiedostoa ${fileID} ei löytynyt.` }
         }
 
         const originalFile = docSnap.data();
 
         // Authorization
         if (userID !== originalFile.userID) {
-            throw new Error("Luvaton muutospyyntö.");
-        }
-
-        // Data validation
-        if (!fileNameRegex.test(newName)) {
-            throw new Error("Virheellinen kansion nimi. Nimen tulee olla 2-50 merkkiä pitkä, eikä se saa sisältää <, >, /, \\ merkkejä.");
+            return { success: false, message: 'Ei tarvittavia oikeuksia tiedostoon.' }
         }
 
         // Update 

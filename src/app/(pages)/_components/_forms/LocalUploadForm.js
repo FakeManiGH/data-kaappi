@@ -1,4 +1,4 @@
-import { X, FilePlus2, Music2 } from 'lucide-react'
+import { X, FilePlus2, Music2, FolderPlus } from 'lucide-react'
 import React, { useState, useRef } from 'react';
 import { validateFile } from '@/utils/FileValidation';
 import { useAlert } from '@/app/contexts/AlertContext';
@@ -10,7 +10,7 @@ import { getFileIcon } from '@/utils/GetFileIcon';
 import { cleanDataType, simplifyFileType, transformFileDataPublic, translateFileSize } from '@/utils/DataTranslation';
 import { generateRandomString } from '@/utils/GenerateRandomString';
 
-function FileUploadForm({ currentFolder, setFiles, setUploadPopup }) {
+function LocalUploadForm({ setFiles, currentFolder, setUploadPopup }) {
     const [isDragging, setIsDragging] = useState(false);
     const [newFiles, setNewFiles] = useState([]);
     const [fileErrors, setFileErrors] = useState([]);
@@ -20,6 +20,12 @@ function FileUploadForm({ currentFolder, setFiles, setUploadPopup }) {
     const { showAlert } = useAlert();
     const { user } = useUser();
     const storage = getStorage(app);
+
+    // Change selected folder
+    const handleFolderChange = (e) => {
+        const folder = e.target.value;
+        setSelectedFolder(folder);
+    }
     
     // Handle drag enter
     const handleDragEnter = (event) => {
@@ -104,85 +110,100 @@ function FileUploadForm({ currentFolder, setFiles, setUploadPopup }) {
             const index = filesToUpload.indexOf(file); // Get the index of the file
             activeUploads++; // Increment active uploads count
     
-            const uploadPromise = new Promise((resolve, reject) => {
+            const uploadPromise = new Promise(async (resolve, reject) => {
                 const fileID = generateRandomString(11);
                 const storageRef = ref(storage, `file-base/${user.id}/${fileID}`);
-                const uploadTask = uploadBytesResumable(storageRef, file);
     
-                uploadTask.on(
-                    'state_changed',
-                    (snapshot) => {
-                        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                        uploadProgressArray[index] = progress; // Update progress for this file
-                        setUploadProgress([...uploadProgressArray]); // Update state
-                    },
-                    (error) => {
-                        console.error('Error uploading file:', error);
-                        setFileErrors((prevErrors) => [...prevErrors, error.message]);
-                        reject(error);
-                    },
-                    async () => {
-                        try {
-                            const downloadURL = await getDownloadURL(storageRef);
-                            const shareURL = process.env.NEXT_PUBLIC_BASE_URL + 'jaettu-tiedosto/' + fileID;
+                try {
+                    // Upload the file to Firebase Storage
+                    const uploadTask = uploadBytesResumable(storageRef, file);
     
-                            const fileData = {
-                                docType: 'file',
-                                fileID,
-                                fileName: file.name,
-                                fileSize: parseFloat(file.size),
-                                fileBase: simplifyFileType(file.type),
-                                fileType: file.type,
-                                fileUrl: downloadURL,
-                                folderID: currentFolder ? currentFolder.id : null,
-                                linkShare: false,
-                                shareUrl: shareURL,
-                                groupShare: false,
-                                shareGroups: [],
-                                pwdProtected: false,
-                                pwd: '',
-                                userName: user.fullName,
-                                userID: user.id,
-                                userEmail: user.primaryEmailAddress.emailAddress,
-                                uploadedAt: Timestamp.fromDate(new Date()),
-                                modifiedAt: Timestamp.fromDate(new Date()),
-                            };
+                    uploadTask.on(
+                        'state_changed',
+                        (snapshot) => {
+                            const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                            uploadProgressArray[index] = progress; // Update progress for this file
+                            setUploadProgress([...uploadProgressArray]); 
+                        },
+                        (error) => {
+                            console.error('Error uploading file:', error);
+                            setFileErrors((prevErrors) => [...prevErrors, error.message]);
+                            reject(error);
+                        },
+                        async () => {
+                            try {
+                                // Get the download URL after the file is uploaded
+                                const downloadURL = await getDownloadURL(storageRef);
     
-                            await runTransaction(db, async (transaction) => {
-                                if (currentFolder) {
-                                    const folderRef = doc(db, 'folders', currentFolder.id);
-                                    const folderSnap = await transaction.get(folderRef);
+                                // Prepare file data for Firestore
+                                const fileData = {
+                                    docType: 'file',
+                                    fileID,
+                                    fileName: file.name,
+                                    fileSize: parseFloat(file.size),
+                                    fileBase: simplifyFileType(file.type),
+                                    fileType: file.type,
+                                    fileUrl: downloadURL,
+                                    folderID: currentFolder ? currentFolder.id : null,
+                                    linkShare: false,
+                                    shareUrl: process.env.NEXT_PUBLIC_BASE_URL + 'jaettu-tiedosto/' + fileID,
+                                    shareGroups: [],
+                                    pwdProtected: false,
+                                    pwd: '',
+                                    userName: user.fullName,
+                                    userID: user.id,
+                                    userEmail: user.primaryEmailAddress.emailAddress,
+                                    uploadedAt: Timestamp.fromDate(new Date()),
+                                    modifiedAt: Timestamp.fromDate(new Date()),
+                                };
     
-                                    if (!folderSnap.exists()) {
-                                        throw new Error(`Kansiota ei löytynyt tiedostolle ${file.name}`);
+                                // Firestore transaction (file-document)
+                                await runTransaction(db, async (transaction) => {
+                                    const userRef = doc(db, 'users', user.id);
+                                    const userSnap = await transaction.get(userRef);
+    
+                                    if (!userSnap.exists()) {
+                                        throw new Error('Käyttäjätietoja ei löytynyt.');
                                     }
     
-                                    transaction.update(folderRef, { fileCount: increment(1) });
-                                }
+                                    if (currentFolder) {
+                                        const folderRef = doc(db, 'folders', currentFolder.id);
+                                        const folderSnap = await transaction.get(folderRef);
     
-                                const userRef = doc(db, 'users', user.id);
-                                const userSnap = await transaction.get(userRef);
+                                        if (!folderSnap.exists()) {
+                                            throw new Error(`Kansiota ei löytynyt tiedostolle ${file.name}`);
+                                        }
     
-                                if (!userSnap.exists()) {
-                                    throw new Error('Käyttäjätietoja ei löytynyt.');
-                                }
+                                        transaction.update(folderRef, { fileCount: increment(1) });
+                                    }
     
-                                const fileRef = doc(db, 'files', fileID);
-                                transaction.set(fileRef, fileData);
+                                    const fileRef = doc(db, 'files', fileID);
+                                    transaction.set(fileRef, fileData);
     
-                                const currentUsedSpace = userSnap.data().usedSpace || 0;
-                                transaction.update(userRef, { usedSpace: currentUsedSpace + file.size });
-                            });
+                                    const currentUsedSpace = userSnap.data().usedSpace || 0;
+                                    transaction.update(userRef, { usedSpace: currentUsedSpace + file.size });
+                                });
     
-                            uploadedFiles.push(transformFileDataPublic(fileData));
-                            resolve();
-                        } catch (error) {
-                            console.error('Error saving file data or updating Firestore:', error);
-                            setFileErrors((prevErrors) => [...prevErrors, `Tiedoston ${file.name} tallentaminen epäonnistui.`]);
-                            reject(error);
+                                uploadedFiles.push(transformFileDataPublic(fileData));
+                                resolve();
+                            } catch (error) {
+                                console.error('Error saving file data or updating Firestore:', error);
+    
+                                // Delete the uploaded file if Firestore transaction fails
+                                await deleteObject(storageRef).catch((deleteError) => {
+                                    console.error('Error deleting file from storage:', deleteError);
+                                });
+    
+                                setFileErrors((prevErrors) => [...prevErrors, `Tiedoston ${file.name} tallentaminen epäonnistui.`]);
+                                reject(error);
+                            }
                         }
-                    }
-                );
+                    );
+                } catch (error) {
+                    console.error('Error uploading file:', error);
+                    setFileErrors((prevErrors) => [...prevErrors, `Tiedoston ${file.name} tallentaminen epäonnistui.`]);
+                    reject(error);
+                }
             });
     
             uploadPromise.finally(() => {
@@ -228,14 +249,14 @@ function FileUploadForm({ currentFolder, setFiles, setUploadPopup }) {
                 className='relative flex items-center justify-center w-full'
                 onDragEnter={handleDragEnter}
                 onDragLeave={handleDragLeave}
-                onDragOver={(e) => e.preventDefault()} // Prevent default behavior
+                onDragOver={(e) => e.preventDefault()} 
                 onDrop={handleFileDrop}
             >
                 {isDragging && (
                     <span
                         className="absolute w-full top-0 left-0 h-full z-10"
-                        onDragOver={(e) => e.preventDefault()} // Prevent default behavior
-                        onDrop={handleFileDrop} // Handle file drop
+                        onDragOver={(e) => e.preventDefault()} 
+                        onDrop={handleFileDrop}
                     />
                 )}
                 <label
@@ -341,4 +362,4 @@ function FileUploadForm({ currentFolder, setFiles, setUploadPopup }) {
     )
 }
 
-export default FileUploadForm
+export default LocalUploadForm

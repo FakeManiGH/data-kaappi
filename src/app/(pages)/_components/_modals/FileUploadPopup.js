@@ -1,8 +1,8 @@
 import { X, } from 'lucide-react'
 import React from 'react';
-import FileUploadForm from './FileUploadForm';
+import LocalUploadForm from '../_forms/LocalUploadForm';
 
-function UploadFilesPopup({ files, setFiles, setUploadPopup }) {
+function FileUploadPopup({ setFiles, currentFolder, setUploadPopup }) {
 
     return (
         <span className='fixed z-50 inset-0 flex justify-center items-center bg-black/50 px-4 py-2'>
@@ -19,10 +19,10 @@ function UploadFilesPopup({ files, setFiles, setUploadPopup }) {
                 <h2 className="text-2xl md:text-3xl mb-2 text-center font-bold">Tallenna tiedostoja</h2>
                 <p className='text-sm'>Lisää tiedostoja kaappiisi.</p>
                 
-                <FileUploadForm files={files} setFiles={setFiles} setUploadPopup={setUploadPopup} />
+                <LocalUploadForm setFiles={setFiles} currentFolder={currentFolder} setUploadPopup={setUploadPopup} />
             </div>
         </span>
     )
 }
 
-export default UploadFilesPopup
+export default FileUploadPopup

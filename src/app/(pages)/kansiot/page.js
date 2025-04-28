@@ -2,7 +2,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigation } from '@/app/contexts/NavigationContext';
 import FolderContainer from './_components/FolderContainer';
-import CreateFolder from './_components/CreateFolder';
 import { FilePlus, FolderPlus, Grid, List } from 'lucide-react';
 import { useUser } from '@clerk/nextjs';
 import { useAlert } from '@/app/contexts/AlertContext';
@@ -10,13 +9,14 @@ import PageLoading from '@/app/_components/_common/PageLoading';
 import ErrorView from '../_components/ErrorView';
 import { getUserBaseFiles } from '@/app/file-requests/files';
 import { getUserBaseFolders } from '@/app/file-requests/folders';
-import Link from 'next/link';
-import RenamePopup from './_components/RenamePopup';
 import PasswordPopup from './_components/PasswordPopup';
 import FolderNavigation from './_components/FolderNavigation';
 import DeletePopup from './_components/DeletePopup';
 import MoveSelectedPopup from './_components/MoveSelectedPopup';
-import UploadFilesPopup from './_components/UploadFilesPopup';
+import CreateNewFolder from '../_components/_modals/CreateNewFolderPopup';
+import FileUploadPopup from '../_components/_modals/FileUploadPopup';
+import FileRenamePopup from '../_components/_modals/FileRenamePopup';
+import FolderRenamePopup from '../_components/_modals/FolderRenamePopup';
 
 
 function Page() {
@@ -38,7 +38,7 @@ function Page() {
 
 
     useEffect(() => {
-        const fetchFolders = async () => {
+        const fetchPageData = async () => {
             if (isLoaded && user) {
                 try {
                     const [foldersResponse, filesResponse] = await Promise.all([
@@ -58,7 +58,7 @@ function Page() {
                         throw new Error(filesResponse.message || 'Virhe tiedostojen hakemisessa.');
                     }
                 } catch (error) {
-                    setPageError('Palvelinvirhe! Yritä uudelleen.');
+                    setPageError('Tietojen hakemisessa tapahtui virhe: ' + error.message);
                     showAlert(error.message || 'Palvelinvirhe! Yritä uudelleen.', 'error');
                 } finally {
                     setLoading(false);
@@ -70,11 +70,7 @@ function Page() {
         };
     
         setCurrentIndex('/kansiot');
-        fetchFolders();
-    
-        return () => {
-            setCurrentIndex('');
-        };
+        fetchPageData();
     }, [isLoaded, user, setCurrentIndex, navigatePage]);
 
 
@@ -155,6 +151,8 @@ function Page() {
                 setSelectedObjects={setSelectedObjects}
             />
 
+
+            {/* POPUPS / MODALS */}
             {movePopup && 
                 <MoveSelectedPopup 
                     selectedObjects={selectedObjects} 
@@ -165,9 +163,33 @@ function Page() {
                 />
             }
 
-            {createFolder && <CreateFolder folders={folders} setFolders={setFolders} setCreateFolder={setCreateFolder} />}
-            {uploadPopup && <UploadFilesPopup files={files} setFiles={setFiles} setUploadPopup={setUploadPopup} />}
-            {renamePopup && <RenamePopup selectedObject={selectedObjects[0]} setFolders={setFolders} setFiles={setFiles} setSelectedObjects={setSelectedObjects} setRenamePopup={setRenamePopup} />}
+            {createFolder && 
+                <CreateNewFolder 
+                    folders={folders} 
+                    setFolders={setFolders} 
+                    setNewFolderPopup={setCreateFolder} 
+                />
+            }
+
+            {renamePopup && (
+                selectedObjects[0].docType === 'file' ? (
+                    <FileRenamePopup
+                        selectedFile={selectedObjects[0]}
+                        setFiles={setFiles}
+                        setSelectedObjects={setSelectedObjects}
+                        setRenamePopup={setRenamePopup}
+                    />
+                ) : (
+                    <FolderRenamePopup
+                        selectedFolder={selectedObjects[0]}
+                        setFolders={setFolders}
+                        setSelectedObjects={setSelectedObjects}
+                        setRenamePopup={setRenamePopup}
+                    />
+                )
+            )}
+
+            {uploadPopup && <FileUploadPopup setFiles={setFiles} currentFolder={null} setUploadPopup={setUploadPopup} />}
             {passwordPopup && <PasswordPopup selectedObject={selectedObjects[0]} setFolders={setFolders} setFiles={setFiles} setSelectedObjects={setSelectedObjects} setPasswordPopup={setPasswordPopup} />}
             {deletePopup && <DeletePopup selectedObjects={selectedObjects} setSelectedObjects={setSelectedObjects} setFolders={setFolders} setFiles={setFiles} setDeletePopup={setDeletePopup} />}
         </main>

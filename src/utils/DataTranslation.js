@@ -67,13 +67,11 @@ export const transformFolderDataPublic = (folder) => {
         name: folder.folderName,
         parent: {
             id: folder.parentID,
-            name: folder.parentFolderName
+            name: folder.parentName
         },
         fileCount: folder.fileCount,
         user: {
-            id: folder.userID,
             name: folder.userName,
-            email: folder.userEmail
         },
         created: new Date(folder.createdAt.seconds * 1000),
         modified: new Date(folder.modifiedAt.seconds * 1000),
@@ -86,25 +84,6 @@ export const transformFolderDataPublic = (folder) => {
     };
 }
 
-// Transform folder data for private use
-export const transformFolderDataPrivate = (folder) => {
-    return {
-        docType: 'folder',
-        folderID: folder.id,
-        folderName: folder.name,
-        parentFolderName: parentFolder.name,
-        parentID: parent.id,
-        fileCount: folder.fileCount,
-        userID: folder.user.id,
-        userName: folder.user.name,
-        userEmail: folder.user.email,
-        createdAt: folder.created instanceof Date ? folder.created : new Date(folder.created.seconds * 1000),
-        modifiedAt: folder.modified instanceof Date ? folder.modified : new Date(folder.modified.seconds * 1000),
-        pwdProtected: folder.passwordProtected,
-        linkShare: folder.sharing.link,
-        shareGroups: folder.sharing.groups,
-    }
-}
 
 
 // CONVERT FILES
@@ -117,45 +96,21 @@ export const transformFileDataPublic = (file) => {
         size: file.fileSize,
         type: file.fileType,
         url: file.fileUrl,
-        shareUrl: file.shareUrl,
         folder: file.folderID,
-        linkShare: file.linkShare,
-        groupShare: file.groupShare,
-        shareGroups: file.shareGroups,
         passwordProtected: file.pwdProtected,
-        uploadedBy: file.uploadedBy,
+        sharing: {
+            link: file.linkShare,
+            url: file.shareUrl,
+            groups: file.shareGroups
+        },
         user: {
-            id: file.userID,
             name: file.userName,
-            email: file.userEmail
         },
         uploaded: new Date(file.uploadedAt.seconds * 1000),
         modified: new Date(file.modifiedAt.seconds * 1000)
     };
 }
 
-// transform file data to private file data
-export const transformFileDataPrivate = (file) => {
-    return {
-        fileID: file.id,
-        docType: file.docType,
-        fileName: file.name,
-        fileSize: file.size,
-        fileType: file.type,
-        fileUrl: file.url,
-        shareUrl: file.shareUrl,
-        folderID: file.folder,
-        linkShare: file.linkShare,
-        groupShare: file.groupShare,
-        shareGroups: file.shareGroups,
-        pwdProtected: file.passwordProtected,
-        userName: file.user.name,
-        userEmail: file.user.email,
-        userID: file.user.id,
-        uploadedAt: file.uploaded instanceof Date ? file.uploaded : new Date(file.uploadedAt.seconds * 1000),
-        modifiedAt: file.modified instanceof Date ? file.modified : new Date(file.modifiedAt.seconds * 1000)
-    };
-}
 
 
 // CONVERT GROUPS
@@ -175,22 +130,5 @@ export const transformGroupDataPublic = (group) => {
             name: group.userName,
             email: group.userEmail
         }
-    }
-}
-
-// Convert group-data private
-export const transformGroupDataPrivate = (group) => {
-    return {
-        docType: group.docType,
-        groupID: group.id,
-        groupName: group.name,
-        groupDesc: group.desc,
-        groupVisibility: group.visibility,
-        createdAt: group.created instanceof Date ? group.created : new Date(group.created.seconds * 1000),
-        pwdProtected: group.passwordProtected,
-        groupMembers: group.members,
-        userID: group.user.id,
-        userName: group.user.name,
-        userEmail: group.user.email
     }
 }
