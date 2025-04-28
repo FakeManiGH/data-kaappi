@@ -6,6 +6,7 @@ import bcrypt from 'bcrypt';
 import { folderNameRegex, groupIdRegex, passwordRegex } from "@/utils/Regex";
 import { transformFileDataPublic, transformFolderDataPrivate, transformFolderDataPublic, transformGroupDataPublic } from "@/utils/DataTranslation";
 import { generateRandomString } from "@/utils/GenerateRandomString";
+import { parse } from "date-fns";
 
 
 
@@ -34,6 +35,7 @@ export const createFolder = async (user, folderName) => {
             parentFolderName: null,
             parentID: null,
             fileCount: parseInt(0),
+            subFolders: parseInt(0),
             userID: user.id,
             userName: user.name,
             userEmail: user.email,
@@ -43,7 +45,6 @@ export const createFolder = async (user, folderName) => {
             pwd: null,
             linkShare: false,
             shareUrl: process.env.NEXT_PUBLIC_BASE_URL + 'jaettu-kansio/' + folderID,
-            groupShare: false,
             shareGroups: [],
         };
 
@@ -106,7 +107,6 @@ export const createSubfolder = async (user, parentFolder, folderName) => {
                 pwd: '',
                 linkShare: false,
                 shareUrl: process.env.NEXT_PUBLIC_BASE_URL + 'jaettu-kansio/' + folderID,
-                groupShare: false,
                 shareGroups: [],
             };
 
@@ -171,15 +171,11 @@ export const getFolderContent = async (userID, folderID) => {
 
         const folderTemp = folderSnap.data();
 
-        // Verify access rights
-        if (!folderTemp.linkShare && !folderTemp.shareGroups.length && userID !== folderTemp.userID) {
+        // Access Rights
+        if (userID !== folderTemp.userID) {
             return { success: false, message: 'Ei tarvittavia oikeuksia kansion sisältöön.' }
         }
-
-
-        // TODO (Group rights, link share rights)
-
-
+    
         // Fetch subfolders (if exists)
         let foldersTemp = [];
         try {
@@ -215,11 +211,7 @@ export const getFolderContent = async (userID, folderID) => {
         const folders = foldersTemp.map(folder => transformFolderDataPublic(folder));
         const files = filesTemp.map(file => transformFileDataPublic(file));
 
-        // Password protection
-        if (folderTemp.pwdProtected && userID !== folderTemp.userID) {
-            return { success: true, folder, folders, files, password };
-        }
-
+        // SUCCESS return
         return { success: true, folder, folders, files };
     } catch (error) {
         console.error("Error fetching folder content: ", error);
@@ -676,7 +668,7 @@ export const changeFolderLinkSharing = async (userID, folderID, shareValue) => {
         const folder = folderSnap.data();
 
         if (userID !== folder.userID) {
-            return { success: false, message: 'Ei muutosoikeuksia kansioon.' }
+            return { success: false, message: 'Ei tarvittavia oikeuksia muuttaa kansion jakamista.' }
         }
 
         await updateDoc(folderRef, { linkShare: shareValue });

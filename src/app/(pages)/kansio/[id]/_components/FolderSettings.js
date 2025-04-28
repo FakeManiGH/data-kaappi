@@ -94,7 +94,8 @@ function FolderSettings({ folder, setFolder, shareGroups, setShareGroups,  setti
             const response = await changeFolderLinkSharing(user.id, folder.id, newShareValue);
     
             if (response.success) {
-                showAlert('Kansion jakamista muutettu.', 'info');
+                if (newShareValue === true) showAlert('Kansion jakaminen linkillä otettu käyttöön.', 'info');
+                else showAlert('Kansion jakaminen linkillä poistettu käytöstä.', 'info');
                 setShareLink(newShareValue); 
                 setFolder({ 
                     ...folder, 

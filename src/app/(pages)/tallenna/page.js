@@ -1,28 +1,23 @@
 "use client";
 import React, { useState, useEffect } from 'react';
-import UploadForm from './_components/UploadForm';
-import FilePreview from './_components/FilePreview';
 import { useUser } from '@clerk/nextjs';
 import { useNavigation } from '@/app/contexts/NavigationContext';
-import SpaceMeterBar from '@/app/_components/_common/SpaceMeterBar';
-import { getUserDocument } from '@/app/file-requests/api';
 import { getUserFolders } from '@/app/file-requests/folders';
 import PageLoading from '@/app/_components/_common/PageLoading';
 import ErrorView from '../_components/ErrorView';
-import CreateFolder from './_components/CreateFolder';
+import CreateFolder from '../_components/_modals/CreateNewFolderPopup';
+import FileUploadForm from './_components/FileUploadForm';
+import ContentNotFound from '@/app/_components/_common/ContentNotFound';
 
 
 function Page() {
-  const { user } = useUser();
+  const { user, isLoaded } = useUser();
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const isLoaded = user !== undefined;
+  const [dataError, setDataError] = useState(null);
+  const [serverError, setServerError] = useState(null);
   const { setCurrentIndex, navigatePage } = useNavigation();
-  const [files, setFiles] = useState([]);
-  const [fileErrors, setFileErrors] = useState([]);
   const [folders, setFolders] = useState([]);
-  const [newFolder, setNewFolder] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState([]);
+  const [newFolderPopup, setNewFolderPopup] = useState(false);
 
   useEffect(() => {
     setCurrentIndex('/tallenna');
@@ -34,11 +29,11 @@ function Page() {
           if (response.success) {
             setFolders(response.folders);
           } else {
-            throw new Error(response.message || "Kansiotietojen hakemisessa tapahtui virhe.")
+            setDataError(response.message)
           }
         } catch (error) {
           console.error("Error fetching user document:", error);
-          setError(error.message);
+          setServerError("Virhe hakiessa käyttäjätietoja: " + error.message)
         } finally {
           setLoading(false);
         }
@@ -52,7 +47,8 @@ function Page() {
   
 
   if (loading) return <PageLoading />;
-  if (error) return <ErrorView message={error} />;
+  if (dataError) return <ContentNotFound message={dataError} />
+  if (serverError) return <ErrorView message={error} />;
 
   return (
     <main>
@@ -63,25 +59,9 @@ function Page() {
         </div>
       </div>
 
-  
-      <UploadForm 
-        files={files} 
-        setFiles={setFiles} 
-        fileErrors={fileErrors}
-        setFileErrors={setFileErrors}
-        setUploadProgress={setUploadProgress}
-      />
-
-      <FilePreview 
-        files={files}
-        folders={folders}
-        setNewFolder={setNewFolder}
-        removeFile={(file) => setFiles(files.filter(f => f !== file))} 
-        uploadProgress={uploadProgress}
-        setFiles={setFiles}
-      />
+      <FileUploadForm folders={folders} setNewFolderPopup={setNewFolderPopup} />
       
-      {newFolder && <CreateFolder setNewFolder={setNewFolder} folders={folders} setFolders={setFolders} files={files} setFiles={setFiles} />}
+      {newFolderPopup && <CreateFolder setNewFolderPopup={setNewFolderPopup} folders={folders} setFolders={setFolders} />}
     </main>
   );
 }

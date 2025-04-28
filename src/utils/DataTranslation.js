@@ -81,7 +81,6 @@ export const transformFolderDataPublic = (folder) => {
         sharing: {
             link: folder.linkShare,
             url: folder.shareUrl,
-            group: folder.groupShare,
             groups: folder.shareGroups,
         }
     };
@@ -103,7 +102,6 @@ export const transformFolderDataPrivate = (folder) => {
         modifiedAt: folder.modified instanceof Date ? folder.modified : new Date(folder.modified.seconds * 1000),
         pwdProtected: folder.passwordProtected,
         linkShare: folder.sharing.link,
-        groupShare: folder.sharing.group,
         shareGroups: folder.sharing.groups,
     }
 }

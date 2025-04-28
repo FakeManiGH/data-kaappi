@@ -59,7 +59,10 @@ function Page() {
           <div className='flex flex-col gap-4 items-center md:items-start text-white'>
             <h3 className='text-xl font-bold'>Tallennustilan käyttö</h3>
             <p className='text-sm text-center md:text-start'>Jos kaapistasi loppuu tila kesken, lisätilaa on saatavilla muutamalla klikkauksella.</p>
-            <Link className='flex items-center w-fit gap-1 rounded-lg text-sm cursor-not-allowed text-success hover:text-success/75 transition-colors' href="#"
+            <Link 
+              className='flex items-center w-fit px-3 py-2 gap-1 rounded-lg text-sm cursor-not-allowed text-white bg-primary hover:bg-primary/75 
+                transition-colors' 
+              href="#"
             >
               <Settings2 />
               Hallitse tallennustilaa

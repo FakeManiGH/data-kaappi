@@ -28,7 +28,6 @@ function Page({ params }) {
     const { setCurrentIndex, navigatePage } = useNavigation();
     const [loading, setLoading] = useState(true);
     const [view, setView] = useState('grid');
-    const [pwdVerified, setPwdVerified] = useState(true);
     const [folder, setFolder] = useState(null);
     const [settings, setSettings] = useState(false);
     const [folders, setFolders] = useState(null);
@@ -69,7 +68,7 @@ function Page({ params }) {
                         }
                     }
                 } else {
-                    setDataError(response.message);
+                    setDataError(response.message || 'Sisällön h');
                 }
             } catch (error) {
                 console.error("Error fetching folder data:", error);

@@ -1,13 +1,12 @@
 import { X } from 'lucide-react'
 import React, { useState } from 'react'
-import { generateRandomString } from '@/utils/GenerateRandomString'
-import { createFolder, createSubfolder } from '@/app/file-requests/folders'
+import { createSubfolder } from '@/app/file-requests/folders'
 import { useAlert } from '@/app/contexts/AlertContext'
 import { useUser } from '@clerk/nextjs'
-import { transformFolderDataPublic } from '@/utils/DataTranslation'
 import { folderNameRegex } from '@/utils/Regex'
+import PopupLoader from '@/app/_components/_common/PopupLoader'
 
-function CreateFolder({ folder, setFolder, folders, setFolders, setCreateFolder }) {
+function CreateFolder({ folder, setFolder, setFolders, setCreateFolder }) {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const { showAlert } = useAlert()
@@ -21,13 +20,13 @@ function CreateFolder({ folder, setFolder, folders, setFolders, setCreateFolder 
 
     // Validate folder name
     if (!folderName) {
-      setError('Anna kansiolle nimi, 2-50 merkkiä.');
+      showAlert('Anna kansiolle ensin nimi. 2-50 merkkiä, <, >, /, \\ - merkit kielletty.')
       setLoading(false);
       return;
     }
 
     if (!folderNameRegex.test(folderName)) {
-      setError('Kansion nimen tulee olla 2-50 merkkiä, eikä saa sisältää <, >, /, \\ -merkkejä.');
+      setError('Kansion nimen tulee olla 2-50 merkkiä pitkä, eikä se saa sisältää <, >, /, \\ -merkkejä.');
       setLoading(false);
       return;
     }
@@ -43,12 +42,6 @@ function CreateFolder({ folder, setFolder, folders, setFolders, setCreateFolder 
 
       if (response.success) {
         setFolders((prevFolders) => [...prevFolders, response.folder]);
-        setFolder((prevFolder) => ({
-          ...prevFolder,
-          fileCount: prevFolder.fileCount + 1,
-        }));
-
-        showAlert('Uusi kansio luotu!', 'success');
         e.target.reset(); 
         setCreateFolder(false); 
       } else {
@@ -61,6 +54,8 @@ function CreateFolder({ folder, setFolder, folders, setFolders, setCreateFolder 
       setLoading(false);
     }
   };
+
+  if (loading) return <PopupLoader />
 
   return (
     <span className='fixed z-50 inset-0 flex justify-center items-center bg-black/50 p-4'>
