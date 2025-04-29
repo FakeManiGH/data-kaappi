@@ -84,7 +84,7 @@ function FileRenamePopup({ selectedFile, setFiles, setRenamePopup, setSelectedOb
           <X />
         </button>
 
-        <h2 className="text-2xl md:text-3xl mb-2 text-center font-bold">Nimeä tiedosto uudelleen</h2>
+        <h2 className="text-2xl md:text-3xl mb-2 text-center font-bold">Nimeä uudelleen</h2>
         <p className='text-sm'>Nimeä tiedosto uudelleen. Nimen tulee olla 1-75 merkkiä pitkä, eikä se saa sisältää &lt;, &gt;, \ ja / -merkkejä.</p>
 
         <form className="flex flex-col mt-4" onSubmit={handleFileRenaming}>

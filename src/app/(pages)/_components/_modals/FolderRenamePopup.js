@@ -70,8 +70,8 @@ function FolderRenamePopup({ selectedFolder, setFolders, setRenamePopup, setSele
                 <X />
             </button>
 
-            <h2 className="text-2xl md:text-3xl mb-2 text-center font-bold">Nimeä kansio uudelleen</h2>
-            <p className='text-sm'>Nimen tulee olla 2-50 merkkiä pitkä, eikä se saa sisältää &lt;, &gt;, \ ja / -merkkejä.</p>
+            <h2 className="text-2xl md:text-3xl mb-2 text-center font-bold">Nimeä uudelleen</h2>
+            <p className='text-sm'>Nimeä kansio uudelleen. Nimen tulee olla 2-50 merkkiä pitkä, eikä se saa sisältää &lt;, &gt;, \ ja / -merkkejä.</p>
 
             <form className="flex flex-col mt-4" onSubmit={handleFolderRenaming}>
                 <div>

@@ -9,7 +9,6 @@ import PageLoading from '@/app/_components/_common/PageLoading';
 import ErrorView from '../_components/ErrorView';
 import { getUserBaseFiles } from '@/app/file-requests/files';
 import { getUserBaseFolders } from '@/app/file-requests/folders';
-import PasswordPopup from './_components/PasswordPopup';
 import FolderNavigation from './_components/FolderNavigation';
 import DeletePopup from './_components/DeletePopup';
 import MoveSelectedPopup from './_components/MoveSelectedPopup';
@@ -17,6 +16,8 @@ import CreateNewFolder from '../_components/_modals/CreateNewFolderPopup';
 import FileUploadPopup from '../_components/_modals/FileUploadPopup';
 import FileRenamePopup from '../_components/_modals/FileRenamePopup';
 import FolderRenamePopup from '../_components/_modals/FolderRenamePopup';
+import FilePasswordPopup from '../_components/_modals/FilePasswordPopup';
+import FolderPasswordPopup from '../_components/_modals/FolderPasswordPopup';
 
 
 function Page() {
@@ -189,8 +190,32 @@ function Page() {
                 )
             )}
 
-            {uploadPopup && <FileUploadPopup setFiles={setFiles} currentFolder={null} setUploadPopup={setUploadPopup} />}
-            {passwordPopup && <PasswordPopup selectedObject={selectedObjects[0]} setFolders={setFolders} setFiles={setFiles} setSelectedObjects={setSelectedObjects} setPasswordPopup={setPasswordPopup} />}
+            {uploadPopup && 
+                <FileUploadPopup 
+                    setFiles={setFiles} 
+                    currentFolder={null} 
+                    setUploadPopup={setUploadPopup} 
+                />
+            }
+
+            {passwordPopup && (
+                selectedObjects[0].docType === 'file' ? (
+                    <FilePasswordPopup
+                        selectedFile={selectedObjects[0]}
+                        setFiles={setFiles}
+                        setSelectedObjects={setSelectedObjects}
+                        setPasswordPopup={setPasswordPopup}
+                    />
+                ) : (
+                    <FolderPasswordPopup
+                        selectedFolder={selectedObjects[0]}
+                        setFolders={setFolders}
+                        setSelectedObjects={setSelectedObjects}
+                        setPasswordPopup={setPasswordPopup}
+                    />
+                )
+            )}
+            
             {deletePopup && <DeletePopup selectedObjects={selectedObjects} setSelectedObjects={setSelectedObjects} setFolders={setFolders} setFiles={setFiles} setDeletePopup={setDeletePopup} />}
         </main>
     );

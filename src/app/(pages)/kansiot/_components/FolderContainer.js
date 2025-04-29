@@ -1,16 +1,15 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { ArrowRightLeft, FilePlus, FolderPlus, FolderX, GripVertical, Group, LockKeyhole, Pen, Pencil, Settings, Share2, Trash2, Users2, X } from 'lucide-react';
-import DownloadBtn from './DownloadBtn';
+import { GripVertical, LockKeyhole, Share2, Users2 } from 'lucide-react';
 import Link from 'next/link';
 import { cleanDataType, translateFileSize } from '@/utils/DataTranslation';
 import { getFileIcon } from '@/utils/GetFileIcon';
 import { useAlert } from '@/app/contexts/AlertContext';
-import { moveFileToFolder } from '@/app/file-requests/files';
+import { transferFileToFolder } from '@/app/file-requests/files';
 import { useUser } from '@clerk/nextjs';
 import FileCardPreview from '@/app/_components/_common/FileCardPreview';
 
 
-function FolderContainer({ view, folders, files, setFolders, setFiles, setCreateFolder, selectedObjects, setSelectedObjects }) {
+function FolderContainer({ view, folders, files, setFolders, setFiles, selectedObjects, setSelectedObjects }) {
     const [draggedFile, setDraggedFile] = useState(null);
     const [isDragging, setIsDragging] = useState(false)
     const [dragOverFolder, setDragOverFolder] = useState(null);
@@ -33,7 +32,7 @@ function FolderContainer({ view, folders, files, setFolders, setFiles, setCreate
         setIsDragging(false)
         if (draggedFile) {
             try {
-                const response = await moveFileToFolder(user.id, draggedFile.id, folder.id);
+                const response = await transferFileToFolder(user.id, draggedFile.id, folder.id);
 
                 if (response.success) {
                     const updatedFiles = files.filter(file => file.id !== draggedFile.id);
@@ -98,8 +97,12 @@ function FolderContainer({ view, folders, files, setFolders, setFiles, setCreate
         );
     }
 
+
+    /* GRID VIEW */
     if (view === 'grid') return (
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8 gap-2">
+
+            {/* Folders */}
             {folders.map(folder => (
                 <div 
                     key={folder.id} 
@@ -120,7 +123,7 @@ function FolderContainer({ view, folders, files, setFolders, setFiles, setCreate
                     }
                     <input 
                         type="checkbox" 
-                        className={`absolute top-2 right-2 p-2 bg-background group-hover:block appearance-none rounded-lg border 
+                        className={`absolute top-2 right-2 p-2 bg-background group-hover:block appearance-none rounded-full border 
                             border-navlink hover:border-primary checked:border-primary checked:bg-primary checked:hover:border-navlink transition-all
                             ${selectedObjects.includes(folder) ? 'block' : 'block md:hidden'}`}
                         onChange={() => handleObjectSelect(folder)}
@@ -140,6 +143,8 @@ function FolderContainer({ view, folders, files, setFolders, setFiles, setCreate
                 </div>
             ))}
 
+
+            {/* Files */}
             {files.map(file => (
                 <div 
                     key={file.id}
@@ -154,7 +159,7 @@ function FolderContainer({ view, folders, files, setFolders, setFiles, setCreate
                 >   
                     <input 
                         type="checkbox" 
-                        className={`absolute top-2 right-2 p-2 bg-background group-hover:block appearance-none rounded-lg  border 
+                        className={`absolute top-2 right-2 p-2 bg-background group-hover:block appearance-none rounded-full border 
                             border-navlink hover:border-primary checked:border-primary checked:bg-primary checked:hover:border-navlink transition-all
                             ${selectedObjects.includes(file) ? 'block' : 'block md:hidden'}`}
                         onChange={() => handleObjectSelect(file)}
@@ -186,8 +191,12 @@ function FolderContainer({ view, folders, files, setFolders, setFiles, setCreate
         </div>
     );
 
+
+    /* LIST VIEW */
     if (view === 'list') return (
         <ul className='flex flex-col text-sm gap-1'>
+
+            {/* Folders */}
             {folders.map(folder => (
                 <li 
                     key={folder.id} 
@@ -221,6 +230,7 @@ function FolderContainer({ view, folders, files, setFolders, setFiles, setCreate
                 </li>
             ))}
 
+            {/* Files */}
             {files.map(file => (
                 <li 
                     key={file.id}

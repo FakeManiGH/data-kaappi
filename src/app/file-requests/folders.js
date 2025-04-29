@@ -346,7 +346,16 @@ export const updateFolderName = async (userID, folderID, newName) => {
 // Set or update folder password
 export const updateFolderPassword = async (userID, folderID, password) => {
     try {
-        // Original
+        if (!userID || !folderID || !password) {
+            return { success: false, message: 'Pyynnöstä puuttuu tietoja.' }
+        }
+
+        // Validation
+        if (!passwordRegex.test(password)) {
+            throw new Error("Salasanan tulee olla vähintään 4 merkkiä pitkä, eikä se saa sisältää <, >, /, \\ merkkejä.");
+        }
+
+        // Data
         const folderRef = doc(db, 'folders', folderID);
         const docSnap = await getDoc(folderRef);
 
@@ -361,21 +370,16 @@ export const updateFolderPassword = async (userID, folderID, password) => {
             throw new Error("Luvaton muutospyyntö.");
         }
 
-        // Data validation
-        if (!passwordRegex.test(password)) {
-            throw new Error("Virheellinen salasana. Salasana ei saa sisältää <, >, /, \\ merkkejä.");
-        }
-
-        // Password hash
+        // Hash
         const salt = bcrypt.genSaltSync(13)
         const hashPass = bcrypt.hashSync(password, salt)
 
         // Update
         await updateDoc(folderRef, { pwd: hashPass, pwdProtected: true });
-        return { success: true, message: "Kansion salasana asetettu." };
+        return { success: true, message: "Kansion uusi salasana tallennettu." };
     } catch (error) {
         console.error("Error updating folder name: ", error);
-        return { success: false, message: error.message };
+        return { success: false, message: 'Salasanan tallentamisessa tapahtui virhe, yritä uudelleen.' };
     }
 }
 
