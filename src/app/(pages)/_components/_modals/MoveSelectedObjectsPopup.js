@@ -3,13 +3,12 @@ import { getFileIcon } from '@/utils/GetFileIcon';
 import React, { useEffect, useState } from 'react'
 import { useUser } from '@clerk/nextjs';
 import { useAlert } from '@/app/contexts/AlertContext';
-import { getUserFolders } from '@/app/file-requests/folders';
+import { getUserFolders, transferFolderInFolder } from '@/app/file-requests/folders';
 import PopupLoader from '@/app/_components/_common/PopupLoader';
-import { moveFolderInFolder } from '@/app/file-requests/folders';
 import { transferFileToFolder } from '@/app/file-requests/files';
 
 function MoveSelectedObjectsPopup({ currentFolder, selectedObjects, setSelectedObjects, setFolders, setFiles, setMovePopup }) {
-    const [allFolders, setAllFolders] = useState(null);
+    const [availableFolders, setAvailableFolders] = useState(null);
     const [targetID, setTargetID] = useState(null);
     const [transferErrors, setTransferErrors] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -18,33 +17,40 @@ function MoveSelectedObjectsPopup({ currentFolder, selectedObjects, setSelectedO
 
 
     useEffect(() => {
-        const getAllUserFolders = async () => {
-            if (isLoaded && user) {
-                try {
-                    const response = await getUserFolders(user.id);
-                    if (response.success) {
-                        setAllFolders(response.folders);
-                    } else {
-                        showAlert(response.message || 'Kansioiden hakeminen epäonnistui.');
-                    }
-                } catch (error) {
-                    showAlert('Kansioiden hakeminen epäonnistui.', 'error');
-                    setMovePopup(false);
-                } finally {
-                    setLoading(false);
-                }
+      const getUserFolderData = async () => {
+        if (isLoaded && user) {
+          try {
+            const response = await getUserFolders(user.id);
+            if (response.success) {
+              let allFolders = response.folders
+              if (currentFolder) {
+                setAvailableFolders(
+                  allFolders.filter((folder) => folder.id !== currentFolder.id)
+                );
+              } else {
+                setAvailableFolders(allFolders);
+              }
             } else {
-                showAlert('Käyttäjätietoja ei löytynyt', 'error');
-                setMovePopup(false);
-                setLoading(false);
+              showAlert(response.message || 'Kansioiden hakeminen epäonnistui.');
             }
-        };
-    
-        if (selectedObjects.length === 0) {
+          } catch (error) {
+            showAlert('Kansioiden hakeminen epäonnistui.', 'error');
             setMovePopup(false);
+          } finally {
+            setLoading(false);
+          }
+        } else {
+          showAlert('Käyttäjätietoja ei löytynyt', 'error');
+          setMovePopup(false);
+          setLoading(false);
         }
+      };
     
-        getAllUserFolders();
+      if (selectedObjects.length === 0) {
+        setMovePopup(false);
+      }
+    
+      getUserFolderData();
     }, [isLoaded, user, showAlert, selectedObjects]);
   
   // Remove selected object
@@ -62,78 +68,86 @@ function MoveSelectedObjectsPopup({ currentFolder, selectedObjects, setSelectedO
 
     // Move selected files into folder
     const moveSelectedObjects = async () => {
-        setLoading(true);
-        setTransferErrors([]); // Clear previous errors
-  
-        if (!targetID) {
-            showAlert('Valitse kohdekansio ennen siirtoa.', 'info');
-            setLoading(false);
-            return;
-        }
-
-        if (currentFolder && currentFolder.id === targetID) {
-            showAlert('Kohteet sijaitsevat jo tässä kansiossa.', 'info');
-            setLoading(false);
-            return
-        }
-  
-        try {
-            const errors = []; // Track errors
-            const movedObjects = []; // Track successful
+      setLoading(true);
+      setTransferErrors([]); // Clear previous errors
     
-            const movePromises = selectedObjects.map(async (object) => {
-                if (object.docType === 'folder') {
-                    const response = await moveFolderInFolder(user.id, object.id, targetID);
-                    if (!response.success) {
-                        errors.push({ id: object.id, name: object.name, message: response.message });
-                    } else {
-                        movedObjects.push(object);
-                    }
-
-                } else if (object.docType === 'file') {
-                    const response = await transferFileToFolder(user.id, object.id, targetID);
-                    if (!response.success) {
-                        errors.push({ id: object.id, name: object.name, message: response.message });
-                    } else {
-                        movedObjects.push(object);
-                    }
-                }
-            });
-        
-            await Promise.all(movePromises);
-            setTransferErrors(errors); // Possible error
-
-            if (errors.length > 0) {
-                showAlert('Joitakin kohteita ei voitu siirtää.', 'error');
+      if (!targetID) {
+        showAlert('Valitse kohdekansio ennen siirtoa.', 'info');
+        setLoading(false);
+        return;
+      }
+    
+      if (currentFolder && currentFolder.id === targetID) {
+        showAlert('Kohteet sijaitsevat jo tässä kansiossa.', 'info');
+        setLoading(false);
+        return;
+      }
+    
+      if (targetID === 'kansiot') setTargetID(null); // for base folder
+    
+      try {
+        const errors = []; // Track errors
+        const movedObjects = []; // Track successful
+    
+        const movePromises = selectedObjects.map(async (object) => {
+          if (object.docType === 'folder') {
+            const response = await transferFolderInFolder(user.id, object.id, targetID);
+            if (!response.success) {
+              errors.push({ id: object.id, name: object.name, message: response.message });
             } else {
-                showAlert('Kohteet siirretty onnistuneesti.', 'success');
-    
-                // Remove moved objects
-                setFolders((prevFolders) =>
-                    prevFolders.filter((folder) => !movedObjects.some((obj) => obj.id === folder.id))
-                );
-
-                setFiles((prevFiles) =>
-                    prevFiles.filter((file) => !movedObjects.some((obj) => obj.id === file.id))
-                );
-    
-                // Update targetFolder fileCount (if in this folder)
-                setFolders((prevFolders) =>
-                    prevFolders.map((folder) => folder.id === targetID
-                        ? { ...folder, fileCount: folder.fileCount + movedObjects.length }
-                        : folder
-                    )
-                );
-    
-                setSelectedObjects([]); // Clear selected 
-                setMovePopup(false); // Close popup
+              movedObjects.push(object);
             }
-        } catch (error) {
-            console.error('Error moving selected objects:', error);
-            showAlert(error.message || 'Kohteiden siirtäminen epäonnistui.', 'error');
-        } finally {
-            setLoading(false);
+          } else if (object.docType === 'file') {
+            const response = await transferFileToFolder(user.id, object.id, targetID);
+            if (!response.success) {
+              errors.push({ id: object.id, name: object.name, message: response.message });
+            } else {
+              movedObjects.push(object);
+            }
+          }
+        });
+    
+        await Promise.all(movePromises);
+    
+        // Update folders
+        setFolders((prevFolders) =>
+          prevFolders.filter((folder) => !movedObjects.some((obj) => obj.id === folder.id))
+        );
+
+        // Update files
+        setFiles((prevFiles) =>
+          prevFiles.filter((file) => !movedObjects.some((obj) => obj.id === file.id))
+        );
+
+        // Update targetFolder fileCount (if in this folder)
+        setFolders((prevFolders) =>
+          prevFolders.map((folder) =>
+            folder.id === targetID
+              ? { ...folder, fileCount: folder.fileCount + movedObjects.length }
+              : folder
+          )
+        );
+
+        if (errors.length > 0) {
+          showAlert('Joitakin kohteita ei voitu siirtää.', 'error');
+          setSelectedObjects((prevSelectedObjects) =>
+            prevSelectedObjects.filter(
+                (selectedObject) =>
+                    !movedObjects.some((movedObject) => movedObject.id === selectedObject.id)
+            )
+        );
+          setTransferErrors(errors);
+        } else {
+          showAlert('Kohteet siirretty onnistuneesti.', 'success');
+          setSelectedObjects([]); // Clear all selected objects
+          setMovePopup(false); // Close modal
         }
+      } catch (error) {
+        console.error('Error moving selected objects:', error);
+        showAlert(error.message || 'Kohteiden siirtäminen epäonnistui.', 'error');
+      } finally {
+        setLoading(false);
+      }
     };
 
 
@@ -199,7 +213,8 @@ function MoveSelectedObjectsPopup({ currentFolder, selectedObjects, setSelectedO
             value={targetID || ''} // Prioritize preferredFolder
           >
             <option value="" disabled>Valitse kansio</option>
-            {allFolders.map((folder) => (
+            {currentFolder && <option value="kansiot">Kansiot</option>}
+            {availableFolders.map((folder) => (
               <option key={folder.id} value={folder.id}>{folder.name}</option>
             ))}
           </select>

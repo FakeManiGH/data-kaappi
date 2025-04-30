@@ -109,7 +109,7 @@ function FolderContainer({ view, folders, files, setFolders, setFiles, selectedO
                     onTouchStart={() => handleTouchStart(folder)}
                     onTouchEnd={() => handleTouchEnd(folder)}
                     className={`relative flex items-center justify-center p-2 rounded-lg transition-colors border group overflow-hidden
-                        ${selectedObjects.includes(folder) ? 'border-primary' : 'border-transparent'}
+                        ${selectedObjects.some((obj) => obj.id === folder.id) ? 'border-primary' : 'border-transparent'}
                         ${dragOverFolder === folder.id ? 'bg-primary' : 'bg-gradient-to-br from-secondary to-contrast'}`}
                 >   
                     {isDragging && 
@@ -125,9 +125,9 @@ function FolderContainer({ view, folders, files, setFolders, setFiles, selectedO
                         type="checkbox" 
                         className={`absolute top-2 right-2 p-2 bg-background group-hover:block appearance-none rounded-full border 
                             border-navlink hover:border-primary checked:border-primary checked:bg-primary checked:hover:border-navlink transition-all
-                            ${selectedObjects.includes(folder) ? 'block' : 'block md:hidden'}`}
+                            ${selectedObjects.some((obj) => obj.id === folder.id) ? 'block' : 'block md:hidden'}`}
                         onChange={() => handleObjectSelect(folder)}
-                        checked={selectedObjects.includes(folder)}
+                        checked={selectedObjects.some((obj) => obj.id === folder.id)}
                     />
                     <Link href={`/kansio/${folder.id}`} className='flex flex-col items-center max-w-full overflow-hidden text-foreground hover:text-primary'>
                         <img src={folder.fileCount > 0 ? "/icons/folder_file.png" : "/icons/folder.png"} alt="folder" className="w-16 h-16" />
@@ -155,15 +155,15 @@ function FolderContainer({ view, folders, files, setFolders, setFiles, selectedO
                     onDragStart={() => handleDragStart(file)}
                     onDragEnd={() => handleDragEnd(file)}
                     className={`relative flex items-center justify-center p-2 rounded-lg bg-gradient-to-br from-secondary to-contrast transition-colors group border overflow-hidden
-                         ${selectedObjects.includes(file) ? 'border-primary' : 'border-transparent'}`}
+                         ${selectedObjects.some((obj) => obj.id === file.id) ? 'border-primary' : 'border-transparent'}`}
                 >   
                     <input 
                         type="checkbox" 
                         className={`absolute top-2 right-2 p-2 bg-background group-hover:block appearance-none rounded-full border 
                             border-navlink hover:border-primary checked:border-primary checked:bg-primary checked:hover:border-navlink transition-all
-                            ${selectedObjects.includes(file) ? 'block' : 'block md:hidden'}`}
+                            ${selectedObjects.some((obj) => obj.id === file.id) ? 'block' : 'block md:hidden'}`}
                         onChange={() => handleObjectSelect(file)}
-                        checked={selectedObjects.includes(file)}
+                        checked={selectedObjects.some((obj) => obj.id === file.id)}
                     />
 
                     <button className='absolute py-2 right-1 cursor-grab text-navlink hover:text-foreground'>

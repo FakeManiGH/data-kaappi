@@ -18,6 +18,7 @@ import FileRenamePopup from '../_components/_modals/FileRenamePopup';
 import FolderRenamePopup from '../_components/_modals/FolderRenamePopup';
 import FilePasswordPopup from '../_components/_modals/FilePasswordPopup';
 import FolderPasswordPopup from '../_components/_modals/FolderPasswordPopup';
+import MoveSelectedObjectsPopup from '../_components/_modals/MoveSelectedObjectsPopup';
 
 
 function Page() {
@@ -155,7 +156,7 @@ function Page() {
 
             {/* POPUPS / MODALS */}
             {movePopup && 
-                <MoveSelectedPopup 
+                <MoveSelectedObjectsPopup
                     selectedObjects={selectedObjects} 
                     setSelectedObjects={setSelectedObjects}
                     setFolders={setFolders}

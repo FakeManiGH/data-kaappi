@@ -567,86 +567,88 @@ export const deleteFilesInFolder = async (userID, folderID) => {
 
 
 // MOVE
-// Change folder parent
-export const moveFolderInFolder = async (userID, folderID, toFolderID) => {
+// Change folders parent
+export const transferFolderInFolder = async (userID, folderID, targetID) => {
     try {
-        if (!userID) {
-            return { success: false, message: 'Käyttäjätietoja ei löytynyt.' };
+        if (!userID || !folderID || targetID === undefined) {
+            return { success: false, message: 'Pyynnöstä puuttuu tietoja.' };
         }
-        
-        const circularMove = await isCircularMove(folderID, toFolderID)
-        if (circularMove) {
-            return { success: false, message: "Kansiota ei voi siirtää omaan alikansioonsa." };
+
+        // Folder data
+        const folderRef = doc(db, "folders", folderID);
+        const folderSnap = await getDoc(folderRef);
+
+        if (!folderSnap.exists()) {
+            return { success: false, message: `Siirrettävää kansiota ${folderID} ei löytynyt.` };
         }
-  
+
+        const folder = folderSnap.data();
+
+        // Folder authorization
+        if (userID !== folder.userID) {
+            return { success: false, message: `Ei tarvittavia oikeuksia kansioon ${folder.folderName}.` };
+        }
+
+        // Handle target folder
+        const toFolderRef = targetID ? doc(db, "folders", targetID) : null;
+        const toFolderSnap = targetID ? await getDoc(toFolderRef) : null;
+
+        if (targetID && (!toFolderSnap || !toFolderSnap.exists())) {
+            return { success: false, message: `Kohdekansiota ${targetID} ei löytynyt.` };
+        }
+
+        const toFolder = toFolderSnap ? toFolderSnap.data() : null;
+
+        if (toFolder && toFolder.userID !== userID) {
+            return { success: false, message: `Ei tarvittavia oikeuksia kansioon ${toFolder.folderName}.` };
+        }
+
+        // Prevent transferring to the same folder
+        if (String(folder.parentID) === String(targetID)) {
+            return { success: false, message: `Kansio sijaitsee jo kansiossa ${toFolder.folderName || 'pohjakansio'}.` };
+        }
+
+        // Prevent circular moves
+        const isCircular = await isCircularMove(folderID, targetID);
+        if (isCircular) {
+            return { success: false, message: 'Kansiota ei voi siirtää omaan alikansioonsa.' };
+        }
+
+        // Handle from folder
+        const fromFolderRef = folder.parentID ? doc(db, "folders", folder.parentID) : null;
+        const fromFolderSnap = folder.parentID ? await getDoc(fromFolderRef) : null;
+
+        if (folder.parentID && (!fromFolderSnap || !fromFolderSnap.exists())) {
+            return { success: false, message: 'Kansion nykyistä sijaintia ei pystytty määrittämään.' };
+        }
+
+        const fromFolder = fromFolderSnap ? fromFolderSnap.data() : null;
+
+        if (fromFolder && fromFolder.userID !== userID) {
+            return { success: false, message: `Ei tarvittavia oikeuksia kansion yläkansioon ${fromFolder.folderName}` };
+        }
+
+        // Transactions
         await runTransaction(db, async (transaction) => {
-            const folderRef = doc(db, "folders", folderID);
-            const folderSnap = await transaction.get(folderRef);
-    
-            if (!folderSnap.exists()) {
-                throw new Error(`Kansiota ${folderID} ei löytynyt.`);
+            transaction.update(folderRef, { parentID: targetID || null });
+
+            if (toFolder) {
+                transaction.update(toFolderRef, { fileCount: increment(1) });
             }
-    
-            const folderData = folderSnap.data();
-            if (folderData.userID !== userID) {
-                throw new Error(`Luvaton siirtopyyntö kansiolle ${folderData.folderName}.`);
-            }
-    
-            // Handle root-level moves
-            if (!toFolderID) {
-                transaction.update(folderRef, {
-                    parentID: null,
-                    parentName: null,
-                });
-        
-                if (folderData.parentID) {
-                    const fromFolderRef = doc(db, "folders", folderData.parentID);
-                    transaction.update(fromFolderRef, { fileCount: increment(-1) });
-                }
-    
-                return { success: true };
-            }
-    
-            const toFolderRef = doc(db, "folders", toFolderID);
-            const toFolderSnap = await transaction.get(toFolderRef);
-    
-            if (!toFolderSnap.exists()) {
-                throw new Error(`Kohdekansiota ${toFolderID} ei löydy.`);
-            }
-    
-            const toFolderData = toFolderSnap.data();
-            if (toFolderData.userID !== userID) {
-                throw new Error(`Ei oikeuksia kohdekansioon ${toFolderData.folderName}.`);
-            }
-    
-            // Check target folder capacity
-            if (toFolderData.fileCount >= 10) {
-                throw new Error(`Kohdekansio ${toFolderData.folderName} on täynnä.`);
-            }
-    
-            // Update target folder file count
-            transaction.update(toFolderRef, { fileCount: increment(1) });
-    
-            // Update source folder file count
-            if (folderData.parentID) {
-                const fromFolderRef = doc(db, "folders", folderData.parentID);
+
+            if (fromFolder) {
                 transaction.update(fromFolderRef, { fileCount: increment(-1) });
             }
-    
-            // Update folder's parent
-            transaction.update(folderRef, {
-                parentID: toFolderID,
-                parentName: toFolderData.folderName,
-            });
         });
-  
-        console.log(`User ${userID} moved folder ${folderID} to folder ${toFolderID || 'root'} at ${new Date().toISOString()}.`);
-        return { success: true };
+
+        console.log(`Folder ${folderID} moved from ${folder.parentID || 'base'} to ${targetID || 'base'} by user ${userID}.`);
+        return { success: true, message: "Kansio siirretty onnistuneesti." };
     } catch (error) {
-        console.error("Error changing folder parent: ", error.stack || error);
-        return { success: false, message: error.message || `Kansion ${folderID} siirtäminen epäonnistui.` };
+        console.error("Error moving folder into another folder: ", error);
+        return { success: false, message: `Kansion siirtäminen epäonnistui: ${error.message}` };
     }
 };
+
 
 
 
@@ -781,19 +783,19 @@ const isCircularMove = async (folderID, toFolderID) => {
     let currentFolderID = toFolderID;
   
     while (currentFolderID) {
-      if (currentFolderID === folderID) {
-        return true;
-      }
+        if (currentFolderID === folderID) {
+            return true;
+        }
   
-      const currentFolderRef = doc(db, "folders", currentFolderID);
-      const currentFolderSnap = await getDoc(currentFolderRef);
+        const currentFolderRef = doc(db, "folders", currentFolderID);
+        const currentFolderSnap = await getDoc(currentFolderRef);
   
-      if (!currentFolderSnap.exists()) {
-        return false;
-      }
+        if (!currentFolderSnap.exists()) {
+            return false;
+        }
   
-      currentFolderID = currentFolderSnap.data().parentID;
+        currentFolderID = currentFolderSnap.data().parentID;
     }
   
     return false;
-  };
+};

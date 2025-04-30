@@ -421,7 +421,7 @@ export const transferFileToFolder = async (userID, fileID, targetID) => {
             return { success: false, message: `Ei tarvittavia oikeuksia tiedoston nykyiseen kansioon ${fromFolder.folderName}` };
         }
 
-        // Perform the transaction
+        // Transactions
         await runTransaction(db, async (transaction) => {
             transaction.update(fileRef, { folderID: targetID || null });
 
@@ -441,6 +441,7 @@ export const transferFileToFolder = async (userID, fileID, targetID) => {
         return { success: false, message: `Tiedoston siirtäminen epäonnistui: ${error.message}` };
     }
 };
+
 
 
 
