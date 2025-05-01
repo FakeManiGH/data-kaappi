@@ -298,64 +298,92 @@ export const removeFilePassword = async (userID, fileID) => {
 
 
 // DELETE FILE FUNCTIONS
-// Delete file
+// Delete file (document & physical file)
 export const deleteFile = async (userID, fileID) => {
+    if (!userID || !fileID) {
+        return { success: false, message: 'Pyynnöstä puuttuu tietoja.' };
+    }
+
     try {
-        // Firestore transaction
+        let docDelete = false;
+
+        const fileRef = doc(db, "files", fileID);
+        const fileSnap = await getDoc(fileRef);
+
+        if (!fileSnap.exists()) {
+            return { success: false, message: `Tiedostoa ${fileID} ei löytynyt.` };
+        }
+
+        const file = fileSnap.data();
+
+        // Authorization
+        if (userID !== file.userID) {
+            return { success: false, message: `Luvaton poistamispyyntö tiedostolle ${file.fileName}.` };
+        }
+
+        // User document
+        const userRef = doc(db, "users", userID);
+        const userSnap = await getDoc(userRef);
+
+        if (!userSnap.exists()) {
+            return { success: false, message: 'Käyttäjätietoja ei löytynyt.' };
+        }
+
+        const userDoc = userSnap.data();
+
+        // Space confirmation (negative space size)
+        if (userDoc.usedSpace < file.fileSize) {
+            return { success: false, message: 'Käyttäjän tallennustilan käyttö ei voi olla negatiivinen.' };
+        }
+
+        // Check possible folder
+        const folderRef = file.folderID ? doc(db, "folders", file.folderID) : null;
+        const folderSnap = folderRef ? await getDoc(folderRef) : null;
+
+        if (folderSnap && folderSnap.exists()) {
+            const folder = folderSnap.data();
+
+            // Folder file count (no negative values allowed)
+            if (folder.fileCount <= 0) {
+                return { success: false, message: `Kansion ${folder.folderName} tiedostomäärä ei voi olla negatiivinen.` };
+            }
+        }
+
+        // Document updates
         await runTransaction(db, async (transaction) => {
-            const fileRef = doc(db, "files", fileID);
-            const fileSnap = await transaction.get(fileRef);
-
-            if (!fileSnap.exists()) {
-                return { success: false, message: `Tiedostoa ${fileID} ei löytynyt.`}
+            if (folderSnap && folderSnap.exists()) {
+                transaction.update(folderRef, { fileCount: increment(-1) }); // Folder file count
             }
-                
-            const file = fileSnap.data();
-            if (userID !== file.userID) {
-                return { success: false, message: `Luvaton poistamispyyntö tiedostolle ${file.fileName}.`}
-            }
+            transaction.update(userRef, { usedSpace: increment(-file.fileSize) }); // User space
+            transaction.delete(fileRef); // Delete file doc
 
-            // User document
-            const userRef = doc(db, "users", userID);
-            const userSnap = await transaction.get(userRef);
-            const userDoc = userSnap.data();
-            if (userDoc.usedSpace < file.fileSize) {
-                return { success: false, message: 'Käyttäjän tallennustilan käyttö ei voi olla negatiivinen.'}
-            }
-
-            // Handle possible folder fileCount
-            if (file.folderID) {
-                const folderRef = doc(db, "folders", file.folderID);
-                const folderSnap = await transaction.get(folderRef);
-
-                if (!folderSnap.exists()) {
-                    return { success: false, message: `Tiedoston ${file.fileName} kansioita ei löytynyt. Yritä uudelleen.`}
-                }
-
-                const folder = folderSnap.data();
-
-                if (folder.fileCount <= 0) {
-                    return { success: false, message: `Kansion ${folder.folderName} tiedostomäärä ei voi olla negatiivine.`}
-                }
-
-                transaction.update(folderRef, { fileCount: increment(-1) });
-            }
-
-            // Update user space
-            transaction.update(userRef, { usedSpace: increment(-file.fileSize) });
-
-            // Delete the file document
-            transaction.delete(fileRef);
+            docDelete = true; // Doc deleted
         });
 
-        // Delete the file from Firebase Storage
-        const fileStorageRef = ref(storage, `file-base/${userID}/${fileID}`);
-        await deleteObject(fileStorageRef);
+        // Physical file delete
+        if (docDelete) {
+            const fileStorageRef = ref(storage, `file-base/${userID}/${fileID}`);
+            try {
+                await deleteObject(fileStorageRef);
+                console.log(`File ${fileID} deleted by user: ${userID}`);
+                return { success: true, message: "Tiedosto poistettu onnistuneesti." };
+            } catch (error) {
+                console.error(`Failed to delete physical file ${fileID}:`, error);
 
-        // Log the storage transaction
-        console.log(`File deleted: ${fileID}, User: ${userID}`);
+                // Undo document changes
+                await runTransaction(db, async (transaction) => {
+                    if (folderSnap && folderSnap.exists()) {
+                        transaction.update(folderRef, { fileCount: increment(1) }); // Restore folder file count
+                    }
+                    transaction.update(userRef, { usedSpace: increment(file.fileSize) }); // Restore user space
+                    transaction.set(fileRef, file); // Restore file document
+                });
 
-        return { success: true, message: "Tiedosto poistettu onnistuneesti." };
+                return { success: false, message: 'Fyysisen tiedoston poistaminen epäonnistui. Tiedot palautettu.' };
+            }
+        } else {
+            return { success: false, message: 'Tiedoston tietojen poistaminen epäonnistui.' };
+        }
     } catch (error) {
         console.error("Error deleting file: ", error);
         return { success: false, message: `Tiedoston ${fileID} poistaminen epäonnistui. Yritä uudelleen.` };

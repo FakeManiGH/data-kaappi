@@ -10,8 +10,6 @@ import ErrorView from '../_components/ErrorView';
 import { getUserBaseFiles } from '@/app/file-requests/files';
 import { getUserBaseFolders } from '@/app/file-requests/folders';
 import FolderNavigation from './_components/FolderNavigation';
-import DeletePopup from './_components/DeletePopup';
-import MoveSelectedPopup from './_components/MoveSelectedPopup';
 import CreateNewFolder from '../_components/_modals/CreateNewFolderPopup';
 import FileUploadPopup from '../_components/_modals/FileUploadPopup';
 import FileRenamePopup from '../_components/_modals/FileRenamePopup';
@@ -19,6 +17,7 @@ import FolderRenamePopup from '../_components/_modals/FolderRenamePopup';
 import FilePasswordPopup from '../_components/_modals/FilePasswordPopup';
 import FolderPasswordPopup from '../_components/_modals/FolderPasswordPopup';
 import MoveSelectedObjectsPopup from '../_components/_modals/MoveSelectedObjectsPopup';
+import DeleteSelectedObjects from '../_components/_modals/DeleteSelectedObjectsPopup';
 
 
 function Page() {
@@ -217,7 +216,15 @@ function Page() {
                 )
             )}
             
-            {deletePopup && <DeletePopup selectedObjects={selectedObjects} setSelectedObjects={setSelectedObjects} setFolders={setFolders} setFiles={setFiles} setDeletePopup={setDeletePopup} />}
+            {deletePopup && 
+                <DeleteSelectedObjects 
+                    selectedObjects={selectedObjects} 
+                    setSelectedObjects={setSelectedObjects} 
+                    setFolders={setFolders} 
+                    setFiles={setFiles} 
+                    setDeletePopup={setDeletePopup} 
+                />
+            }
         </main>
     );
 }

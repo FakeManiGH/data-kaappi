@@ -9,16 +9,18 @@ import { getFolderContent, getFolderShareGroupsInfo } from '@/app/file-requests/
 import Breadcrumbs from './_components/BreadGrumps';
 import FolderContainer from './_components/FolderContainer';
 import FolderNavigation from './_components/FolderNavigation';
-import CreateFolder from './_components/CreateFolder';
-import RenamePopup from './_components/RenamePopup';
-import PasswordPopup from './_components/PasswordPopup';
-import DeletePopup from './_components/DeletePopup';
 import { FilePlus, FolderPlus, Grid, List, LockKeyhole, Settings, Share2, Users2, X } from 'lucide-react';
-import MoveSelectedPopup from './_components/MoveSelectedPopup';
 import { useAlert } from '@/app/contexts/AlertContext';
-import UploadFilesPopup from './_components/UploadFilesPopup';
 import FolderInfoContainer from './_components/FolderInfoContainer';
 import FolderSettings from './_components/FolderSettings';
+import MoveSelectedObjectsPopup from '../../_components/_modals/MoveSelectedObjectsPopup';
+import CreateNewFolder from '../../_components/_modals/CreateNewFolderPopup';
+import FileRenamePopup from '../../_components/_modals/FileRenamePopup';
+import FolderRenamePopup from '../../_components/_modals/FolderRenamePopup';
+import FileUploadPopup from '../../_components/_modals/FileUploadPopup';
+import FilePasswordPopup from '../../_components/_modals/FilePasswordPopup';
+import FolderPasswordPopup from '../../_components/_modals/FolderPasswordPopup';
+import DeleteSelectedObjects from '../../_components/_modals/DeleteSelectedObjectsPopup';
 
 
 function Page({ params }) {
@@ -189,21 +191,81 @@ function Page({ params }) {
                 setSelectedObjects={setSelectedObjects}
             />
 
+
+            {/* POPUPS / MODALS */}
             {movePopup && 
-            <MoveSelectedPopup 
-                selectedObjects={selectedObjects} 
-                setSelectedObjects={setSelectedObjects}
-                folder={folder}
-                setFolders={setFolders}
-                setFiles={setFiles} 
-                setMovePopup={setMovePopup} 
-            />
+                <MoveSelectedObjectsPopup
+                    currentFolder={folder}
+                    selectedObjects={selectedObjects} 
+                    setSelectedObjects={setSelectedObjects}
+                    setFolders={setFolders}
+                    setFiles={setFiles} 
+                    setMovePopup={setMovePopup} 
+                />
             }
-            {createFolder && <CreateFolder folder={folder} setFolder={setFolder} folders={folders} setFolders={setFolders} setCreateFolder={setCreateFolder} />}
-            {uploadPopup && <UploadFilesPopup currentFolder={folder} files={files} setFiles={setFiles} setUploadPopup={setUploadPopup} />}
-            {renamePopup && <RenamePopup selectedObject={selectedObjects[0]} setFolders={setFolders} setFiles={setFiles} setSelectedObjects={setSelectedObjects} setRenamePopup={setRenamePopup} />}
-            {passwordPopup && <PasswordPopup selectedObject={selectedObjects[0]} setFolders={setFolders} setFiles={setFiles} setSelectedObjects={setSelectedObjects} setPasswordPopup={setPasswordPopup} />}
-            {deletePopup && <DeletePopup selectedObjects={selectedObjects} setSelectedObjects={setSelectedObjects} setFolders={setFolders} setFiles={setFiles} setDeletePopup={setDeletePopup} />}
+
+            {createFolder && 
+                <CreateNewFolder
+                    currentFolder={folder}
+                    folders={folders} 
+                    setFolders={setFolders} 
+                    setNewFolderPopup={setCreateFolder} 
+                />
+            }
+
+            {renamePopup && (
+                selectedObjects[0].docType === 'file' ? (
+                    <FileRenamePopup
+                        selectedFile={selectedObjects[0]}
+                        setFiles={setFiles}
+                        setSelectedObjects={setSelectedObjects}
+                        setRenamePopup={setRenamePopup}
+                    />
+                ) : (
+                    <FolderRenamePopup
+                        selectedFolder={selectedObjects[0]}
+                        setFolders={setFolders}
+                        setSelectedObjects={setSelectedObjects}
+                        setRenamePopup={setRenamePopup}
+                    />
+                )
+            )}
+
+            {uploadPopup && 
+                <FileUploadPopup 
+                    setFiles={setFiles} 
+                    currentFolder={folder} 
+                    setUploadPopup={setUploadPopup} 
+                />
+            }
+
+            {passwordPopup && (
+                selectedObjects[0].docType === 'file' ? (
+                    <FilePasswordPopup
+                        selectedFile={selectedObjects[0]}
+                        setFiles={setFiles}
+                        setSelectedObjects={setSelectedObjects}
+                        setPasswordPopup={setPasswordPopup}
+                    />
+                ) : (
+                    <FolderPasswordPopup
+                        selectedFolder={selectedObjects[0]}
+                        setFolders={setFolders}
+                        setSelectedObjects={setSelectedObjects}
+                        setPasswordPopup={setPasswordPopup}
+                    />
+                )
+            )}
+            
+            {deletePopup && 
+                <DeleteSelectedObjects
+                    selectedObjects={selectedObjects} 
+                    setSelectedObjects={setSelectedObjects} 
+                    setFolders={setFolders} 
+                    setFiles={setFiles} 
+                    setDeletePopup={setDeletePopup} 
+                />
+            }
         </main>
     );
 }

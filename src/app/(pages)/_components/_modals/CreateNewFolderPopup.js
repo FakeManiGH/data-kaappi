@@ -1,14 +1,12 @@
 import { X } from 'lucide-react'
 import React, { useState } from 'react'
-import { generateRandomString } from '@/utils/GenerateRandomString'
 import { createFolder } from '@/app/file-requests/folders'
 import { useAlert } from '@/app/contexts/AlertContext'
 import { useUser } from '@clerk/nextjs'
-import { transformFolderDataPublic } from '@/utils/DataTranslation'
 import { folderNameRegex } from '@/utils/Regex'
 import PopupLoader from '@/app/_components/_common/PopupLoader'
 
-function CreateNewFolder({ setNewFolderPopup, folders, setFolders }) {
+function CreateNewFolder({ currentFolder, setNewFolderPopup, folders, setFolders }) {
   const [apiLoading, setApiLoading] = useState(false);
   const [nameError, setNameError] = useState(null);
   const { showAlert } = useAlert()
@@ -33,13 +31,13 @@ function CreateNewFolder({ setNewFolderPopup, folders, setFolders }) {
       }
   
       try {
-        const folderUser = {
+        const userData = {
           id: user.id,
           name: user.fullName,
           email: user.primaryEmailAddress.emailAddress,
         }
-  
-        const response = await createFolder(folderUser, folderName)
+        
+        const response = await createFolder(userData, folderName, currentFolder);
         if (response.success) {
           setFolders((prevFolders) => [...prevFolders, response.folder]);
           showAlert('Uusi kansio luotu onnistuneesti.', 'success');
@@ -82,12 +80,12 @@ function CreateNewFolder({ setNewFolderPopup, folders, setFolders }) {
             id="folderName" 
             placeholder='Anna kansiolle nimi...' 
             name="folderName" 
-            className="outline-none py-2.5 px-3 bg-background text-sm border border-transparent focus:border-primary focus:ring-1"
+            className="outline-none py-2.5 px-3 rounded-md bg-background text-sm border border-transparent focus:border-primary focus:ring-1"
             autoFocus
           />
 
           {nameError && 
-            <div className='flex items-center justify-between gap-4 px-3 py-2.5 mt-2 text-white text-sm bg-red-500'>
+            <div className='flex items-center justify-between gap-4 px-3 py-2.5 mt-2 rounded-md text-white text-sm bg-red-500'>
               <p>{nameError}</p>
               <button onClick={() => setNameError(null)}><X size={20} /></button>
             </div>

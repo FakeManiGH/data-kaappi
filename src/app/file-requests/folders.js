@@ -12,7 +12,12 @@ import { parse } from "date-fns";
 
 // CREATE
 // Create folder
-export const createFolder = async (user, folderName) => {
+export const createFolder = async (userData, folderName, currentFolder) => {
+    if (currentFolder && currentFolder.id) {
+        // Redirect to createSubfolder and return its result
+        return await createSubfolder(userData, folderName, currentFolder);
+    }
+
     try {
         if (!folderNameRegex.test(folderName)) {
             return { success: false, message: 'Kansion nimen tulee olla 2-50 merkkiä pitkä, eikä se saa sisältää <, >, /, \\ -merkkejä.' }
@@ -35,9 +40,9 @@ export const createFolder = async (user, folderName) => {
             parentName: null,
             parentID: null,
             fileCount: parseInt(0),
-            userID: user.id,
-            userName: user.name,
-            userEmail: user.email,
+            userID: userData.id,
+            userName: userData.name,
+            userEmail: userData.email,
             createdAt: Timestamp.fromDate(new Date()),
             modifiedAt: Timestamp.fromDate(new Date()),
             pwdProtected: false,
@@ -59,17 +64,20 @@ export const createFolder = async (user, folderName) => {
 }
 
 // Create subfolder
-export const createSubfolder = async (user, parentFolder, folderName) => {
+export const createSubfolder = async (userData, folderName, currentFolder) => {
+    if (!userData || !folderName || !currentFolder) {
+        return { success: false, message: 'Pyynnöstä puuttuu tietoja.' }
+    }
+
     try {
-        // Validate folder name
+        // Name validation
         if (!folderNameRegex.test(folderName)) {
             return { success: false, message: 'Kansion nimen täytyy olla 2-50 merkkiä pitkä ja ei saa sisältää <, >, /, \\ merkkejä.' };
         }
 
-        // Generate unique folder ID
+        // Unique ID
         let folderID;
-        let newFolder;
-        let folderExists = true;
+        let folderExists;
 
         do {
             folderID = generateRandomString(11);
@@ -78,43 +86,37 @@ export const createSubfolder = async (user, parentFolder, folderName) => {
             folderExists = folderSnap.exists();
         } while (folderExists);
 
-        // Use a Firestore transaction
-        await runTransaction(db, async (transaction) => {
+        // Parent folder data
+        const parentFolderRef = doc(db, "folders", currentFolder.id);
+        const parentFolderSnap = await getDoc(parentFolderRef);
 
-            // Update parent folder's fileCount
-            const parentFolderRef = doc(db, "folders", parentFolder.id);
-            const parentFolderSnap = await transaction.get(parentFolderRef);
+        if (!parentFolderSnap.exists()) {
+            throw new Error(`Parent folder with ID ${currentFolder.id} does not exist.`);
+        }
 
-            if (!parentFolderSnap.exists()) {
-                throw new Error(`Parent folder with ID ${parentFolder.id} does not exist.`);
-            }
+        // Subfolder data
+        const newFolder = {
+            docType: 'folder',
+            folderID,
+            folderName,
+            parentID: currentFolder.id,
+            fileCount: 0,
+            userID: userData.id, 
+            userName: userData.name, 
+            userEmail: userData.email,
+            createdAt: Timestamp.fromDate(new Date()),
+            modifiedAt: Timestamp.fromDate(new Date()),
+            pwdProtected: false,
+            pwd: '',
+            linkShare: false,
+            shareUrl: process.env.NEXT_PUBLIC_BASE_URL + 'jaettu-kansio/' + folderID,
+            shareGroups: [],
+        };
 
-            // Subfolder data
-            newFolder = {
-                docType: 'folder',
-                folderID,
-                folderName,
-                parentName: parentFolder.name,
-                parentID: parentFolder.id,
-                fileCount: 0,
-                userID: user.id, 
-                userName: user.name, 
-                userEmail: user.email,
-                createdAt: Timestamp.fromDate(new Date()),
-                modifiedAt: Timestamp.fromDate(new Date()),
-                pwdProtected: false,
-                pwd: '',
-                linkShare: false,
-                shareUrl: process.env.NEXT_PUBLIC_BASE_URL + 'jaettu-kansio/' + folderID,
-                shareGroups: [],
-            };
-
-            // Add subfolder to Firestore
-            const subfolderRef = doc(db, "folders", folderID);
-            transaction.set(subfolderRef, newFolder);
-
-            transaction.update(parentFolderRef, { fileCount: increment(1) });
-        });
+        // Updates
+        const subfolderRef = doc(db, "folders", folderID);
+        await setDoc(subfolderRef, newFolder);
+        await updateDoc(parentFolderRef, { fileCount: increment(1) }); // added file
 
         const publicFolder = transformFolderDataPublic(newFolder)
         console.log(`Subfolder ${folderName} created with ID ${folderID}.`);
@@ -418,14 +420,21 @@ export const removeFolderPassword = async (userID, folderID) => {
 // DELETE
 // Delete Folder
 export const deleteFolder = async (userID, folderID) => {
+    if (!userID || !folderID) {
+        return { success: false, message: 'Pyynnöstä puuttuu tietoja.'}
+    }
+
     try {
-        // Verify folder and check access control
         const folderRef = doc(db, "folders", folderID);
         const folderSnap = await getDoc(folderRef);
+
         if (!folderSnap.exists()) { 
             return { success: false, message: `Kansiota ${folderID} ei löytynyt.`};
         }
+
         const folder = folderSnap.data();
+
+        // Authorization
         if (userID !== folder.userID) {
             return { success: false, message: `Ei oikeuksia kansioon ${folder.folderName}` }
         }
@@ -462,12 +471,17 @@ export const deleteFolder = async (userID, folderID) => {
 
 // Delete subfolders
 export const deleteSubfolders = async (userID, parentID) => {
+    if (!userID || !parentID) {
+        return { success: false, message: 'Pyynnöstä puuttuu tietoja.' }
+    }
+
     try {
-        // Query for subfolders
+        // Query
         const subfoldersQuery = query(
             collection(db, "folders"),
             where("parentID", "==", parentID)
         );
+
         const querySnapshot = await getDocs(subfoldersQuery);
 
         if (querySnapshot.empty) {
@@ -505,8 +519,12 @@ export const deleteSubfolders = async (userID, parentID) => {
     }
 };
 
-// Delete file in folder
+// Delete files in folder
 export const deleteFilesInFolder = async (userID, folderID) => {
+    if (!userID || !folderID) {
+        return { success: false, message: 'Pyynnöstä puuttuu tietoja.' };
+    }
+
     try {
         const storage = getStorage();
 
@@ -521,12 +539,15 @@ export const deleteFilesInFolder = async (userID, folderID) => {
 
         // Calculate total file size
         let totalFileSize = 0;
+        const filesData = [];
         querySnapshot.forEach((docSnap) => {
             const fileData = docSnap.data();
             totalFileSize += fileData.fileSize || 0; // Ensure fileSize is accounted for
+            filesData.push({ id: docSnap.id, ...fileData });
         });
 
-        // Firestore transaction to delete file documents and update user storage
+        // Transaction to delete file documents and update user storage
+        let documentsDeleted = false;
         await runTransaction(db, async (transaction) => {
             // Update user's usedSpace
             const userRef = doc(db, "users", userID);
@@ -536,6 +557,7 @@ export const deleteFilesInFolder = async (userID, folderID) => {
             if (userDoc.usedSpace < totalFileSize) {
                 throw new Error("Käyttäjän tallennustila ei voi olla negatiivinen.");
             }
+
             transaction.update(userRef, { usedSpace: increment(-totalFileSize) });
 
             // Delete file documents
@@ -543,22 +565,46 @@ export const deleteFilesInFolder = async (userID, folderID) => {
                 const fileRef = doc(db, "files", docSnap.id);
                 transaction.delete(fileRef);
             });
+
+            documentsDeleted = true; // Mark documents as deleted
         });
 
         // Delete files from Firebase Storage
-        const deletePromises = querySnapshot.docs.map(async (docSnap) => {
-            const fileData = docSnap.data();
-            const fileStorageRef = ref(storage, `file-base/${userID}/${fileData.fileID}`);
-            await deleteObject(fileStorageRef);
-        });
+        if (documentsDeleted) {
+            try {
+                const deletePromises = filesData.map(async (fileData) => {
+                    const fileStorageRef = ref(storage, `file-base/${userID}/${fileData.fileID}`);
+                    await deleteObject(fileStorageRef);
+                });
 
-        // Wait for all storage deletions to complete
-        await Promise.all(deletePromises);
+                // Wait for all storage deletions to complete
+                await Promise.all(deletePromises);
 
-        console.log(`All files in folder ${folderID} have been deleted.`);
-        return { success: true, message: "Kaikki tiedostot poistettu onnistuneesti." };
+                console.log(`All files in folder ${folderID} have been deleted.`);
+                return { success: true, message: "Kaikki tiedostot poistettu onnistuneesti." };
+            } catch (error) {
+                console.error("Error deleting physical files:", error);
+
+                // Rollback Firestore changes if physical file deletion fails
+                await runTransaction(db, async (transaction) => {
+                    // Restore user's usedSpace
+                    const userRef = doc(db, "users", userID);
+                    transaction.update(userRef, { usedSpace: increment(totalFileSize) });
+
+                    // Restore file documents
+                    filesData.forEach((fileData) => {
+                        const fileRef = doc(db, "files", fileData.id);
+                        transaction.set(fileRef, fileData);
+                    });
+                });
+
+                return { success: false, message: "Fyysisten tiedostojen poistaminen epäonnistui. Tiedot palautettu." };
+            }
+        } else {
+            return { success: false, message: "Tiedostojen tietojen poistaminen epäonnistui." };
+        }
     } catch (error) {
-        console.error("Error deleting files in folder: ", error);
+        console.error("Error deleting files in folder:", error);
         return { success: false, message: "Kansion tiedostojen poistaminen epäonnistui, yritä uudelleen." };
     }
 };
