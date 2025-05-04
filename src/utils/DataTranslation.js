@@ -67,7 +67,6 @@ export const transformFolderDataPublic = (folder) => {
         name: folder.folderName,
         parent: {
             id: folder.parentID,
-            name: folder.parentName
         },
         fileCount: folder.fileCount,
         user: {

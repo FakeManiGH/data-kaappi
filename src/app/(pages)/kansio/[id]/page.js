@@ -5,7 +5,7 @@ import ErrorView from '@/app/(pages)/_components/ErrorView';
 import ContentNotFound from '@/app/_components/_common/ContentNotFound';
 import PageLoading from '@/app/_components/_common/PageLoading';
 import { useNavigation } from '@/app/contexts/NavigationContext';
-import { getFolderContent, getFolderShareGroupsInfo } from '@/app/file-requests/folders';
+import { getFolderBreadGrumpInfo, getFolderContent, getFolderShareGroupsInfo } from '@/app/file-requests/folders';
 import Breadcrumbs from './_components/BreadGrumps';
 import FolderContainer from './_components/FolderContainer';
 import FolderNavigation from './_components/FolderNavigation';
@@ -31,6 +31,7 @@ function Page({ params }) {
     const [loading, setLoading] = useState(true);
     const [view, setView] = useState('grid');
     const [folder, setFolder] = useState(null);
+    const [grumps, setGrumps] = useState(null); 
     const [settings, setSettings] = useState(false);
     const [folders, setFolders] = useState(null);
     const [files, setFiles] = useState([]);
@@ -46,29 +47,15 @@ function Page({ params }) {
     const [dataError, setDataError] = useState(null);
 
     useEffect(() => {
-        const getFolder = async () => {
+        const getFolderData = async () => {
             try {
                 const response = await getFolderContent(user.id, id);
                 if (response.success) {
                     setFolder(response.folder);
                     setFolders(response.folders);
                     setFiles(response.files);
-    
-                    // Fetch share group info
-                    if (response.folder.sharing.groups.length > 0) {
-                        try {
-                            const shareGroupsResponse = await getFolderShareGroupsInfo(response.folder.sharing.groups);
-                            if (shareGroupsResponse.success) {
-                                setShareGroups(shareGroupsResponse.groups);
-                            } else {
-                                console.error("Error fetching share groups:", shareGroupsResponse.errors);
-                                showAlert(shareGroupsResponse.message || 'Virhe ryhmien jakamistietojen hakemisessa.', 'error');
-                            }
-                        } catch (error) {
-                            console.error("Error fetching folder share groups info:", error);
-                            showAlert('Virhe ryhmien jakamistietojen hakemisessa.', 'error');
-                        }
-                    }
+                    if (response.folder.sharing.groups.length > 0) await getFolderShareGroups(response.folder.sharing.groups);
+                    if (response.folder.parent.id) await getBreadGrumps(response.folder.parent.id);
                 } else {
                     setDataError(response.message || 'Sisällön h');
                 }
@@ -82,11 +69,43 @@ function Page({ params }) {
     
         if (isLoaded && user) {
             setCurrentIndex('/kansiot');
-            getFolder();
+            getFolderData();
         } else {
             navigatePage('/sign-in');
         }
     }, [isLoaded, user, id, setCurrentIndex, navigatePage]);
+
+    // Folder breadgrump fetch function (in useEffect)
+    const getBreadGrumps = async (parentID) => {
+        try {
+            const grumpResponse = await getFolderBreadGrumpInfo(parentID);
+            if (grumpResponse.success) {
+                setGrumps(grumpResponse.grumps);
+                console.log(grumpResponse.grumps)
+            } else {
+                showAlert(grumpResponse.message);
+            }
+        } catch (error) {
+            console.error("Error fetching folder breadgrumps: " + error);
+            showAlert('Virhe kansion yläkansioiden hakemisessa.', 'error');
+        }
+    }
+
+    // Folder share groups fetch function (in useEffect)
+    const getFolderShareGroups = async (groups) => {
+        try {
+            const shareGroupsResponse = await getFolderShareGroupsInfo(groups);
+            if (shareGroupsResponse.success) {
+                setShareGroups(shareGroupsResponse.groups);
+            } else {
+                console.error("Error fetching share groups:", shareGroupsResponse.errors);
+                showAlert(shareGroupsResponse.message || 'Virhe ryhmien jakamistietojen hakemisessa.', 'error');
+            }
+        } catch (error) {
+            console.error("Error fetching folder share groups info:", error);
+            showAlert('Virhe ryhmien jakamistietojen hakemisessa.', 'error');
+        }
+    }
 
 
     if (loading) return <PageLoading />
@@ -106,7 +125,7 @@ function Page({ params }) {
     return (
         <main>
             <div className='flex items-center gap-2 justify-between'>
-                <Breadcrumbs folder={folder} />
+                <Breadcrumbs folder={folder} grumps={grumps} />
             </div>
 
             <h1 className='text-3xl md:text-4xl font-black truncate'>{folder.name}</h1> 

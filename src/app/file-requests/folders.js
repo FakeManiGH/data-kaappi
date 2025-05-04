@@ -303,6 +303,46 @@ export const getFolderShareGroupsInfo = async (groupIdArray, batchSize = 10) => 
     }
 };
 
+// Get folder breadgrumps
+export const getFolderBreadGrumpInfo = async (parentID) => {
+    if (!parentID) {
+        return { success: false, message: 'Leivänmuruille ei löydy leipää.' };
+    }
+
+    try {
+        let breadGrumps = [];
+        let currentParentID = parentID;
+
+        while (currentParentID) {
+            const folderRef = doc(db, "folders", currentParentID);
+            const folderSnap = await getDoc(folderRef);
+
+            if (!folderSnap.exists()) {
+                return { success: false, message: `Kansiota ${currentParentID} ei löytynyt.` };
+            }
+
+            const folder = folderSnap.data();
+            const grump = {
+                id: folder.folderID,
+                name: folder.folderName,
+            };
+
+            breadGrumps.push(grump);
+
+            // Move to the next parent
+            currentParentID = folder.parentID || null;
+        }
+
+        // Reverse the breadcrumbs to show from root to child
+        breadGrumps.reverse();
+
+        return { success: true, grumps: breadGrumps };
+    } catch (error) {
+        console.error("Error fetching folder breadcrumbs: ", error);
+        return { success: false, message: 'Kansion leivänmurujen hakemisessa tapahtui virhe.' };
+    }
+};
+
 
 
 

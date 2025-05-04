@@ -3,12 +3,12 @@ import { useAlert } from '@/app/contexts/AlertContext'
 import { useUser } from '@clerk/nextjs'
 import CopyClipboard from '@/app/_components/_common/CopyClipboard';
 import { changeFolderLinkSharing, removeFolderPassword, updateFolderGroupSharingStatus, updateFolderName } from '@/app/file-requests/folders';
-import PageLoading from '@/app/_components/_common/PageLoading';
 import { updateFolderPassword } from '@/app/file-requests/folders';
 import { Eye, EyeOff, LockKeyhole, X } from 'lucide-react';
 import { folderNameRegex, passwordRegex } from '@/utils/Regex';
 import { getUserGroups } from '@/app/file-requests/groups';
 import PopupLoader from '@/app/_components/_common/PopupLoader';
+import PageLoading from '@/app/_components/_common/PageLoading';
 
 
 function FolderSettings({ folder, setFolder, shareGroups, setShareGroups,  settings, setSettings }) {
@@ -54,18 +54,18 @@ function FolderSettings({ folder, setFolder, shareGroups, setShareGroups,  setti
     // Save new folder name
     const handleFolderRenaming = async (e) => {
         e.preventDefault();
-        setLoading(true);
+        setApiLoading(true);
         const newName = e.target.folderName.value;
 
         if (!newName || newName === folder.name) {
             showAlert('Anna kansiolle ensin uusi nimi.', 'info');
-            setLoading(false);
+            setApiLoading(false);
             return;
         }
 
         if (!folderNameRegex.test(newName)) {
             setNameError('Kansion nimen tulee olla 2-50 merkkiä, eikä saa sisältää <, >, /, \\ -merkkejä.');
-            setLoading(false);
+            setApiLoading(false);
             return;
         }
 
@@ -82,7 +82,7 @@ function FolderSettings({ folder, setFolder, shareGroups, setShareGroups,  setti
             console.error("Error updating folder name: ", error);
             showAlert('Kansion nimen päivittämisessä tapahtui virhe.', 'error');
         } finally {
-            setLoading(false);
+            setApiLoading(false);
         }
     }
 

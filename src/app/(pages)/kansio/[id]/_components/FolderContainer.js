@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FilePlus, FolderPlus, GripVertical, Group, LockKeyhole, Share2, Users2 } from 'lucide-react';
 import Link from 'next/link';
 import { cleanDataType, translateFileSize } from '@/utils/DataTranslation';
 import { getFileIcon } from '@/utils/GetFileIcon';
 import { useAlert } from '@/app/contexts/AlertContext';
-import { moveFileToFolder } from '@/app/file-requests/files';
+import { transferFileToFolder } from '@/app/file-requests/files';
 import { useUser } from '@clerk/nextjs';
 import FileCardPreview from '@/app/_components/_common/FileCardPreview';
 
@@ -16,7 +16,6 @@ function FolderContainer({ view, folders, files, setFolders, setFiles, setCreate
     const [touchStartTime, setTouchStartTime] = useState(null);
     const { showAlert } = useAlert();
     const { user } = useUser();
-
 
     const handleDragStart = (file) => {
         setDraggedFile(file);
@@ -32,7 +31,7 @@ function FolderContainer({ view, folders, files, setFolders, setFiles, setCreate
         setIsDragging(false)
         if (draggedFile) {
             try {
-                const response = await moveFileToFolder(user.id, draggedFile.id, folder.id);
+                const response = await transferFileToFolder(user.id, draggedFile.id, folder.id);
 
                 if (response.success) {
                     const updatedFiles = files.filter(file => file.id !== draggedFile.id);
