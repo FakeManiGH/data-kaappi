@@ -30,10 +30,9 @@ function FolderSettings({ folder, setFolder, shareGroups, setShareGroups,  setti
             try {
                 const response = await getUserGroups(user.id);
                 if (response.success) {
-                    const normalizedShareGroups = new Set(shareGroups.map(group => String(group.id))); // Normilize id's
+                    const normalizedShareGroups = new Set(shareGroups.map(group => String(group))); // Normilize id's
                     const available = response.groups.filter(group => !normalizedShareGroups.has(String(group.id))); // Not yet shared
                     const selected = response.groups.filter(group => normalizedShareGroups.has(String(group.id))); // Already shared
-    
                     setAvailableGroups(available);
                     setSelectedGroups(selected);
                 } else {

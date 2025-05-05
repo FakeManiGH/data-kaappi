@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { ArrowRightLeft, CheckSquare, LockKeyhole, Pen, Settings, Share2, Trash2, X } from 'lucide-react';
 
 
-function FolderNavigation({ folders, files, selectedObjects, setSelectedObjects, setRenamePopup, setMovePopup, setPasswordPopup, setDeletePopup }) {
+function FolderNavigation({ folders, files, selectedObjects, setSelectedObjects, setRenamePopup, setMovePopup, setPasswordPopup, setSharePopup, setDeletePopup }) {
     const [dropMenu, setDropMenu] = useState(false)
     const dropRef = useRef(null);
 
@@ -65,6 +65,7 @@ function FolderNavigation({ folders, files, selectedObjects, setSelectedObjects,
                                     <Pen size={16} />
                                     Nimeä uudelleen
                                 </button>
+
                                 <button 
                                     className='flex w-full items-center gap-2 px-4 py-2 text-sm text-navlink hover:text-primary' 
                                     role="menuitem"
@@ -72,6 +73,15 @@ function FolderNavigation({ folders, files, selectedObjects, setSelectedObjects,
                                 >
                                     <LockKeyhole size={16} />
                                     Salasana
+                                </button>
+
+                                <button 
+                                    className='flex w-full items-center gap-2 px-4 py-2 text-sm text-navlink hover:text-primary' 
+                                    role="menuitem"
+                                    onClick={() => {setSharePopup(true), setDropMenu(false)}}
+                                >
+                                    <Share2 size={16} />
+                                    Jaa
                                 </button>
                             </>
                             }
@@ -86,23 +96,13 @@ function FolderNavigation({ folders, files, selectedObjects, setSelectedObjects,
                             </button>
 
                             <button 
-                                className='flex w-full items-center gap-2 px-4 py-2 text-sm text-navlink hover:text-primary' 
-                                role="menuitem"
-                            >
-                                <Share2 size={16} />
-                                Jaa
-                            </button>
-                            <button 
                                 className='flex w-full items-center gap-2 px-4 py-2 text-sm text-navlink hover:text-primary'
                                 role='menuitem'
                                 onClick={selectAllObjects}
                             >   
                                 <CheckSquare size={16} />
                                 Valitse kaikki
-                            </button>
-
-
-                            
+                            </button>       
                         </div>
 
                         <div className='bg-background pb-2'>

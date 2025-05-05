@@ -18,6 +18,7 @@ import FilePasswordPopup from '../_components/_modals/FilePasswordPopup';
 import FolderPasswordPopup from '../_components/_modals/FolderPasswordPopup';
 import MoveSelectedObjectsPopup from '../_components/_modals/MoveSelectedObjectsPopup';
 import DeleteSelectedObjects from '../_components/_modals/DeleteSelectedObjectsPopup';
+import FileSharingPopup from '../_components/_modals/FileSharingPopup';
 
 
 function Page() {
@@ -27,7 +28,8 @@ function Page() {
     const [selectedObjects, setSelectedObjects] = useState([]);
     const [createFolder, setCreateFolder] = useState(false);
     const [renamePopup, setRenamePopup] = useState(false);
-    const [passwordPopup, setPasswordPopup] = useState(false)
+    const [passwordPopup, setPasswordPopup] = useState(false);
+    const [sharePopup, setSharePopup] = useState(false);
     const [deletePopup, setDeletePopup] = useState(false);
     const [movePopup, setMovePopup] = useState(false);
     const [uploadPopup, setUploadPopup] = useState(false);
@@ -137,6 +139,7 @@ function Page() {
                     setRenamePopup={setRenamePopup}
                     setMovePopup={setMovePopup}
                     setPasswordPopup={setPasswordPopup}
+                    setSharePopup={setSharePopup}
                     setDeletePopup={setDeletePopup}
                 />
             }
@@ -213,6 +216,19 @@ function Page() {
                         setSelectedObjects={setSelectedObjects}
                         setPasswordPopup={setPasswordPopup}
                     />
+                )
+            )}
+
+            {sharePopup && (
+                selectedObjects[0].docType === 'file' ? (
+                    <FileSharingPopup
+                        selectedFile={selectedObjects[0]}
+                        setFiles={setFiles}
+                        setSelectedObjects={setSelectedObjects}
+                        setSharingPopup={setSharePopup}
+                    />
+                ) : (
+                    null
                 )
             )}
             

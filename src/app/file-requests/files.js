@@ -2,7 +2,8 @@
 import { getStorage, ref, deleteObject } from "firebase/storage";
 import { 
     doc, setDoc, deleteDoc, getDoc, updateDoc, orderBy, collection, query, where, getDocs, limit, increment, 
-    runTransaction, startAfter 
+    runTransaction, startAfter, 
+    arrayUnion
 } from "firebase/firestore";
 import { db } from '@/../firebaseConfig';
 import bcrypt from 'bcrypt';
@@ -476,7 +477,11 @@ export const transferFileToFolder = async (userID, fileID, targetID) => {
 
 // SHARING FILES
 // Changing file link sharing
-export const setFileLinkSharing = async (userID, fileID, shareValue) => {
+export const changeFileLinkSharing = async (userID, fileID, shareValue) => {
+    if (!userID || !fileID) {
+        return { success: false, message: 'Pyynnöstä puuttuu tietoja.'}
+    }
+
     try {
         const fileRef = doc(db, "files", fileID);
         const fileSnap = await getDoc(fileRef);
@@ -487,10 +492,12 @@ export const setFileLinkSharing = async (userID, fileID, shareValue) => {
 
         const file = fileSnap.data();
 
+        // Auth
         if (userID !== file.userID) {
             return { success: false, message: 'Luvaton muutospyyntö.' }
         }
 
+        // Update
         await updateDoc(fileRef, { linkShare: shareValue });
 
         return { success: true }
@@ -499,3 +506,90 @@ export const setFileLinkSharing = async (userID, fileID, shareValue) => {
         return { success: false, message: 'Tiedoston jako-asetusten muuttaminen epäonnistui, yritä uudelleen.'}
     }
 } 
+
+// Changing file group sharing status
+export const changeFileGroupSharingStatus = async (userID, fileID, groupIDarray) => {
+    try {
+        if (!userID || !fileID) {
+            return { success: false, message: 'Pyynnöstä puuttuu tietoja.' };
+        }
+
+        const fileRef = doc(db, "files", fileID);
+        const fileSnap = await getDoc(fileRef);
+
+        if (!fileSnap.exists()) {
+            return { success: false, message: `Tiedostoa ${fileID} ei löytynyt.` };
+        }
+
+        const file = fileSnap.data();
+
+        if (userID !== file.userID) {
+            return { success: false, message: 'Sinulla ei ole tarvittavia oikeuksia tiedostoon.' };
+        }
+
+        // Handle empty groupIDarray
+        if (!groupIDarray || groupIDarray.length === 0) {
+            console.log(`Group sharing disabled for file ${fileID}`);
+            await updateDoc(fileRef, { shareGroups: [] });
+            return { success: true, message: 'Tiedoston jakaminen ryhmissä poistettu käytöstä.' };
+        }
+
+        // Validate groups in parallel
+        const validationResults = await Promise.all(
+            groupIDarray.map(async (groupID) => {
+                try {
+                    if (groupID.length !== 11) {
+                        return { groupID, valid: false, error: `Virheellinen ryhmä ${groupID}.` };
+                    }
+
+                    const groupRef = doc(db, "groups", groupID);
+                    const groupSnap = await getDoc(groupRef);
+
+                    if (!groupSnap.exists()) {
+                        return { groupID, valid: false, error: `Ryhmää ${groupID} ei löytynyt.` };
+                    }
+
+                    const group = groupSnap.data();
+
+                    if (!group.groupMembers || !group.groupMembers.includes(userID)) {
+                        return { groupID, valid: false, error: `Et ole ryhmän ${groupID} jäsen.` };
+                    }
+
+                    return { groupID, valid: true };
+                } catch (error) {
+                    console.error(`Error validating group ${groupID}:`, error);
+                    return { groupID, valid: false, error: `Virhe ryhmän ${groupID} käsittelyssä.` };
+                }
+            })
+        );
+
+        const validGroups = validationResults.filter((result) => result.valid).map((result) => result.groupID);
+        const groupErrors = validationResults.filter((result) => !result.valid).map((result) => result.error);
+
+        // No valid groups
+        if (validGroups.length === 0) {
+            console.log(`User ${userID} is not a member of any valid groups.`);
+            return { success: false, message: 'Ei kelvollisia ryhmiä, missä jakaa tiedosto.', errors: groupErrors };
+        }
+
+        // Update
+        try {
+            await updateDoc(fileRef, {
+                shareGroups: arrayUnion(...validGroups),
+            });
+
+            console.log(`File ${fileID} updated and now shared in groups: ${validGroups}`);
+            return {
+                success: true,
+                message: 'Tiedosto jaettu onnistuneesti valituissa ryhmissä.',
+                errors: groupErrors,
+            };
+        } catch (error) {
+            console.error("Error updating files group sharing status: ", error);
+            return { success: false, message: 'Tiedoston jakaminen ryhmissä epäonnistui. Yritä uudelleen.' };
+        }
+    } catch (error) {
+        console.error(`Error sharing file ${fileID} in groups ${groupIDarray}: ${error}`);
+        return { success: false, message: 'Tiedoston jakaminen ryhmissä epäonnistui. Yritä uudelleen.' };
+    }
+}

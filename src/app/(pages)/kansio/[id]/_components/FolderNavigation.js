@@ -65,6 +65,7 @@ function FolderNavigation({ folders, files, selectedObjects, setSelectedObjects,
                                     <Pen size={16} />
                                     Nimeä uudelleen
                                 </button>
+
                                 <button 
                                     className='flex w-full items-center gap-2 px-4 py-2 text-sm text-navlink hover:text-primary' 
                                     role="menuitem"
@@ -72,6 +73,14 @@ function FolderNavigation({ folders, files, selectedObjects, setSelectedObjects,
                                 >
                                     <LockKeyhole size={16} />
                                     Salasana
+                                </button>
+
+                                <button 
+                                    className='flex w-full items-center gap-2 px-4 py-2 text-sm text-navlink hover:text-primary' 
+                                    role="menuitem"
+                                >
+                                    <Share2 size={16} />
+                                    Jaa
                                 </button>
                             </>
                             }
@@ -86,14 +95,6 @@ function FolderNavigation({ folders, files, selectedObjects, setSelectedObjects,
                             </button>
 
                             <button 
-                                className='flex w-full items-center gap-2 px-4 py-2 text-sm text-navlink hover:text-primary' 
-                                role="menuitem"
-                            >
-                                <Share2 size={16} />
-                                Jaa
-                            </button>
-
-                            <button 
                                 className='flex w-full items-center gap-2 px-4 py-2 text-sm text-navlink hover:text-primary'
                                 role='menuitem'
                                 onClick={selectAllObjects}
@@ -101,7 +102,6 @@ function FolderNavigation({ folders, files, selectedObjects, setSelectedObjects,
                                 <CheckSquare size={16} />
                                 Valitse kaikki
                             </button>
-
                         </div>
 
                         <div className='bg-background pb-2'>

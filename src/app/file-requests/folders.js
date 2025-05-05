@@ -491,15 +491,28 @@ export const deleteFolder = async (userID, folderID) => {
             return { success: false, message: fileDeletionResult.message };
         }
 
-        // Delete the folder itself
+        // Handle deletion (+ ?parent folder fileCount)
         await runTransaction(db, async (transaction) => {
             const folderSnap = await transaction.get(folderRef);
             if (!folderSnap.exists()) {
                 return { success: false, message: `Kansiota ${folderID} ei löytynyt.` };
             }
 
+            // If folder has parent folder, update fileCount
+            if (folder.parentID) {
+                const parentRef = doc(db, "folders", folder.parentID);
+                const parentSnap = await transaction.get(parentRef);
+                if (!parentSnap.exists()) {
+                    return { success: false, message: `Kansion yläkansiota ${folder.parentID} ei löytynyt.` }
+                }
+
+                transaction.update(parentRef, { fileCount: increment(-1)});
+            }
+
             transaction.delete(folderRef);
         });
+
+        
 
         console.log(`Folder ${folderID} deleted successfully.`);
         return { success: true, message: "Kansio poistettu onnistuneesti." };
@@ -788,9 +801,9 @@ export const updateFolderGroupSharingStatus = async (userID, folderID, groupIDar
 
         // Handle empty groupIDarray
         if (!groupIDarray || groupIDarray.length === 0) {
-            console.log("No groups provided. Disabling group sharing.");
-            await updateDoc(folderRef, { groupShare: false, shareGroups: [] });
-            return { success: true, message: 'Kansiota ei jaeta enää ryhmissä.' };
+            console.log(`Group sharing disabled for folder ${folderID}.`);
+            await updateDoc(folderRef, { shareGroups: [] });
+            return { success: true, message: 'Kansion jakaminen ryhmissä poistettu käytöstä.' };
         }
 
         // Validate groups in parallel
@@ -835,7 +848,6 @@ export const updateFolderGroupSharingStatus = async (userID, folderID, groupIDar
         // Update folder groupSharing with valid groups
         try {
             await updateDoc(folderRef, {
-                groupShare: true,
                 shareGroups: arrayUnion(...validGroups),
             });
 

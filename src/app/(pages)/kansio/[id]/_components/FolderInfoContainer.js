@@ -26,7 +26,7 @@ function FolderInfoContainer({ files, folder, folders, shareGroups }) {
         <div ref={infoRef} className='w-full z-10 flex flex-col gap-1 text-sm'>
             <button 
                 onClick={() => setOpen(!open)}
-                className={`flex items-center gap-1 ${open ? 'text-red-500 hover:text-red-600' : 'text-foreground hover:text-primary'}`}
+                className={`flex items-center gap-1 w-fit ${open ? 'text-red-500 hover:text-red-600' : 'text-foreground hover:text-primary'}`}
             >
                 <p className='font-semibold'>Tietoa kansiosta</p>
                 {open ? <ChevronUp /> : <ChevronDown />}
@@ -59,7 +59,7 @@ function FolderInfoContainer({ files, folder, folders, shareGroups }) {
                                     <Link className='text-primary hover:text-priamry/75' href={`ryhma/${group.id}`}>{group.name}</Link>
                                 </li>
                             ))) : (
-                                <li>Ei jaettu</li>
+                                <li className='text-navlink'>Ei jaettu</li>
                             )}
                         </ul>
                     </li>
