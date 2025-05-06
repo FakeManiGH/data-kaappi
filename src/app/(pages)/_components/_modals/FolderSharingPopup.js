@@ -5,6 +5,7 @@ import { useUser } from '@clerk/nextjs';
 import { X } from 'lucide-react';
 import React, { useEffect, useState } from 'react'
 import FolderLinkSharingForm from '../_forms/FolderLinkSharingForm';
+import FolderGroupSharingForm from '../_forms/FolderGroupSharingForm';
 
 
 function FolderSharingPopup({ selectedFolder, setFolders, setSharingPopup, setSelectedObjects }) {
@@ -52,6 +53,7 @@ function FolderSharingPopup({ selectedFolder, setFolders, setSharingPopup, setSe
 
                 <FolderLinkSharingForm folder={selectedFolder} setFolders={setFolders} setSelectedObjects={setSelectedObjects} />
 
+                <FolderGroupSharingForm folder={selectedFolder} setFolders={setFolders} setSelectedObjects={setSelectedObjects} groups={groups} />
             </div>
         </span>
     )
