@@ -19,6 +19,7 @@ import FolderPasswordPopup from '../_components/_modals/FolderPasswordPopup';
 import MoveSelectedObjectsPopup from '../_components/_modals/MoveSelectedObjectsPopup';
 import DeleteSelectedObjects from '../_components/_modals/DeleteSelectedObjectsPopup';
 import FileSharingPopup from '../_components/_modals/FileSharingPopup';
+import FolderSharingPopup from '../_components/_modals/FolderSharingPopup';
 
 
 function Page() {
@@ -228,7 +229,12 @@ function Page() {
                         setSharingPopup={setSharePopup}
                     />
                 ) : (
-                    null
+                    <FolderSharingPopup
+                        selectedFolder={selectedObjects[0]}
+                        setFolders={setFolders}
+                        setSelectedObjects={setSelectedObjects}
+                        setSharingPopup={setSharePopup}
+                    />
                 )
             )}
             

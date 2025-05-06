@@ -1,42 +1,50 @@
 import CopyClipboard from '@/app/_components/_common/CopyClipboard';
 import SimpleLoading from '@/app/_components/_common/SimpleLoading';
 import { useAlert } from '@/app/contexts/AlertContext';
-import { changeFileLinkSharing } from '@/app/file-requests/files';
+import { changeFolderLinkSharing } from '@/app/file-requests/folders';
 import { useUser } from '@clerk/nextjs';
 import React, { useState } from 'react'
 
-function FileLinkSharingForm({ file, setFile, setFiles, setSelectedObjects }) {
+function FolderLinkSharingForm({ folder, setFolder, setFolders, setSelectedObjects }) {
     const [apiLoading, setApiLoading] = useState(false);
-    const [linkSharing, setLinkSharing] = useState(file.sharing.link);
+    const [linkSharing, setLinkSharing] = useState(folder.sharing.link);
     const { user } = useUser();
     const { showAlert } = useAlert();
 
     // Link sharing
     const handleLinkSharing = async (e) => {
+        if (apiLoading) {
+            showAlert('Ladataan... Odota hetki.', 'info');
+            return;
+        }
+
+        e.preventDefault();
         setApiLoading(true);
+
         try {
             const newShareValue = e.target.checked;
-            const response = await changeFileLinkSharing(user.id, file.id, newShareValue);
-    
+            const response = await changeFolderLinkSharing(user.id, folder.id, newShareValue);
             if (response.success) {
-                if (newShareValue === true) showAlert('Tiedoston jakaminen linkillä otettu käyttöön.', 'info');
-                else showAlert('Tiedoston jakaminen linkillä poistettu käytöstä.', 'info');
+                if (newShareValue === true) showAlert('Kansion jakaminen linkillä otettu käyttöön.', 'info');
+                else showAlert('Kansion jakaminen linkillä poistettu käytöstä.', 'info');
+
+                // Client updates
                 setLinkSharing(newShareValue); 
-                const updatedFile = {
-                    ...file,
+                const updatedFolder = {
+                    ...folder,
                     sharing: {
-                        ...file.sharing,
+                        ...folder.sharing,
                         link: newShareValue
                     }
                 }
-                setFiles(prevFiles => prevFiles.map(f => f.id === file.id ? updatedFile : f));
-                setSelectedObjects(prevObjs => prevObjs.map(obj => obj.id === file.id ? updatedFile : obj));
+                setFolders(prevFolders => prevFolders.map(f => f.id === folder.id ? updatedFolder : f));
+                setSelectedObjects(prevObjs => prevObjs.map(obj => obj.id === folder.id ? updatedFolder : obj));
             } else {
                 showAlert(response.message, 'error');
             }
         } catch (error) {
-            console.error("Error changing file sharing: " + error);
-            showAlert('Tiedoston jakamisasetusten muuttamisessa tapahtui virhe, yritä uudelleen.', 'error');
+            console.error("Error changing folder link sharing: " + error);
+            showAlert('Kansion linkillä jakamisen muutokset epäonnistuivat, yritä uudelleen.', 'error');
         } finally {
             setApiLoading(false);
         }
@@ -62,15 +70,17 @@ function FileLinkSharingForm({ file, setFile, setFiles, setSelectedObjects }) {
                         rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] 
                         after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all 
                         dark:border-gray-600 peer-checked:bg-primary"></div>
-                    <span className="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">Jaa linkki</span>
+                    <span className="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">
+                        { linkSharing ? 'Jaettu' : 'Ei jaettu' }
+                    </span>
                 </label>
 
                 {linkSharing && (
                     <>
-                        <CopyClipboard content={file.sharing.url} />
+                        <CopyClipboard content={folder.sharing.url} />
 
                         <p className='text-xs text-orange-500'>
-                            <strong>Huom!</strong> Osoite on julkinen ja kaikki osoitteen tietävät pääsevät näkemään tiedoston. 
+                            <strong>Huom!</strong> Osoite on julkinen ja kaikki osoitteen tietävät pääsevät näkemään kansion sisällön. 
                             Jaa linkkiä harkiten ja aseta tarvittaessa salasana.
                         </p>
                     </>
@@ -81,4 +91,4 @@ function FileLinkSharingForm({ file, setFile, setFiles, setSelectedObjects }) {
     )
 }
 
-export default FileLinkSharingForm
+export default FolderLinkSharingForm

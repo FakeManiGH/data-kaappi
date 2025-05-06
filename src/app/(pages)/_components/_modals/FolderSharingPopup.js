@@ -4,10 +4,10 @@ import { getUserGroups } from '@/app/file-requests/groups';
 import { useUser } from '@clerk/nextjs';
 import { X } from 'lucide-react';
 import React, { useEffect, useState } from 'react'
-import FileGroupSharingForm from '../_forms/FileGroupSharingForm';
-import FileLinkSharingForm from '../_forms/FileLinkSharingForm';
+import FolderLinkSharingForm from '../_forms/FolderLinkSharingForm';
 
-function FileSharingPopup({ selectedFile, setFiles, setSharingPopup, setSelectedObjects }) {
+
+function FolderSharingPopup({ selectedFolder, setFolders, setSharingPopup, setSelectedObjects }) {
     const [loading, setLoading] = useState(true);
     const { showAlert} = useAlert();
     const { user } = useUser();
@@ -47,15 +47,14 @@ function FileSharingPopup({ selectedFile, setFiles, setSharingPopup, setSelected
                     <X />
                 </button>
 
-                <h2 className="text-2xl md:text-3xl mb-2 text-center font-bold">Jaa tiedosto</h2>
-                <p className='text-sm'>Voit jakaa tiedoston <strong className='text-success'>{selectedFile.name}</strong> seuraavasti:</p>
+                <h2 className="text-2xl md:text-3xl mb-2 text-center font-bold">Jaa kansio</h2>
+                <p className='text-sm'>Voit jakaa kansion <strong className='text-success text-base'>{selectedFolder.name}</strong> seuraavasti:</p>
 
-                <FileLinkSharingForm file={selectedFile} setFiles={setFiles} setSelectedObjects={setSelectedObjects} />
+                <FolderLinkSharingForm folder={selectedFolder} setFolders={setFolders} setSelectedObjects={setSelectedObjects} />
 
-                <FileGroupSharingForm groups={groups} file={selectedFile} setFiles={setFiles} setSelectedObjects={setSelectedObjects} />
             </div>
         </span>
     )
 }
 
-export default FileSharingPopup
+export default FolderSharingPopup
