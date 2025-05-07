@@ -5,7 +5,7 @@ import { useAlert } from '@/app/contexts/AlertContext';
 import { Trash2, X } from 'lucide-react';
 import { removeFilePassword } from '@/app/file-requests/files';
 
-function FilePasswordPopup({ selectedFile, setFiles, setSelectedObjects, setPasswordPopup }) {
+function FilePasswordPopup({ selectedFile, setFile, setFiles, setSelectedObjects, setPasswordPopup }) {
     const { user } = useUser();
     const { showAlert } = useAlert();
 
@@ -19,10 +19,15 @@ function FilePasswordPopup({ selectedFile, setFiles, setSelectedObjects, setPass
                     ...selectedFile,
                     passwordProtected: false
                 }
-                setFiles(prevFiles => prevFiles.map(file =>
-                    file.id === updatedFile.id ? updatedFile : file
-                ));
-                setSelectedObjects([updatedFile]);
+                if (setFile) {
+                    setFile(updatedFile);
+                }
+                if (setFiles) {
+                    setFiles(prevFiles => prevFiles.map(file => file.id === updatedFile.id ? updatedFile : file));
+                }
+                if (setSelectedObjects) {
+                    setSelectedObjects([updatedFile]);
+                }
             } else {
                 showAlert(response.message || 'Salasanan poistaminen käytöstä epäonnistui.', 'error');
             }
@@ -74,6 +79,7 @@ function FilePasswordPopup({ selectedFile, setFiles, setSelectedObjects, setPass
 
                 <FilePasswordForm 
                     selectedFile={selectedFile}
+                    setFile={setFile}
                     setFiles={setFiles}
                     setSelectedObjects={setSelectedObjects}
                     setPasswordPopup={setPasswordPopup}

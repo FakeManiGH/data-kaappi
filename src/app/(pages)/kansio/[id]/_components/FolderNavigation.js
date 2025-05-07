@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { ArrowRightLeft, CheckSquare, LockKeyhole, Pen, Settings, Share2, Trash2, X } from 'lucide-react';
 
 
-function FolderNavigation({ folders, files, selectedObjects, setSelectedObjects, setRenamePopup, setMovePopup, setPasswordPopup, setDeletePopup }) {
+function FolderNavigation({ folders, files, selectedObjects, setSelectedObjects, setRenamePopup, setMovePopup, setPasswordPopup, setSharePopup, setDeletePopup }) {
     const [dropMenu, setDropMenu] = useState(false)
     const dropRef = useRef(null);
 
@@ -78,6 +78,7 @@ function FolderNavigation({ folders, files, selectedObjects, setSelectedObjects,
                                 <button 
                                     className='flex w-full items-center gap-2 px-4 py-2 text-sm text-navlink hover:text-primary' 
                                     role="menuitem"
+                                    onClick={() => {setSharePopup(true), setDropMenu(false)}}
                                 >
                                     <Share2 size={16} />
                                     Jaa

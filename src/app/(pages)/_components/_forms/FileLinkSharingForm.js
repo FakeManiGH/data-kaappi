@@ -29,8 +29,9 @@ function FileLinkSharingForm({ file, setFile, setFiles, setSelectedObjects }) {
                         link: newShareValue
                     }
                 }
-                setFiles(prevFiles => prevFiles.map(f => f.id === file.id ? updatedFile : f));
-                setSelectedObjects(prevObjs => prevObjs.map(obj => obj.id === file.id ? updatedFile : obj));
+                if (setFile) setFile(updatedFile);
+                if (setFiles) setFiles(prevFiles => prevFiles.map(f => f.id === file.id ? updatedFile : f));
+                if (setSelectedObjects) setSelectedObjects(prevObjs => prevObjs.map(obj => obj.id === file.id ? updatedFile : obj));
             } else {
                 showAlert(response.message, 'error');
             }

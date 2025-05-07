@@ -3,7 +3,7 @@ import { translateFileSize, cleanDataType, convertDate } from '@/utils/DataTrans
 import { LockKeyhole, Share2 } from 'lucide-react';
 import Link from 'next/link';
 
-function FileInfo({ file, folder }) {
+function FileInfo({ file, folder, shareGroups }) {
   if (!file) return null;
 
   // Define the file info fields
@@ -19,7 +19,8 @@ function FileInfo({ file, folder }) {
     {
       label: 'Kansio:',
       value: folder ? (
-        <Link href={`/kansio/${folder.id}`} className="text-primary hover:text-primary/75">
+        <Link href={`/kansio/${folder.id}`} className="flex gap-1 items-center text-primary hover:text-primary/75">
+          <img src='/icons/folder.png' className='w-4 h-4 contain' alt={folder.name} />
           {folder.name}
         </Link>
       ) : (
@@ -33,13 +34,24 @@ function FileInfo({ file, folder }) {
       value: cleanDataType(file.type),
     },
     {
-      label: 'Näkyvyys:',
+      label: 'Jaettu linkillä:',
       value: (
         <span className="flex gap-1 items-center">
-          {file.linkShare && <span title="Jaettu" className="text-xs text-success"><Share2 size={18} /></span>}
-          {file.linkShare ? 'Linkki' : 'Yksityinen'}
+          {file.sharing.link && <span title="Jaettu" className="text-xs text-success"><Share2 size={18} /></span>}
+          {file.sharing.link ? 'Kyllä' : 'Ei'}
         </span>
       ),
+    },
+    {
+      label: 'Jaettu ryhmässä:',
+      value: (
+        shareGroups?.length > 0 ? shareGroups.map(group => (
+          <Link href={`/ryhma/${group.id}`} key={group.id} className="flex gap-1 items-center text-primary hover:text-primary/75">
+            <img src='/icons/group.png' className='w-4 h-4 contain' alt={group.name} />
+            {group.name}
+          </Link>
+        ))
+      : 'Ei jaettu'),
     },
     {
       label: 'Salasana suojattu:',

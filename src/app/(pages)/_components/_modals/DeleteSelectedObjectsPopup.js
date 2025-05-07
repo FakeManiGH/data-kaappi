@@ -181,10 +181,10 @@ function DeleteSelectedObjects({ selectedObjects, setSelectedObjects, setFolders
             ) : (
                 <>
                 <h2 className="text-2xl md:text-3xl text-center font-bold">Vahvista poisto</h2>
-                <p className='mt-4 text-center'>Haluatko varmasti poistaa kaikki valitut kohteet?</p>
+                <p className='mt-4 text-center text-sm'>Haluatko varmasti poistaa kaikki valitut kohteet?</p>
                 <p className='mt-2 text-xs text-orange-500 text-center'>Poistettuja kohteita ei voi palauttaa.</p>
 
-                <div className='flex items-center justify-center gap-1 mt-4'>
+                <div className='flex items-center justify-center gap-1 mt-4 text-sm'>
                     <button 
                         className='px-3 py-2 rounded-lg bg-red-500 text-white hover:bg-red-600'
                         onClick={handleDeletingObjects}

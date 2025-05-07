@@ -7,7 +7,7 @@ import { getUserFolders, transferFolderInFolder } from '@/app/file-requests/fold
 import PopupLoader from '@/app/_components/_common/PopupLoader';
 import { transferFileToFolder } from '@/app/file-requests/files';
 
-function MoveSelectedObjectsPopup({ currentFolder, selectedObjects, setSelectedObjects, setFolders, setFiles, setMovePopup }) {
+function MoveSelectedObjectsPopup({ currentFolder, selectedObjects, setSelectedObjects, setFile, setFolders, setFiles, setMovePopup }) {
     const [availableFolders, setAvailableFolders] = useState(null);
     const [targetID, setTargetID] = useState(null);
     const [transferErrors, setTransferErrors] = useState([]);
@@ -53,12 +53,14 @@ function MoveSelectedObjectsPopup({ currentFolder, selectedObjects, setSelectedO
       getUserFolderData();
     }, [isLoaded, user, showAlert, selectedObjects]);
   
-  // Remove selected object
-  const removeObjectSelection = (object) => {
-    setSelectedObjects((prevSelectedObjects) => 
-        prevSelectedObjects.filter((selectedObject) => selectedObject.id !== object.id)
-    );
-  };
+  // Remove selected object (if not on file-page)
+  if (!setFile) {
+    const removeObjectSelection = (object) => {
+      setSelectedObjects((prevSelectedObjects) => 
+          prevSelectedObjects.filter((selectedObject) => selectedObject.id !== object.id)
+      );
+    };
+  }
 
   // Change selected folder
   const handleFolderChange = (e) => {
@@ -108,25 +110,36 @@ function MoveSelectedObjectsPopup({ currentFolder, selectedObjects, setSelectedO
         });
     
         await Promise.all(movePromises);
+
+        // Update file
+        if (setFile) {
+          setFile((prevFile) => ({...prevFile, folder: targetID}));
+        }
     
         // Update folders
-        setFolders((prevFolders) =>
-          prevFolders.filter((folder) => !movedObjects.some((obj) => obj.id === folder.id))
-        );
+        if (setFolders) {
+          setFolders((prevFolders) =>
+            prevFolders.filter((folder) => !movedObjects.some((obj) => obj.id === folder.id))
+          );
+        }
 
         // Update files
-        setFiles((prevFiles) =>
-          prevFiles.filter((file) => !movedObjects.some((obj) => obj.id === file.id))
-        );
+        if (setFiles) {
+          setFiles((prevFiles) =>
+            prevFiles.filter((file) => !movedObjects.some((obj) => obj.id === file.id))
+          );
+        }
 
         // Update targetFolder fileCount (if in this folder)
-        setFolders((prevFolders) =>
-          prevFolders.map((folder) =>
-            folder.id === targetID
-              ? { ...folder, fileCount: folder.fileCount + movedObjects.length }
-              : folder
-          )
-        );
+        if (setFolders) {
+          setFolders((prevFolders) =>
+            prevFolders.map((folder) =>
+              folder.id === targetID
+                ? { ...folder, fileCount: folder.fileCount + movedObjects.length }
+                : folder
+            )
+          );
+        }
 
         if (errors.length > 0) {
           showAlert('Joitakin kohteita ei voitu siirtää.', 'error');
@@ -184,14 +197,16 @@ function MoveSelectedObjectsPopup({ currentFolder, selectedObjects, setSelectedO
                         <span className='text-navlink'>({object.fileCount} tiedostoa)</span>
                       )}
                     </div>
-
-                    <button
-                      title='Poista valinta'
-                      className='text-navlink hover:text-foreground'
-                      onClick={() => removeObjectSelection(object)}
-                    >
-                      <CircleMinus size={20} />
-                    </button>
+                      
+                    {!setFile &&
+                      <button
+                        title='Poista valinta'
+                        className='text-navlink hover:text-foreground'
+                        onClick={() => removeObjectSelection(object)}
+                      >
+                        <CircleMinus size={20} />
+                      </button>
+                    }
                   </div>
 
                   {/* Display error message if it exists */}
@@ -207,7 +222,7 @@ function MoveSelectedObjectsPopup({ currentFolder, selectedObjects, setSelectedO
 
           <select
             id='folder'
-            className='px-3 py-2.5 mt-4 bg-background text-sm border border-contrast focus:border-primary w-full focus:ring-primary focus:ring-1
+            className='px-3 py-2.5 mt-4 rounded-md bg-background text-sm border border-contrast focus:border-primary w-full focus:ring-primary focus:ring-1
               first:text-navlink'
             onChange={(e) => handleFolderChange(e)}
             value={targetID || ''} // Prioritize preferredFolder

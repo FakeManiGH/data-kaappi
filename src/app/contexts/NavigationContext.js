@@ -34,7 +34,7 @@ export const NavigationProvider = ({ children }) => {
         },
         {
             id: 4,
-            name: 'Selaa',
+            name: 'Selaa mediaa',
             icon: Images,
             path: '/selaa'
         },

@@ -5,7 +5,7 @@ import { useUser } from '@clerk/nextjs';
 import { X } from 'lucide-react';
 import React, { useEffect, useState } from 'react'
 
-function FileRenamePopup({ selectedFile, setFiles, setRenamePopup, setSelectedObjects }) {
+function FileRenamePopup({ selectedFile, setFile, setFiles, setRenamePopup, setSelectedObjects }) {
   const [fileName, setFileName] = useState(null);
   const [newName, setNewName] = useState(null);
   const [fileExtension, setFileExtension] = useState(null);
@@ -57,11 +57,16 @@ function FileRenamePopup({ selectedFile, setFiles, setRenamePopup, setSelectedOb
 
       if (response.success) {
         const updatedFile = {...selectedFile, name: fullName}
-        setFiles(prevFiles => prevFiles.map(file => 
-          file.id === updatedFile.id ? updatedFile : file
-        ));
-        setRenamePopup(false); 
-        setSelectedObjects([]);
+        if (setFile) {
+          setFile(updatedFile);
+        }
+        if (setFiles) {
+          setFiles(prevFiles => prevFiles.map(file => file.id === updatedFile.id ? updatedFile : file));
+        }
+        if (setSelectedObjects) {
+          setSelectedObjects([]);
+        }
+        setRenamePopup(false);
         showAlert(response.message || 'Tiedoston nimi vaihdettu.' , 'success');
       } else {
         showAlert(response.message || 'Uudelleen nimeäminen epäonnistui.' , 'error');

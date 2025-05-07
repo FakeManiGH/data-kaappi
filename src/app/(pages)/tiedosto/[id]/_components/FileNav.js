@@ -1,126 +1,77 @@
 import React, { useEffect, useState, useRef } from 'react'
-import { LockKeyhole, Pen, Settings, Share2, Trash } from 'lucide-react'
-import SharePopup from './SharePopup'
-import PasswordPopup from './PasswordPopup'
-import DeletePopup from './DeletePopup'
-import RenamePopup from './RenamePopup'
 
-function FileNav({ file, setFile, setDeleted }) {
-    const dropRef = useRef(null);
-    const [dropMenu, setDropMenu] = useState(false);
-    const [sharePopup, setSharePopup] = useState(false);
-    const [passwordPopup, setPasswordPopup] = useState(false);
-    const [deletePopup, setDeletePopup] = useState(false);
-    const [renamePopup, setRenamePopup] = useState(false);
-
-    useEffect(() => {
-        if (dropRef) {
-            const handleClickOutside = (event) => {
-                if (dropRef.current && !dropRef.current.contains(event.target)) {
-                    setDropMenu(false);
-                }
-            };
-            document.addEventListener('mousedown', handleClickOutside);
-            return () => {
-                document.removeEventListener('mousedown', handleClickOutside);
-            };
-        }
-    }), [];
+function FileNav({ setRenamePopup, setDeletePopup, setPasswordPopup, setMovePopup, setSharePopup }) {
+    
 
     const handleRenamePopup = () => {
-        setDropMenu(false);
+        closeAllPopups();
         setRenamePopup(true);
     }
 
     const handleSharePopup = () => {
-        setDropMenu(false)
+        closeAllPopups();
         setSharePopup(true)
     }
 
     const handlePasswordPopup = () => {
-        setDropMenu(false)
+        closeAllPopups();
         setPasswordPopup(true)
     }
 
+    const handleMovePopup = () => {
+        closeAllPopups();
+        setMovePopup(true)
+    }
+
     const handleDeletePopup = () => {
-        setDropMenu(false)
+        closeAllPopups();
         setDeletePopup(true)
     }
 
+    const closeAllPopups = () => {
+        setRenamePopup(false);
+        setSharePopup(false);
+        setPasswordPopup(false);
+        setMovePopup(false);
+        setDeletePopup(false);
+    }
+
     return (
-        <div className='flex flex-wrap items-center justify-end'>
-            <div ref={dropRef}>
-                <button 
-                    className='flex items-center gap-1 p-2 rounded-lg text-sm bg-primary text-white 
-                        hover:bg-primary/75 transition-colors'
-                    role="button"
-                    onClick={() => setDropMenu(!dropMenu)}
-                >
-                    <Settings size={24} />
-                </button>
+        <div className='flex flex-wrap items-center gap-1 justify-end text-sm'>
+            <button 
+                className='px-3 py-2 rounded-lg text-white bg-primary hover:bg-primary/75'
+                onClick={handleSharePopup}
+            >
+                Jaa
+            </button>
 
-                {dropMenu && (
-                    <div
-                        className="absolute z-10 right-0 rounded-lg mt-2 w-full sm:max-w-64 divide-y divide-contrast overflow-hidden 
-                            border border-contrast bg-background shadow-lg shadow-black/25"
-                        role="menu"
-                    >
-                        <div className='bg-background shadow-lg shadow-black/50'>
-                            <strong className="block p-2 text-xs font-medium uppercase text-gray-500">
-                                Yleiset
-                            </strong>
+            <button 
+                className='px-3 py-2 rounded-lg text-white bg-primary hover:bg-primary/75'
+                onClick={handleRenamePopup}
+            >
+                Nimeä uudelleen
+            </button>
 
-                            <button 
-                                className='flex w-full items-center gap-2 px-4 py-2 text-sm text-navlink hover:text-primary' 
-                                role="menuitem"
-                                onClick={handleRenamePopup}
-                            >
-                                <Pen size={16} />
-                                Nimeä uudelleen
-                            </button>
+            <button 
+                className='px-3 py-2 rounded-lg text-white bg-primary hover:bg-primary/75'
+                onClick={handlePasswordPopup}
+            >
+                Salasana
+            </button>
 
-                            <button 
-                                className='flex w-full items-center gap-2 px-4 py-2 text-sm text-navlink hover:text-primary' 
-                                role="menuitem"
-                                onClick={handleSharePopup}
-                            >
-                                <Share2 size={16} />
-                                Jaa tiedosto
-                            </button>
+            <button 
+                className='px-3 py-2 rounded-lg text-white bg-primary hover:bg-primary/75'
+                onClick={handleMovePopup}
+            >
+                Siirrä
+            </button>
 
-                            <button 
-                                className='flex w-full items-center gap-2 px-4 py-2 text-sm text-navlink hover:text-primary' 
-                                role="menuitem"
-                                onClick={handlePasswordPopup}
-                            >
-                                <LockKeyhole size={16} />
-                                Aseta salasana
-                            </button>
-                        </div>
-
-                        <div className='bg-background pb-2'>
-                            <strong className="block p-2 text-xs font-medium uppercase text-gray-500">
-                                Vaaravyöhyke
-                            </strong>
-
-                            <button
-                            type="submit"
-                            className="flex w-full items-center gap-2 px-4 py-2 text-sm text-red-500 hover:text-red-700"
-                            role="menuitem"
-                            onClick={handleDeletePopup}
-                            >
-                                <Trash size={16} />
-                                Poista tiedosto
-                            </button>                            
-                        </div>
-                    </div>
-                )}
-            </div>
-            {/* Popups */}
-            {sharePopup && <SharePopup file={file} setFile={setFile} setSharePopup={setSharePopup} />}
-            {passwordPopup && <PasswordPopup file={file} setFile={setFile} setPasswordPopup={setPasswordPopup} />}
-            {deletePopup && <DeletePopup file={file} setDeletePopup={setDeletePopup} setDeleted={setDeleted} />}
-            {renamePopup && <RenamePopup file={file} setFile={setFile} setRenamePopup={setRenamePopup} />}
+            <button 
+                className='px-3 py-2 rounded-lg text-white bg-red-500 hover:bg-red-600'
+                onClick={handleDeletePopup}
+            >
+                Poista
+            </button>
         </div>
     )
 }

@@ -21,6 +21,8 @@ import FileUploadPopup from '../../_components/_modals/FileUploadPopup';
 import FilePasswordPopup from '../../_components/_modals/FilePasswordPopup';
 import FolderPasswordPopup from '../../_components/_modals/FolderPasswordPopup';
 import DeleteSelectedObjects from '../../_components/_modals/DeleteSelectedObjectsPopup';
+import FileSharingPopup from '../../_components/_modals/FileSharingPopup';
+import FolderSharingPopup from '../../_components/_modals/FolderSharingPopup';
 
 
 function Page({ params }) {
@@ -41,7 +43,8 @@ function Page({ params }) {
     const [createFolder, setCreateFolder] = useState(false);
     const [uploadPopup, setUploadPopup] = useState(false);
     const [renamePopup, setRenamePopup] = useState(false);
-    const [passwordPopup, setPasswordPopup] = useState(false)
+    const [passwordPopup, setPasswordPopup] = useState(false);
+    const [sharePopup, setSharePopup] = useState(false);
     const [deletePopup, setDeletePopup] = useState(false);
     const [serverError, setServerError] = useState(null);
     const [dataError, setDataError] = useState(null);
@@ -195,6 +198,7 @@ function Page({ params }) {
                 setSelectedObjects={setSelectedObjects}
                 setRenamePopup={setRenamePopup}
                 setPasswordPopup={setPasswordPopup}
+                setSharePopup={setSharePopup}
                 setDeletePopup={setDeletePopup}
             />
             }
@@ -272,6 +276,24 @@ function Page({ params }) {
                         setFolders={setFolders}
                         setSelectedObjects={setSelectedObjects}
                         setPasswordPopup={setPasswordPopup}
+                    />
+                )
+            )}
+
+            {sharePopup && (
+                selectedObjects[0].docType === 'file' ? (
+                    <FileSharingPopup
+                        selectedFile={selectedObjects[0]}
+                        setFiles={setFiles}
+                        setSelectedObjects={setSelectedObjects}
+                        setSharingPopup={setSharePopup}
+                    />
+                ) : (
+                    <FolderSharingPopup
+                        selectedFolder={selectedObjects[0]}
+                        setFolders={setFolders}
+                        setSelectedObjects={setSelectedObjects}
+                        setSharingPopup={setSharePopup}
                     />
                 )
             )}

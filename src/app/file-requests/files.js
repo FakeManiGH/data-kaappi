@@ -30,28 +30,77 @@ export const getFileInfo = async (fileID) => {
 
 // Get filepage info
 export const getFilePageInfo = async (userID, fileID) => {
+    if (!userID || !fileID) {
+        return { success: false, message: 'Pyynnöstä puuttuu tietoja.' } 
+    }
+
     try {
-        const docRef = doc(db, 'files', fileID)
-        const docSnap = await getDoc(docRef)
-        if (!docSnap.exists()) {
-            return { success: false, message: `Tiedostoa ${file.fileID} ei löytynyt.` }
+        const fileRef = doc(db, 'files', fileID)
+        const fileSnap = await getDoc(fileRef)
+
+        if (!fileSnap.exists()) {
+            return { success: false, message: `Tiedostoa ${fileID} ei löytynyt.` }
         } 
-        const data = docSnap.data();
 
-        // Shared?
-        if (!data.linkShare && userID !== data.userID) {
-            return { success: false, message: 'Sisältö ei ole saatavilla tai sitä ei ole jaettu.'}
+        const fileTemp = fileSnap.data();
+
+        // Auth
+        if (userID !== fileTemp.userID) {
+            return { success: false, message: 'Ei tarvittavia oikeuksia tiedostoon.' }
         }
 
-        // Shared in Group
-        // TO DO!
+        // Transform data
+        const file = transformFileDataPublic(fileTemp);
 
-        // Password protection?
-        if (data.pwdProtected && userID !== data.userID) {
-            return { success: true, password: true }
+        // Possible share groups
+        let groups;
+        if (fileTemp.shareGroups.length) {
+            const shareGroups = await Promise.all(
+                fileTemp.shareGroups.map(async (groupID) => {
+                    try {
+                        const groupRef = doc(db, "groups", groupID);
+                        const groupSnap = await getDoc(groupRef);
+        
+                        if (groupSnap.exists()) {
+                            const groupData = groupSnap.data();
+                            return { id: groupID, name: groupData.groupName }; // Create object with id and name
+                        } else {
+                            console.warn(`Group with ID ${groupID} not found.`);
+                            return null; // Handle missing group
+                        }
+                    } catch (error) {
+                        console.error(`Error fetching group with ID ${groupID}:`, error);
+                        return null; // Handle fetch error
+                    }
+                })
+            );
+        
+            // Filter out any null values (in case of errors or missing groups)
+            const validShareGroups = shareGroups.filter((group) => group !== null);
+            groups = [...validShareGroups];
+
+            console.log(validShareGroups); // Array of { id, name } objects
         }
-        const file = transformFileDataPublic(data);
-        return { success: true, data: file };
+        
+        // Possible folder data
+        if (fileTemp.folderID && fileTemp.folderID.length) {
+            const folderRef = doc(db, "folders", fileTemp.folderID);
+            const folderSnap = await getDoc(folderRef);
+
+            if (!folderSnap.exists()) {
+                return { success: true, file: file, error: 'Tiedoston kansiota ei löytynyt.' }
+            }
+
+            const folderTemp = folderSnap.data();
+            const folder = {
+                id: folderTemp.folderID,
+                name: folderTemp.folderName
+            }
+
+            return { success: true, file: file, folder: folder, shareGroups: groups }
+        } else {
+            return { success: true, file: file, shareGroups: groups }
+        }
     } catch (error) {
         console.error("Error fetching file: ", error);
         return { success: false, message: "Tiedoston hakemisessa tapahtui virhe, yritä uudelleen."}
