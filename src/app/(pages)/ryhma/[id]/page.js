@@ -10,6 +10,7 @@ import ErrorView from '../../_components/ErrorView';
 import Hero from './_components/Hero';
 import Breadcrumbs from './_components/BreadGrumps';
 import PasswordPrompt from './_components/PasswordPrompt';
+import NavigationBar from './_components/NavigationBar';
 
 function Page({ params }) {
     const { id } = use(params);
@@ -20,50 +21,13 @@ function Page({ params }) {
     const [pageLoading, setPageLoading] = useState(true);
     const [apiLoading, setApiLoading] = useState(false);
     const [group, setGroup] = useState(null);
+    const [members, setMembers] = useState(null);
     const [contentError, setContentError] = useState(null);
     const [serverError, setServerError] = useState(null);
 
-    const [reqPassword, setReqPassword] = useState(false);
-    const [passwordError, setPasswordError] = useState(null);
-    const [passwordResolve, setPasswordResolve] = useState(null);
-
-    // Password submit
-    const handlePasswordSubmit = async (e) => {
-        e.preventDefault();
-        if (apiLoading) {
-            showAlert('ladataan... odota hetki.', 'info');
-            return;
-        }
-    
-        setApiLoading(true);
-        const password = e.target.password.value;
-    
-        if (!password || !password.length) {
-            setPasswordError('Anna ensin kelvollinen salasana.');
-            setApiLoading(false);
-            return;
-        }
-    
-        try {
-            const response = await validateGroupPassword(id, password);
-            if (response.success) {
-                setPasswordResolve(true); // Resolve the promise with `true`
-                setReqPassword(false); // Close the prompt
-            } else {
-                setPasswordError(response.message || 'Virheellinen salasana.'); // Keep the prompt open
-            }
-        } catch (error) {
-            setPasswordError('Virhe tapahtui salasanan tarkistuksessa.'); // Handle unexpected errors
-        } finally {
-            setApiLoading(false);
-        }
-    };
-
-    // Password Cancel
-    const handlePasswordCancel = () => {
-        if (passwordResolve) passwordResolve(false); // Resolve the promise with `false`
-        setReqPassword(false); // Close the prompt
-    };
+    // MODAL STATES
+    const [coverImagePopup, setCoverImagePopup] = useState(false);
+    const [addMembersPopup, setAddMembersPopup] = useState(false);
 
 
     useEffect(() => {
@@ -81,18 +45,7 @@ function Page({ params }) {
                     const response = await getPrivateGroupInformation(user.id, id);
                     if (response.success) {
                         setGroup(response.group);
-                        if (response.password) {
-                            setPageLoading(false);
-                            const passwordValid = await new Promise((resolve) => {
-                                setPasswordResolve(() => resolve); // Store the resolve function
-                                setReqPassword(true); // Show the password prompt
-                            });
-    
-                            if (!passwordValid) {
-                                navigatePage('/ryhmat');
-                                return;
-                            }
-                        }
+                        setMembers(response.members);
                     } else {
                         setContentError(response.message);
                     }
@@ -111,27 +64,21 @@ function Page({ params }) {
         setCurrentIndex('/ryhmat');
     }, [isLoaded, user, id, navigatePage, setCurrentIndex]);
 
-
-    
     if (pageLoading) return <PageLoading />
     if (contentError) return <ContentNotFound message={contentError} />
     if (serverError) return <ErrorView message={serverError} />
-    if (reqPassword) return (
-        <PasswordPrompt 
-            handleSubmit={handlePasswordSubmit}
-            error={passwordError}
-            loading={apiLoading}
-            setError={setPasswordError}
-            handleCancel={handlePasswordCancel} 
-        />
-    )
 
     return (
+        <>
         <main>
             <Breadcrumbs group={group} />
-            <Hero group={group} setGroup={setGroup} />
-            
+            <Hero group={group} setCoverImagePopup={setCoverImagePopup} />
+            <NavigationBar members={members} setAddMembersPopup={setAddMembersPopup} />
         </main>
+
+        {/* MODALS */}
+
+        </>
     )
 }
 

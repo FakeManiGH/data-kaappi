@@ -28,11 +28,11 @@ function GroupInvites() {
                             id='kutsukoodi'
                             name='kutsukoodi'
                             placeholder='Syötä kutsukoodi...'
-                            className='w-full py-2.5 px-3 bg-secondary text-sm border border-transparent outline-none focus:border-primary focus:ring-1'
+                            className='w-full py-2.5 px-3 rounded-md bg-secondary text-sm border border-transparent outline-none focus:border-primary focus:ring-1'
                         />
                         <button
                             type='submit'
-                            className='py-2.5 px-3 bg-primary text-white hover:bg-primary/75 rounded-lg whitespace-nowrap'
+                            className='py-2 px-3 bg-primary text-white hover:bg-primary/75 rounded-lg whitespace-nowrap'
                         >
                             Hyväksy kutsu
                         </button>

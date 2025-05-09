@@ -10,11 +10,12 @@ import { transformGroupDataPublic } from "@/utils/DataTranslation";
 // CREATE
 // Create a group
 export const createNewGroup = async (userData, groupData) => {
-    try {
-        if (!userData) {
-            throw new Error('Käyttäjätietoja ei löytynyt.');
-        }
+    if (!userData || !groupData) {
+        return { success: false, message: 'Pyynnöstä puuttuu teitoja.' }
+    }
 
+    try {
+        // Data validation
         const validationErrors = validateGroupdata(groupData);
         if (Object.keys(validationErrors).length > 0) {
             return { success: false, errors: validationErrors }
@@ -30,26 +31,19 @@ export const createNewGroup = async (userData, groupData) => {
             groupExists = groupSnap.exists();
         } while (groupExists);
 
-        let password = null;
-        if (groupData.groupPwd !== "") {
-            const salt = bcrypt.genSaltSync(13)
-            const hashPass = bcrypt.hashSync(groupData.groupPwd, salt)
-            password = hashPass;
-        }
-
         const newGroup = {
             docType: 'group',
             groupID: groupID,
             groupVisibility: groupData.groupVisibility,
             groupName: groupData.groupName,
             groupDesc: groupData.groupDesc,
+            groupCover: null,
             userID: userData.id,
             userName: userData.name,
             userEmail: userData.email,
             createdAt: Timestamp.fromDate(new Date()),
-            pwdProtected: !!password,
-            pwd: password,
-            groupMembers: [userData.id]
+            groupMembers: [userData.id],
+            groupAdmins: [userData.id]
         }
 
         await setDoc(doc(db, "groups", groupID), newGroup);
@@ -92,16 +86,11 @@ export const getUserGroups = async (userID) => {
 
 // get private group infromation
 export const getPrivateGroupInformation = async (userID, groupID) => {
+    if (!userID || !groupID) {
+        return { success: false, message: 'Pyynnöstä puuttuu tietoja.' }
+    }
+
     try {
-        if (!userID) {
-            throw new Error("Käyttäjätietoja ei löytynyt.");
-        }
-
-        if (!groupID) {
-            throw new Error("Ryhmätietoja ei löytynyt.");
-        }
-
-        // Get data
         const groupRef = doc(db, "groups", groupID);
         const groupSnap = await getDoc(groupRef);
 
@@ -109,7 +98,6 @@ export const getPrivateGroupInformation = async (userID, groupID) => {
             return { success: false, message: `Ryhmää ${groupID} ei löytynyt.` }
         }
 
-        // Assign data
         const groupData = groupSnap.data();
 
         if (!Array.isArray(groupData.groupMembers)) {
@@ -120,50 +108,62 @@ export const getPrivateGroupInformation = async (userID, groupID) => {
             return { success: false, message: `Ryhmän ${groupID} jäsenyyttä ei löytynyt.` }
         }
 
-        // Public data
-        const group = transformGroupDataPublic(groupData);
+        // Group member info
+        const result = await getGroupMemberInfo(groupData.groupMembers);
 
-        if (groupData.pwdProtected && groupData.userID !== userID) {
-            return { success: true, password: true, group: group }
+        if (result.success) {
+            const members = result.members
+            const group = transformGroupDataPublic(groupData);
+            return { success: true, group: group, members: members }
+        } else {
+            return { success: false, message: 'Ryhmän käyttäjätietojen hakemisessa tapahtio virhe, yritä uudelleen.' }
         }
-
-        return { success: true, group: group }
-
     } catch (error) {
         console.error("Error fetching group information: " + error);
         return { success: false, message: error.message || 'Virhe ryhmätietojen hakemisesa, yritä uudelleen.' }
     }
 }
 
-
-
-
-// PASSWORD
-// Validate group password
-export const validateGroupPassword = async (groupID, password) => {
-    try {
-        const groupRef = doc(db, "groups", groupID);
-        const groupSnap = await getDoc(groupRef);
-
-        if (!groupSnap.exists()) {
-            return { success: false, message: `Ryhmää ${groupID} ei löytynyt.` }
-        }
-
-        const groupTemp = groupSnap.data();
-        const valid = await bcrypt.compare(password, groupTemp.pwd);
-
-        if (valid) {
-            const group = transformGroupDataPublic(groupTemp)
-            return { success: true, group: group }
-        } else { 
-            return { success: false, message: 'Voi ei! Virheellinen salasana.'}
-        }
-
-    } catch (error) {
-        console.error("Error verifying password: " + error);
-        return { success: false, message: 'Salasanan vahvistuksessa tapahtui virhe, yritä uudelleen.'}
+// Get group member info
+export const getGroupMemberInfo = async (idArray) => {
+    if (!Array.isArray(idArray) || idArray.length === 0) {
+        return { success: false, message: 'Pyynnöstä puuttuu tietoja tai jäsenlista on tyhjä.' };
     }
-}
+
+    try {
+        const memberData = await Promise.all(
+            idArray.map(async (memberID) => {
+                try {
+                    const memberRef = doc(db, "users", memberID);
+                    const memberSnap = await getDoc(memberRef);
+
+                    if (memberSnap.exists()) {
+                        const member = memberSnap.data();
+                        return {
+                            id: memberID,
+                            name: member.name || 'Tuntematon',
+                            email: member.userEmail || 'Ei sähköpostia',
+                        };
+                    } else {
+                        console.warn(`Member with ID ${memberID} not found.`);
+                        return null; // Handle missing member
+                    }
+                } catch (error) {
+                    console.error(`Error fetching member with ID ${memberID}:`, error);
+                    return null; // Handle fetch error
+                }
+            })
+        );
+
+        // Filter out any null values (in case of errors or missing members)
+        const validMembers = memberData.filter((member) => member !== null);
+
+        return { success: true, members: validMembers };
+    } catch (error) {
+        console.error("Error fetching group member information: ", error);
+        return { success: false, message: 'Virhe ryhmän jäsentietojen hakemisessa, yritä uudelleen.' };
+    }
+};
 
 
 

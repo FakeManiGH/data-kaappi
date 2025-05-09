@@ -7,44 +7,35 @@ import PopupLoader from '@/app/_components/_common/PopupLoader';
 import { useAlert } from '@/app/contexts/AlertContext';
 
 function CreateGroupPopup({ setGroups, setCreateGroup }) {
-    const [loading, setLoading] = useState(false);
-    const [passwordProtected, setPasswordProtected] = useState(false);
-    const [showPassword, setShowPassword] = useState(false);
+    const [apiLoading, setApiLoading] = useState(false);
     const [nameError, setNameError] = useState(null);
     const [descError, setDescError] = useState(null);
     const [visibilityError, setVisibilitiyError] = useState(null);
-    const [pwdError, setPwdError] = useState(null);
     const { showAlert } = useAlert();
     const { user } = useUser();
 
-    // Password switch
-    const handlePasswordProtecting = (e) => {
-        setPasswordProtected(e.target.checked);
-    }
-
-    // Password visibility
-    const changeVisibility = () => {
-        setShowPassword(!showPassword);
-    }
-
+    
     // Create new group
     const handleNewGroup = async (e) => {
         e.preventDefault();
-        if (loading) return;
-        setLoading(true);
+
+        if (apiLoading) {
+            showAlert('Ladataan... odota hetki.', 'info');
+            return;
+        }
+
+        setApiLoading(true);
 
         // Reset error states
         setNameError(null);
         setDescError(null);
         setVisibilitiyError(null);
-        setPwdError(null);
 
         try {
             const groupData = {
                 groupName: e.target.groupName.value,
                 groupDesc: e.target.groupDesc.value,
                 groupVisibility: e.target.groupVisibility.value,
-                groupPwd: e.target.groupPwd.value
             }
 
             const validationErrors = validateGroupdata(groupData);
@@ -53,10 +44,9 @@ function CreateGroupPopup({ setGroups, setCreateGroup }) {
             setNameError(validationErrors.name || null);
             setDescError(validationErrors.desc || null);
             setVisibilitiyError(validationErrors.visibility || null);
-            setPwdError(validationErrors.pwd || null);
 
             if (Object.keys(validationErrors).length > 0) {
-                setLoading(false);
+                setApiLoading(false);
                 return;
             }
 
@@ -77,7 +67,6 @@ function CreateGroupPopup({ setGroups, setCreateGroup }) {
                     setNameError(response.errors.name || null);
                     setDescError(response.errors.desc || null);
                     setVisibilitiyError(response.errors.visibility || null);
-                    setPwdError(response.errors.pwd || null);
                     showAlert('Virhe ryhmän tiedoissa.', 'error');
                 } else {
                     showAlert(response.message || 'Ryhmän luominen epäonnistui.', 'error');
@@ -87,12 +76,12 @@ function CreateGroupPopup({ setGroups, setCreateGroup }) {
             console.error("Error creating new group " + error);
             showAlert('Ryhmän luominen epäonnistui, yritä uudelleen.', 'error');
         } finally {
-            setLoading(false);
+            setApiLoading(false);
         }
     }
 
 
-    if (loading) return <PopupLoader />
+    if (apiLoading) return <PopupLoader />
 
     return (
     <div className='fixed z-50 inset-0 flex justify-center items-center bg-black/50 px-4 py-2'>
@@ -117,8 +106,9 @@ function CreateGroupPopup({ setGroups, setCreateGroup }) {
                     id='groupName'
                     name='groupName'
                     placeholder='Anna ryhmälle nimi...'
-                    className='w-full py-2.5 px-3 bg-background text-sm border border-transparent outline-none focus:border-primary focus:ring-1'
+                    className='w-full py-2.5 px-3 rounded-md bg-background text-sm border border-transparent outline-none focus:border-primary focus:ring-1'
                 />
+
                 {nameError &&
                     <div className='flex items-center justify-between gap-4 px-3 py-2.5 mt-2 text-white text-sm bg-red-500'>
                         <p>{nameError}</p>
@@ -132,8 +122,9 @@ function CreateGroupPopup({ setGroups, setCreateGroup }) {
                     name='groupDesc'
                     placeholder='Anna kuvaus ryhmälle...'
                     rows='3'
-                    className='w-full py-2.5 px-3 bg-background text-sm border border-transparent outline-none focus:border-primary focus:ring-1'
+                    className='w-full py-2.5 px-3 rounded-md bg-background text-sm border border-transparent outline-none focus:border-primary focus:ring-1'
                 />
+
                 {descError &&
                     <div className='flex items-center justify-between gap-4 px-3 py-2.5 mt-2 text-white text-sm bg-red-500'>
                         <p>{descError}</p>
@@ -146,63 +137,17 @@ function CreateGroupPopup({ setGroups, setCreateGroup }) {
                     id='groupVisibility'
                     name='groupVisibility'
                     defaultValue='private'
-                    className='w-full py-2.5 px-3 bg-background text-sm border border-transparent outline-none focus:border-primary focus:ring-1'
+                    className='w-full py-2.5 px-3 rounded-md bg-background text-sm border border-transparent outline-none focus:border-primary focus:ring-1'
                 >
                     <option value='private'>Yksityinen</option>
                     <option value='public'>Julkinen</option>
                 </select>
+
                 {visibilityError &&
                     <div className='flex items-center justify-between gap-4 px-3 py-2.5 mt-2 text-white text-sm bg-red-500'>
                         <p>{visibilityError}</p>
                         <button onClick={() => setVisibilitiyError(null)}><X size={20} /></button>
                     </div>
-                }
-
-
-                <label className='flex items-center cursor-pointer w-fit mt-4'>
-                    <input 
-                        type="checkbox" 
-                        value="" 
-                        className="sr-only peer" 
-                        checked={passwordProtected}
-                        onChange={handlePasswordProtecting} 
-                    />
-                    <div className="relative w-11 h-6 bg-gray-400 dark:bg-gray-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 
-                        dark:peer-focus:ring-blue-800 rounded-lg peer peer-checked:after:translate-x-full 
-                        rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] 
-                        after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-lg after:h-5 after:w-5 after:transition-all 
-                        dark:border-gray-600 peer-checked:bg-primary"></div>
-                    <span className="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">Suojaa salasanalla</span>
-                </label>
-
-                {passwordProtected && 
-                    <>
-                    <div className='relative mt-2'>
-                        <label htmlFor='groupPwd' className='text-gray-700 dark:text-gray-300'>Salasana:</label>
-                        <input
-                            id="groupPwd"
-                            name="groupPwd"
-                            type={showPassword ? 'text' : 'password'}
-                            className="relative w-full py-2.5 px-3 bg-background text-sm border border-transparent outline-none focus:border-primary focus:ring-1 pe-12"
-                            placeholder="Kirjoita salasana..."
-                        />
-                        <span className="flex items-center absolute bottom-2.5 right-0 px-4">
-                            <button 
-                                className="text-navlink hover:text-primary" 
-                                type="button"
-                                onClick={changeVisibility}
-                            >
-                                {showPassword ? <Eye size={20} /> : <EyeOff size={20} />}
-                            </button>
-                        </span>
-                    </div>
-                    {pwdError &&
-                        <div className='flex items-center justify-between gap-4 px-3 py-2.5 mt-2 text-white text-sm bg-red-500'>
-                            <p>{pwdError}</p>
-                            <button onClick={() => setPwdError(null)}><X size={20} /></button>
-                        </div>
-                    }
-                    </>
                 }
 
                 <button 

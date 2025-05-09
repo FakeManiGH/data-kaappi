@@ -120,10 +120,12 @@ export const transformGroupDataPublic = (group) => {
         id: group.groupID,
         name: group.groupName,
         desc: group.groupDesc,
+        cover: group.groupCover,
         visibility: group.groupVisibility,
         created: new Date(group.createdAt.seconds * 1000),
         passwordProtected: group.pwdProtected,
         members: group.groupMembers,
+        admins: group.groupAdmins,
         user: {
             id: group.userID,
             name: group.userName,
