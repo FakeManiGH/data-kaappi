@@ -4,7 +4,7 @@ import { doc, setDoc, deleteDoc, getDoc, updateDoc, orderBy, collection, query, 
 import { db } from '@/../firebaseConfig';
 import bcrypt from 'bcrypt';
 import { validateGroupdata } from "@/utils/DataValidation";
-import { transformGroupDataPublic } from "@/utils/DataTranslation";
+import { transformFolderDataPublic, transformGroupDataPublic } from "@/utils/DataTranslation";
 
 
 // CREATE
@@ -162,6 +162,38 @@ export const getGroupMemberInfo = async (idArray) => {
     } catch (error) {
         console.error("Error fetching group member information: ", error);
         return { success: false, message: 'Virhe ryhmän jäsentietojen hakemisessa, yritä uudelleen.' };
+    }
+};
+
+// Get group shared folders
+export const getSharedBaseFoldersForGroup = async (groupID) => {
+    if (!groupID) {
+        return { success: false, message: 'Pyynnöstä puuttuu tietoja.' };
+    }
+
+    try {
+        // Validate Group
+        const groupRef = doc(db, "groups", groupID);
+        const groupSnap = await getDoc(groupRef);
+
+        if (!groupSnap.exists()) {
+            return { success: false, message: `Ryhmää ${groupID} ei löytynyt.` };
+        }
+
+        // Query folders where shareGroups array contains the groupID
+        const q = query(
+            collection(db, "folders"),
+            where("shareGroups", "array-contains", groupID)
+        );
+
+        const querySnap = await getDocs(q);
+        const tempFolders = querySnap.docs.map((doc) => doc.data());
+
+        const publicFolders = tempFolders.map(folder => transformFolderDataPublic(folder));
+        return { success: true, folders: publicFolders };
+    } catch (error) {
+        console.error("Error fetching group shared folders: " + error);
+        return { success: false, message: 'Virhe ryhmän jaettujen kansioiden hakemisessa, yritä uudelleen.' };
     }
 };
 
