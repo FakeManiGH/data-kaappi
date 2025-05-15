@@ -8,9 +8,8 @@ const Alert = () => {
   if (!alert.isOpen) return null;
 
   return (
-    <div className={`fixed z-50 bottom-4 px-4 py-6 ml-auto inset-x-4 max-w-2xl bg-foreground 
-      text-background rounded-lg flex items-center gap-4 shadow-black/50 shadow-lg 
-      border-l-8 border-r-8
+    <div className={`fixed z-50 bottom-4 px-4 py-6 ml-auto inset-x-4 max-w-xl bg-white dark:bg-black 
+      flex items-center gap-4 shadow-black/50 shadow-lg 
       ${alert.type === 'error' ? 'border-red-500' : (alert.type === 'success' ? 'border-success' : 'border-primary')}`
     }>
       {alert.type === 'success' && <CircleCheck className='text-success' size={24} />}

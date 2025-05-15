@@ -38,8 +38,8 @@ function FolderSharingPopup({ selectedFolder, setFolders, setSharingPopup, setSe
 
     return (
         <span className='fixed z-50 inset-0 flex justify-center items-center bg-black/50 px-4 py-2'>
-            <div className='relative flex flex-col w-full max-w-2xl rounded-xl p-4 z-50 bg-gradient-to-br from-contrast to-secondary 
-                shadow-lg shadow-black/25 max-h-full border border-contrast overflow-y-auto'
+            <div className='relative flex flex-col w-full max-w-2xl rounded-xl p-4 z-50 bg-background
+                shadow-lg shadow-black/25 max-h-full overflow-y-auto'
             >
                 <button 
                     onClick={() => setSharingPopup(false)} 
@@ -51,9 +51,15 @@ function FolderSharingPopup({ selectedFolder, setFolders, setSharingPopup, setSe
                 <h2 className="text-2xl md:text-3xl mb-2 text-center font-bold">Jaa kansio</h2>
                 <p className='text-sm'>Voit jakaa kansion <strong className='text-success text-base'>{selectedFolder.name}</strong> seuraavasti:</p>
 
-                <FolderLinkSharingForm folder={selectedFolder} setFolders={setFolders} setSelectedObjects={setSelectedObjects} />
+                <div className='my-4'>
+                    <FolderLinkSharingForm folder={selectedFolder} setFolders={setFolders} setSelectedObjects={setSelectedObjects} />
+                </div>
 
-                <FolderGroupSharingForm folder={selectedFolder} setFolders={setFolders} setSelectedObjects={setSelectedObjects} groups={groups} />
+                <hr />
+
+                <div className='my-2'>
+                    <FolderGroupSharingForm folder={selectedFolder} setFolders={setFolders} setSelectedObjects={setSelectedObjects} groups={groups} />
+                </div>
             </div>
         </span>
     )

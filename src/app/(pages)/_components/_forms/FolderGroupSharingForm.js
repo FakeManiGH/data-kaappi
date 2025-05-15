@@ -110,18 +110,25 @@ function FolderGroupSharingForm({ folder, setFolder, setFolders, setSelectedObje
     };
 
     return (
-        <div className='flex flex-col gap-2 mt-2 p-2 bg-gradient-to-r from-contrast to-neutral-400 dark:to-neutral-700 rounded-lg'>
-            <h3 className='text-lg font-semibold'>Jaa ryhmässä</h3>
+        <div className='flex flex-col gap-2'>
+            <h3 className='text-xl font-semibold'>Jaa ryhmässä</h3>
             {apiLoading ? (
                 <SimpleLoading />
             ) : (
                 <form className='flex flex-col gap-2' onSubmit={handleChangingFolderGroupSharing}>
                     <div>
-                        <label htmlFor="groupSelect" className="block text-sm font-medium text-gray-700 dark:text-gray-400">Lisää ryhmä:</label>
+                        <label 
+                            htmlFor="groupSelect" 
+                            className="block text-sm font-semibold text-gray-500"
+                        >
+                            Lisää ryhmä:
+                        </label>
+
                         <span className='flex items-center gap-1'>
                             <select
                                 id="groupSelect"
-                                className="w-full py-2.5 px-3 rounded-md bg-background text-sm border border-transparent outline-none focus:border-primary focus:ring-1"
+                                className="w-full py-2 px-3 rounded-md bg-contrast text-sm border border-transparent 
+                                    outline-none focus:border-primary focus:ring-1"
                                 onChange={handleCurrentSelected}
                                 defaultValue=""
                             >

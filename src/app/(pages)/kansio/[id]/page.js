@@ -114,18 +114,9 @@ function Page({ params }) {
     if (loading) return <PageLoading />
     if (serverError) return <ErrorView message={serverError} />
     if (dataError) return <ContentNotFound message={dataError} />
-    if (settings) return (
-        <FolderSettings 
-            folder={folder} 
-            setFolder={setFolder} 
-            shareGroups={shareGroups} 
-            setShareGroups={setShareGroups}
-            settings={settings} 
-            setSettings={setSettings} 
-        />
-    )
 
     return (
+        <>
         <main>
             <div className='flex items-center gap-2 justify-between'>
                 <Breadcrumbs folder={folder} grumps={grumps} />
@@ -308,6 +299,17 @@ function Page({ params }) {
                 />
             }
         </main>
+
+        
+        <FolderSettings 
+            folder={folder} 
+            setFolder={setFolder} 
+            shareGroups={shareGroups} 
+            setShareGroups={setShareGroups}
+            settings={settings} 
+            setSettings={setSettings} 
+        />
+        </>
     );
 }
 

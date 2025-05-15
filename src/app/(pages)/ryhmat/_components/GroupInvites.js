@@ -21,14 +21,14 @@ function GroupInvites() {
                 <p className='text-xs text-orange-500 mb-2'>Syötä kutsussa saamasi koodi alla olevaan kenttään hyväksyäksesi kutsu.</p>
 
                 <div className='flex flex-col'>
-                    <label htmlFor='kutsukoodi' className='text-gray-700 dark:text-gray-300'>Kutsukoodi:</label>
+                    <label htmlFor='kutsukoodi' className='text-gray-500 font-semibold'>Kutsukoodi:</label>
 
                     <div className='flex items-center gap-2 flex-nowrap'>
                         <input
                             id='kutsukoodi'
                             name='kutsukoodi'
                             placeholder='Syötä kutsukoodi...'
-                            className='w-full py-2.5 px-3 rounded-md bg-secondary text-sm border border-transparent outline-none focus:border-primary focus:ring-1'
+                            className='w-full py-2 px-3 rounded-md bg-secondary text-sm border border-transparent outline-none focus:border-primary focus:ring-1'
                         />
                         <button
                             type='submit'

@@ -8,37 +8,11 @@ import { removeFolderPassword } from '@/app/file-requests/folders';
 import FolderPasswordForm from '../_forms/FolderPasswordForm';
 
 function FolderPasswordPopup({ selectedFolder, setFolders, setSelectedObjects, setPasswordPopup }) {
-    const { user } = useUser();
-    const { showAlert } = useAlert();
-
-    // Remove password (API)
-    const handlePasswordRemoving = async () => {
-        try {
-            const response = await removeFolderPassword(user.id, selectedFolder.id);
-            if (response.success) {
-                showAlert(response.message, 'success');
-                const updatedFolder = {
-                    ...selectedFolder,
-                    passwordProtected: false
-                }
-                setFolders(prevFolders => prevFolders.map(folder =>
-                    folder.id === updatedFolder.id ? updatedFolder : folder
-                ));
-                setSelectedObjects([updatedFolder]);
-            } else {
-                showAlert(response.message || 'Salasanan poistaminen käytöstä epäonnistui.', 'error');
-            }
-        } catch (error) {
-            console.error('Error removing password: ' + error);
-            showAlert('Salasanan poistaminen käytöstä epäonnistui, yritä uudelleen.', 'error');
-        }
-    }
-
-
+  
     return (
         <span className='fixed z-50 inset-0 flex justify-center items-center bg-black/50 px-4 py-2'>
-            <div className='relative flex flex-col w-full max-w-2xl rounded-xl p-4 z-50 bg-gradient-to-br from-contrast to-secondary 
-                shadow-lg shadow-black/25 max-h-full border border-contrast overflow-y-auto'
+            <div className='relative flex flex-col w-full max-w-2xl rounded-xl p-4 z-50 bg-background
+                shadow-lg shadow-black/25 max-h-full overflow-y-auto'
             >
                 <button
                     className="absolute top-2 right-2 p-1 rounded-lg text-white bg-red-500 hover:bg-red-600 transition-colors"
@@ -48,31 +22,6 @@ function FolderPasswordPopup({ selectedFolder, setFolders, setSelectedObjects, s
                 </button>
 
                 <h2 className="text-2xl md:text-3xl mb-2 text-center font-bold">Salasana</h2>
-
-                {selectedFolder.passwordProtected ? (
-                    <div className="flex items-center justify-between gap-2 p-4 rounded-lg bg-contrast border border-gray-400 dark:border-gray-600 shadow-md">
-                        <div className='flex items-center gap-2 w-full'>
-                            <p className='text-sm'>Kansio <strong>{selectedFolder.name}</strong> on suojattu salasanalla.</p>
-                        </div>
-
-                        <button 
-                            onClick={handlePasswordRemoving} 
-                            className='flex items-center gap-1 px-2 text-sm text-red-500 hover:text-red-600'
-                            title='Poista salasana käytöstä'
-                        >
-                            Poista käytöstä
-                        </button>
-                    </div>
-                ) : (
-                    <div className="flex items-center justify-between gap-2 p-4 mb-4 rounded-lg bg-contrast border border-gray-400 dark:border-gray-600 shadow-md">
-                        <p className='text-sm'>Suojaa kansio <strong>{selectedFolder.name}</strong> salasanalla.</p>
-                    </div>
-                )}
-
-                <ul className='flex flex-col gap-1 list-disc list-inside text-sm mt-4'>
-                    <li>Vain kansion omistaja näkee kansion sisällön ilman salasanaa.</li>
-                    <li>Salasanan tulee olla vähintään 4 merkkiä pitkä, eikä se saa sisältää &lt;, &gt;, /, \ -merkkejä.</li>
-                </ul>
 
                 <FolderPasswordForm 
                     selectedFolder={selectedFolder}

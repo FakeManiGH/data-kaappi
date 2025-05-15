@@ -13,6 +13,7 @@ import PasswordPrompt from './_components/PasswordPrompt';
 import NavigationBar from './_components/NavigationBar';
 import GridContainer from './_components/GridContainer';
 import MemberList from './_components/MemberList';
+import GroupInvitePopup from '../../_components/_modals/GroupInvitePopup';
 
 function Page({ params }) {
     const { id } = use(params);
@@ -30,6 +31,7 @@ function Page({ params }) {
 
     // MODAL STATES
     const [coverImagePopup, setCoverImagePopup] = useState(false);
+    const [groupInvitePopup, setGroupInvitePopup] = useState(false);
     const [memberList, setMemberList] = useState(false);
 
 
@@ -100,7 +102,18 @@ function Page({ params }) {
         </main>
 
         {/* MODALS */}
-        <MemberList group={group} members={members} memberList={memberList} setMemberList={setMemberList} />
+        <MemberList 
+            group={group} 
+            members={members} 
+            memberList={memberList} 
+            setMemberList={setMemberList} 
+            setGroupInvitePopup={setGroupInvitePopup}
+        />
+
+        {groupInvitePopup &&
+            <GroupInvitePopup group={group} setGroup={setGroup} setGroupInvitePopup={setGroupInvitePopup} />
+        }
+        
         </>
     )
 }

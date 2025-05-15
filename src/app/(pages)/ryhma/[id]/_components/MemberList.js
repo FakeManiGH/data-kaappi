@@ -14,13 +14,13 @@ function MemberList({ group, members, memberList, setMemberList, setGroupInviteP
         }
 
         <div
-            className={`fixed z-50 right-0 top-0 flex flex-col gap-4 p-4 bg-white dark:bg-black w-full h-full max-w-96
+            className={`fixed z-50 right-0 top-0 flex flex-col gap-4 p-4 bg-background w-full h-full max-w-96
                 origin-right transition-transform overflow-y-auto ${memberList ? 'scale-x-100' : 'scale-x-0'}`}
         >
             <button 
                 title='Sulje lista'
                 onClick={() => setMemberList(false)}
-                className='hover:text-primary'
+                className='text-red-500 hover:text-red-600'
             >
                 <ArrowRight />
             </button>
@@ -60,10 +60,10 @@ function MemberList({ group, members, memberList, setMemberList, setGroupInviteP
             {/* INVITES */}
             {group.admins.includes(user.id) &&
                 <button 
-                    className='px-3 py-2 rounded-lg text-sm text-white bg-primary hover:bg-primary/75'
+                    className='px-3 py-2 w-fit rounded-lg text-sm text-white bg-primary hover:bg-primary/75'
                     onClick={() => {setMemberList(false), setGroupInvitePopup(true)}}
                 >
-                    Kutsu ryhmään
+                    Lähetä kutsu
                 </button>
             }
         </div>

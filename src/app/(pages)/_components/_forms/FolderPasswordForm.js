@@ -1,9 +1,9 @@
-import { Eye, EyeOff, Save, X } from 'lucide-react'
+import { Eye, EyeOff, Save, Trash2, X } from 'lucide-react'
 import React, { useState } from 'react'
 import { useAlert } from '@/app/contexts/AlertContext'
 import { useUser } from '@clerk/nextjs'
 import { passwordRegex } from '@/utils/Regex'
-import { updateFolderPassword } from '@/app/file-requests/folders'
+import { removeFolderPassword, updateFolderPassword } from '@/app/file-requests/folders'
 
 
 function FolderPasswordForm({ selectedFolder, setFolder, setFolders, setSelectedObjects, setPasswordPopup }) {
@@ -59,23 +59,84 @@ function FolderPasswordForm({ selectedFolder, setFolder, setFolders, setSelected
         }
     }
 
+    // Remove password API-call
+    const handlePasswordRemoving = async () => {
+        try {
+            const response = await removeFolderPassword(user.id, selectedFolder.id);
+            if (response.success) {
+                showAlert(response.message, 'success');
+                const updatedFolder = {
+                    ...selectedFolder,
+                    passwordProtected: false
+                }
+
+                // Update folder
+                if (setFolder) {
+                    setFolder(updatedFolder);
+                }
+
+                // Update folders
+                if (setFolders) {
+                    setFolders(prevFolders => prevFolders.map(folder =>
+                        folder.id === updatedFolder.id ? updatedFolder : folder
+                    ));
+                }
+
+                // Update selectedFolder
+                if (setSelectedObjects) {
+                    setSelectedObjects([updatedFolder]);
+                }
+            } else {
+                showAlert(response.message || 'Salasanan poistaminen käytöstä epäonnistui.', 'error');
+            }
+        } catch (error) {
+            console.error('Error removing password: ' + error);
+            showAlert('Salasanan poistaminen käytöstä epäonnistui, yritä uudelleen.', 'error');
+        }
+    }
+
+
     // Password visibility
     const changeVisibility = () => setShowPassword(!showPassword)
 
 
     return (
-        <div className="relative mt-2">
-            <form className="flex flex-col text-sm" onSubmit={saveFolderPassword}> 
-                <label htmlFor="password" className="block mt-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+        <div className="relative">
+            <form className="flex flex-col text-sm" onSubmit={saveFolderPassword}>
+                <div className='flex items-center gap-2 justify-between'>
+                    <h3 className='text-xl font-semibold'>Salasana suojaus</h3>
+
+                    {selectedFolder.passwordProtected &&
+                        <div className='flex items-center gap-1'>
+                            <p className='px-1 py-0.5 w-fit text-xs text-success border border-success rounded-md'>
+                                Suojattu
+                            </p>
+                            
+                            <button 
+                                title='Poista salasana käytöstä'
+                                className='hover:text-red-500 transition-colors'
+                                onClick={handlePasswordRemoving}
+                            >
+                                <Trash2 size={20} />
+                            </button>
+                        </div>
+                    }
+                </div>
+                
+                <p className='text-sm mt-2'>Voit antaa kansiolle lisäsuojaa asettamalla sille salasanan.</p>
+
+                <label htmlFor="password" className="block mt-2 text-sm font-medium text-gray-500">
                     {selectedFolder.passwordProtected ? 'Vaihda ' : 'Aseta '} 
                     salasana
                 </label>
+
                 <div className='relative'>
                     <input
                         id="password"
                         name="password"
                         type={showPassword ? 'text' : 'password'}
-                        className="relative w-full py-2.5 px-3 bg-background text-sm rounded-md border border-transparent outline-none focus:border-primary focus:ring-1 pe-12"
+                        className="relative w-full py-2 px-3 bg-contrast text-sm rounded-md border border-transparent 
+                            outline-none focus:border-primary focus:ring-1 pe-12"
                         placeholder="Kirjoita salasana"
                         autoFocus
                     />
@@ -99,10 +160,10 @@ function FolderPasswordForm({ selectedFolder, setFolder, setFolders, setSelected
 
                 <button 
                     type="submit" 
-                    className="w-full mt-2 py-2 px-3 rounded-lg bg-primary text-white 
+                    className="w-fit mt-2 py-2 px-3 rounded-lg bg-primary text-white 
                         text-sm hover:bg-primary/75 transition-colors"
                 >
-                    Tallenna
+                    Tallenna salasana
                 </button>
             </form>
         </div>

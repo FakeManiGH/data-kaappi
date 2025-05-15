@@ -37,8 +37,20 @@ function FolderLinkSharingForm({ folder, setFolder, setFolders, setSelectedObjec
                         link: newShareValue
                     }
                 }
-                setFolders(prevFolders => prevFolders.map(f => f.id === folder.id ? updatedFolder : f));
-                setSelectedObjects(prevObjs => prevObjs.map(obj => obj.id === folder.id ? updatedFolder : obj));
+
+                if (setFolder) {
+                    setFolder(updatedFolder);
+                }
+
+                // Used on folders & folder-pages
+                if (setFolders) { 
+                    setFolders(prevFolders => prevFolders.map(f => f.id === folder.id ? updatedFolder : f));
+                }
+
+                // Used on folders & folder-pages
+                if (setSelectedObjects) {
+                    setSelectedObjects(prevObjs => prevObjs.map(obj => obj.id === folder.id ? updatedFolder : obj));
+                }
             } else {
                 showAlert(response.message, 'error');
             }
@@ -51,8 +63,8 @@ function FolderLinkSharingForm({ folder, setFolder, setFolders, setSelectedObjec
     };
 
     return (
-        <div className='flex flex-col gap-2 mt-2 p-2 bg-gradient-to-r from-contrast to-neutral-400 dark:to-neutral-700 rounded-lg'>
-            <h3 className='text-lg font-semibold mt-2'>Jaa linkillä</h3>
+        <div className='flex flex-col gap-2'>
+            <h3 className='text-xl font-semibold'>Jaa linkillä</h3>
 
             {apiLoading ? (
                 <SimpleLoading />
