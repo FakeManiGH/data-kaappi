@@ -41,7 +41,7 @@ function PasswordPrompt({ fileID, setFile, setPwdVerified }) {
                         id="password"
                         name="password"
                         type={showPassword ? 'text' : 'password'}
-                        className="relative w-full py-2.5 px-3 bg-background text-sm border border-contrast outline-none focus:border-primary focus:ring-1 pe-12"
+                        className="relative w-full py-2 px-3 bg-background text-sm border border-contrast outline-none focus:border-primary focus:ring-1 pe-12"
                         placeholder="Anna salasana..."
                         autoFocus
                     />
@@ -58,7 +58,7 @@ function PasswordPrompt({ fileID, setFile, setPwdVerified }) {
 
                 <button 
                     type='submit'
-                    className="py-2.5 px-3 rounded-lg bg-primary text-white text-sm hover:bg-primary/75 transition-colors
+                    className="py-2 px-3  bg-primary text-white text-sm hover:bg-primary/75 transition-colors
                         "
                 >
                     Avaa sisältö

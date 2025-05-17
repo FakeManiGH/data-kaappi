@@ -19,7 +19,7 @@ function FileCardPreview({ file }) {
             <img 
                 src={file.url} 
                 alt={file.name} 
-                className='aspect-[4/3] h-20 object-cover rounded-md mb-1 cursor-pointer' 
+                className='aspect-[4/3] h-20 object-cover mb-1 cursor-pointer' 
                 onClick={handleOpenPopup}
             />
 
@@ -28,7 +28,7 @@ function FileCardPreview({ file }) {
                     <div className='relative max-w-3xl max-h-screen'>
                         <button
                             onClick={handleClosePopup}
-                            className='absolute top-2 right-2 p-1 text-white bg-red-500 rounded-lg hover:bg-red-600'
+                            className='absolute top-2 right-2 p-1 text-white bg-red-500 hover:bg-red-600'
                             title='Sulje'
                         >
                             <X />
@@ -36,7 +36,7 @@ function FileCardPreview({ file }) {
             
                         <img
                             src={file.url}
-                            className='object-contain rounded-md max-h-screen'
+                            className='object-contain  max-h-screen'
                         />
                     </div>   
                 </div>
@@ -50,7 +50,7 @@ function FileCardPreview({ file }) {
                     <video
                         src={file.url}
                         alt={file.name}
-                        className='h-full w-full object-cover rounded-md'
+                        className='h-full w-full object-cover '
                     />
                     <button 
                         onClick={handleOpenPopup}
@@ -68,11 +68,11 @@ function FileCardPreview({ file }) {
                                 src={file.url}
                                 controls
                                 autoPlay
-                                className='w-full h-auto max-h-screen rounded-md'
+                                className='w-full h-auto max-h-screen '
                             />
                             <button
                                 onClick={handleClosePopup}
-                                className='absolute top-2 right-2 p-2 text-white bg-red-500 rounded-lg hover:bg-red-600'
+                                className='absolute top-2 right-2 p-2 text-white bg-red-500  hover:bg-red-600'
                                 title='Sulje'
                             >
                                 <X />
@@ -87,7 +87,7 @@ function FileCardPreview({ file }) {
             <img 
                 src={getFileIcon(file.type)} 
                 alt={file.name} 
-                className='h-20 rounded-md mb-1' 
+                className='h-20  mb-1' 
             />
         )
     }

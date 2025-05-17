@@ -44,7 +44,7 @@ function FileLinkSharingForm({ file, setFile, setFiles, setSelectedObjects }) {
     };
 
     return (
-        <div className='flex flex-col gap-2 mt-2 p-2 bg-gradient-to-r from-contrast to-neutral-400 dark:to-neutral-700 rounded-lg'>
+        <div className='flex flex-col gap-2 mt-2 p-2 bg-gradient-to-r from-contrast to-neutral-400 dark:to-neutral-700 '>
             <h3 className='text-lg font-semibold mt-2'>Jaa linkillä</h3>
 
             {apiLoading ? (

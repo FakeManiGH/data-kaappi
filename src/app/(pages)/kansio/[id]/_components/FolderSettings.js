@@ -13,16 +13,12 @@ import FolderGroupSharingForm from '@/app/(pages)/_components/_forms/FolderGroup
 import FolderLinkSharingForm from '@/app/(pages)/_components/_forms/FolderLinkSharingForm';
 import FolderPasswordForm from '@/app/(pages)/_components/_forms/FolderPasswordForm';
 import FolderRenameForm from '@/app/(pages)/_components/_forms/FolderRenameForm';
+import FolderDeleteButton from '@/app/(pages)/_components/_buttons/FolderDeleteButton';
 
 
-function FolderSettings({ folder, setFolder, shareGroups, setShareGroups,  settings, setSettings }) {
-    const [nameError, setNameError] = useState(null);
-    const [shareLink, setShareLink] = useState(folder.sharing.link);
+function FolderSettings({ folder, setFolder, shareGroups, setShareGroups,  settings, setSettings, setDeletePopup }) {
     const [groups, setGroups] = useState(null);
-    const [showPassword, setShowPassword] = useState(false);
-    const [passwordErr, setPasswordErr] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [apiLoading, setApiLoading] = useState(false);
     const { showAlert } = useAlert();
     const { user } = useUser();
 
@@ -85,10 +81,21 @@ function FolderSettings({ folder, setFolder, shareGroups, setShareGroups,  setti
             
             {/* PASSWORD */}
             <FolderPasswordForm selectedFolder={folder} setFolder={setFolder} />
-        </div>
 
-        {/* Loader for changes */}
-        {apiLoading && <PopupLoader />}
+            <hr />
+            
+            {/* DELETE */}
+            <div className='flex flex-col gap-2'>
+                <h3 className='text-xl font-semibold'>Poista kansio</h3>
+                <p className='text-sm'>Halutako poistaa tämän kansion?</p>
+                <button
+                    className='flex items-center gap-1 px-3 py-2 w-fit text-sm  text-white bg-red-500 hover:bg-red-600'
+                    onClick={() => setDeletePopup(true)}
+                >
+                    Poista kansio
+                </button>
+            </div>
+        </div>
         </>
     )
 }

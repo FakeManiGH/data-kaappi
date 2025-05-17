@@ -8,7 +8,7 @@ function GroupContainer({ groups }) {
             {groups.map(group => (
                 <Link href={`ryhma/${group.id}`} 
                     key={group.id} 
-                    className='relative flex rounded-lg group overflow-hidden text-sm shadow-lg
+                    className='relative flex  group overflow-hidden text-sm shadow-lg
                     bg-gradient-to-br from-secondary to-contrast border border-black/10 hover:border-primary'
                     title={group.desc}
                 >

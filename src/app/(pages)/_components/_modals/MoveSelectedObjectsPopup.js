@@ -54,13 +54,11 @@ function MoveSelectedObjectsPopup({ currentFolder, selectedObjects, setSelectedO
     }, [isLoaded, user, showAlert, selectedObjects]);
   
   // Remove selected object (if not on file-page)
-  if (!setFile) {
-    const removeObjectSelection = (object) => {
-      setSelectedObjects((prevSelectedObjects) => 
-          prevSelectedObjects.filter((selectedObject) => selectedObject.id !== object.id)
-      );
-    };
-  }
+  const removeObjectSelection = (object) => {
+    setSelectedObjects((prevSelectedObjects) => 
+        prevSelectedObjects.filter((selectedObject) => selectedObject.id !== object.id)
+    );
+  };
 
   // Change selected folder
   const handleFolderChange = (e) => {
@@ -168,12 +166,12 @@ function MoveSelectedObjectsPopup({ currentFolder, selectedObjects, setSelectedO
 
   return (
     <div className='fixed z-50 inset-0 flex justify-center items-center bg-black/50 px-4 py-2'>
-      <div className='relative flex flex-col w-full max-w-2xl rounded-xl p-4 z-50 bg-gradient-to-br from-contrast to-secondary 
-        shadow-lg shadow-black/25 max-h-full border border-contrast overflow-y-auto'
+      <div className='relative flex flex-col w-full max-w-2xl  p-4 z-50 bg-background 
+        shadow-lg shadow-black/25 max-h-full overflow-y-auto'
       >
           <button 
             onClick={() => setMovePopup(false)} 
-            className='absolute top-2 right-2 p-1 rounded-lg text-white bg-red-500 hover:bg-red-600 transition-colors'
+            className='absolute top-2 right-2 p-1  text-white bg-red-500 hover:bg-red-600 transition-colors'
           >
             <X />
           </button>
@@ -222,7 +220,7 @@ function MoveSelectedObjectsPopup({ currentFolder, selectedObjects, setSelectedO
 
           <select
             id='folder'
-            className='px-3 py-2.5 mt-4 rounded-md bg-background text-sm border border-contrast focus:border-primary w-full focus:ring-primary focus:ring-1
+            className='px-3 py-2 mt-2  bg-contrast text-sm border border-contrast focus:border-primary w-full focus:ring-primary focus:ring-1
               first:text-navlink'
             onChange={(e) => handleFolderChange(e)}
             value={targetID || ''} // Prioritize preferredFolder
@@ -237,10 +235,10 @@ function MoveSelectedObjectsPopup({ currentFolder, selectedObjects, setSelectedO
 
           <button 
               onClick={moveSelectedObjects} 
-              className='text-white text-sm bg-primary hover:bg-primary/75 mt-4 py-2.5 px-3 rounded-lg
+              className='w-fit text-white text-sm bg-primary hover:bg-primary/75 mt-2 py-2 px-3 
                 '
           >
-              Siirrä
+              Siirrä valitut
           </button>
       </div>
   </div>

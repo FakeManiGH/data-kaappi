@@ -4,7 +4,7 @@ function FilePreview({ file }) {
 
     if (file.type.includes('image')) return (
         <div className='flex items-center justify-center aspect-video w-full'>
-            <img src={file.url} alt={file.name} className='rounded-lg shadow-lg shadow-black/25' />
+            <img src={file.url} alt={file.name} className=' shadow-lg shadow-black/25' />
         </div>
     )
 

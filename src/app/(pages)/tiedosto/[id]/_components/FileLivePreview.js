@@ -24,9 +24,9 @@ function FileLivePreview({ file, setLivePreview }) {
             <div className="relative flex h-full w-full gap-4 items-center justify-center overflow-auto">
                 {file.type.includes('image') && (
                     <div className="fixed top-20 z-50 flex items-center gap-1">
-                        <button onClick={increaseZoom} className='p-2 bg-gray-600/50 text-white rounded-md hover:text-primary focus:text-primary'><ZoomIn size={24} /></button>
-                        <button onClick={decreaseZoom} className='p-2 bg-gray-600/50 text-white rounded-md hover:text-primary focus:text-primary'><ZoomOut size={24} /></button>
-                        <p className='text-md p-2 bg-gray-600/50 text-white rounded-md'>{Math.round(zoom * 100)}%</p>   
+                        <button onClick={increaseZoom} className='p-2 bg-gray-600/50 text-white  hover:text-primary focus:text-primary'><ZoomIn size={24} /></button>
+                        <button onClick={decreaseZoom} className='p-2 bg-gray-600/50 text-white  hover:text-primary focus:text-primary'><ZoomOut size={24} /></button>
+                        <p className='text-md p-2 bg-gray-600/50 text-white '>{Math.round(zoom * 100)}%</p>   
                     </div>
                 )}
 
@@ -43,7 +43,7 @@ function FileLivePreview({ file, setLivePreview }) {
                 {file.type.includes('audio') && (
                     <div className='flex flex-col gap-2 items-center'>
                         <img src='/icons/audio.png' alt='Audio PNG illustration' className="h-full w-full" />
-                        <audio src={file.url} controls className="h-full w-full rounded-lg" />
+                        <audio src={file.url} controls className="h-full w-full " />
                     </div>
                 )}
 

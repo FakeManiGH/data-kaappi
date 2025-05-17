@@ -79,12 +79,12 @@ function FileRenamePopup({ selectedFile, setFile, setFiles, setRenamePopup, setS
 
   return (
     <span className='fixed z-50 inset-0 flex justify-center items-center bg-black/50 px-4 py-2'>
-      <div className='relative flex flex-col w-full max-w-2xl rounded-xl p-4 z-50 bg-gradient-to-br from-contrast to-secondary 
+      <div className='relative flex flex-col w-full max-w-2xl  p-4 z-50 bg-gradient-to-br from-contrast to-secondary 
           shadow-lg shadow-black/25 max-h-full border border-contrast overflow-y-auto'
       >
         <button 
           onClick={() => setRenamePopup(false)} 
-          className='absolute top-2 right-2 p-1 rounded-lg text-white bg-red-500 hover:bg-red-600 transition-colors'
+          className='absolute top-2 right-2 p-1  text-white bg-red-500 hover:bg-red-600 transition-colors'
         >
           <X />
         </button>
@@ -103,7 +103,7 @@ function FileRenamePopup({ selectedFile, setFile, setFiles, setRenamePopup, setS
                 defaultValue={fileName}
                 onChange={handleNameChange}
                 placeholder='Anna tiedostolle nimi...'
-                className="relative w-full py-2.5 px-3 bg-background text-sm border border-transparent outline-none focus:border-primary focus:ring-1"
+                className="relative w-full py-2 px-3 bg-background text-sm border border-transparent outline-none focus:border-primary focus:ring-1"
                 autoFocus
               />
               
@@ -112,7 +112,7 @@ function FileRenamePopup({ selectedFile, setFile, setFiles, setRenamePopup, setS
           </div>
 
           {nameError && 
-            <div className='flex items-center justify-between gap-4 px-3 py-2.5 mt-2 rounded-lg text-white text-sm bg-red-500'>
+            <div className='flex items-center justify-between gap-4 px-3 py-2 mt-2  text-white text-sm bg-red-500'>
               <p>{nameError}</p>
               <button onClick={() => setNameError('')}><X size={20} /></button>
             </div>
@@ -120,7 +120,7 @@ function FileRenamePopup({ selectedFile, setFile, setFiles, setRenamePopup, setS
 
           <button 
             type="submit" 
-            className="w-full mt-2 py-2.5 px-3 rounded-lg bg-primary text-white 
+            className="w-full mt-2 py-2 px-3  bg-primary text-white 
               text-sm hover:bg-primary/75  transition-colors"
           >
               Tallenna

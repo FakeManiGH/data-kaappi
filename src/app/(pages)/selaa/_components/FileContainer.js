@@ -61,7 +61,7 @@ function FileContainer({ fileState, setFileState, contentLoading }) {
             title={file.name + '|' + translateFileSize(file.size)}
           >
             <div
-              className={`absolute flex flex-col items-center bg-background rounded-lg top-0 left-0 gap-1 ${
+              className={`absolute flex flex-col items-center bg-background top-0 left-0 gap-1 ${
                 file.shared || file.password ? 'p-1' : 'p-0'
               }`}
             >

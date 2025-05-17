@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react';
-import { BookMarked, CircleGauge, FolderOpen, Home, Images, MailPlus, MessageCircleQuestion, UploadCloud, UserCog, UsersRound } from 'lucide-react';
+import { BookMarked, CircleGauge, FolderOpen, Home, Image, MailPlus, UploadCloud, UserCog, UsersRound } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 const NavigationContext = createContext();
@@ -35,7 +35,7 @@ export const NavigationProvider = ({ children }) => {
         {
             id: 4,
             name: 'Selaa mediaa',
-            icon: Images,
+            icon: Image,
             path: '/selaa'
         },
         {

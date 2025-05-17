@@ -103,7 +103,7 @@ function FolderContainer({ view, folders, files, setFolders, setFiles, setCreate
                     key={folder.id} 
                     onTouchStart={() => handleTouchStart(folder)}
                     onTouchEnd={() => handleTouchEnd(folder)}
-                    className={`relative flex items-center justify-center p-2 rounded-lg transition-colors border group  overflow-hidden
+                    className={`relative flex items-center justify-center p-2  transition-colors border group  overflow-hidden
                         ${selectedObjects.includes(folder) ? 'border-primary' : 'border-transparent'}
                         ${dragOverFolder === folder.id ? 'bg-primary' : 'bg-gradient-to-br from-secondary to-contrast'}`}
                 >   
@@ -118,7 +118,7 @@ function FolderContainer({ view, folders, files, setFolders, setFiles, setCreate
                     }
                     <input 
                         type="checkbox" 
-                        className={`absolute top-2 right-2 p-2 bg-background group-hover:block appearance-none rounded-lg border 
+                        className={`absolute top-2 right-2 p-1.5 bg-background group-hover:block appearance-none border 
                             border-navlink hover:border-primary checked:border-primary checked:bg-primary checked:hover:border-navlink transition-all
                             ${selectedObjects.includes(folder) ? 'block' : 'block md:hidden'}`}
                         onChange={() => handleObjectSelect(folder)}
@@ -147,12 +147,12 @@ function FolderContainer({ view, folders, files, setFolders, setFiles, setCreate
                     draggable
                     onDragStart={() => handleDragStart(file)}
                     onDragEnd={() => handleDragEnd(file)}
-                    className={`relative flex items-center justify-center p-2 rounded-lg bg-gradient-to-br from-secondary to-contrast transition-colors group border overflow-hidden
+                    className={`relative flex items-center justify-center p-2  bg-gradient-to-br from-secondary to-contrast transition-colors group border overflow-hidden
                          ${selectedObjects.includes(file) ? 'border-primary' : 'border-transparent'}`}
                 >   
                     <input 
                         type="checkbox" 
-                        className={`absolute top-2 right-2 p-2 bg-background group-hover:block appearance-none rounded-lg  border 
+                        className={`absolute top-2 right-2 p-1.5 bg-background group-hover:block appearance-none border 
                             border-navlink hover:border-primary checked:border-primary checked:bg-primary checked:hover:border-navlink transition-all
                             ${selectedObjects.includes(file) ? 'block' : 'block md:hidden'}`}
                         onChange={() => handleObjectSelect(file)}
@@ -196,7 +196,7 @@ function FolderContainer({ view, folders, files, setFolders, setFiles, setCreate
                 >
                     <input 
                         type="checkbox" 
-                        className={`p-2 bg-background appearance-none rounded-lg border border-navlink hover:border-primary checked:border-primary 
+                        className={`p-1.5 bg-background appearance-none border border-navlink hover:border-primary checked:border-primary 
                             checked:bg-primary checked:hover:border-navlink transition-all`}
                         onChange={() => handleObjectSelect(folder)}
                         checked={selectedObjects.includes(folder)}
@@ -230,7 +230,7 @@ function FolderContainer({ view, folders, files, setFolders, setFiles, setCreate
                     <div className='flex items-center gap-2'>
                         <input 
                             type="checkbox" 
-                            className={`p-2 bg-background appearance-none rounded-lg border border-navlink hover:border-primary checked:border-primary 
+                            className={`p-1.5 bg-background appearance-none border border-navlink hover:border-primary checked:border-primary 
                                 checked:bg-primary checked:hover:border-navlink transition-all`}
                             onChange={() => handleObjectSelect(file)}
                             checked={selectedObjects.includes(file)}

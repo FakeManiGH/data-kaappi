@@ -6,7 +6,7 @@ import { useUser } from '@clerk/nextjs';
 import { X } from 'lucide-react';
 import React, { useState } from 'react'
 
-function FolderRenameForm({ selectedFolder, setFolder, setFolders, setSelectedObjects }) {
+function FolderRenameForm({ selectedFolder, setFolder, setFolders, setSelectedObjects, setRenamePopup }) {
     const [apiLoading, setApiLoading] = useState(false);
     const [nameError, setNameError] = useState(null);
     const { user } = useUser();
@@ -23,7 +23,7 @@ function FolderRenameForm({ selectedFolder, setFolder, setFolders, setSelectedOb
         setApiLoading(true);
         const newName = e.target.folderName.value;
 
-        if (!newName || newName === folder.name) {
+        if (!newName || newName === selectedFolder.name) {
             showAlert('Anna kansiolle ensin uusi nimi.', 'info');
             setApiLoading(false);
             return;
@@ -39,8 +39,29 @@ function FolderRenameForm({ selectedFolder, setFolder, setFolders, setSelectedOb
             const response = await updateFolderName(user.id, selectedFolder.id, newName);
     
             if (response.success) {
-                setFolder({ ...folder, name: newName })
+                const updatedFolder = {
+                    ...selectedFolder,
+                    name: newName
+                }
+
+                // Update Folder (client)
+                if (setFolder) {
+                    setFolder(updatedFolder);
+                }
+
+                // Update Folders (client)
+                if (setFolders) {
+                    setFolders(prevFolders => prevFolders.map(folder => folder.id === updatedFolder.id ? updatedFolder: folder));
+                }
+
+                // Update selectedObjects (client)
+                if (setSelectedObjects) {
+                    setSelectedObjects(prevObjects => prevObjects.map(obj => obj.id === updatedFolder.id ? updatedFolder : obj));
+                }
+
+                // Alert & (closePopup)
                 showAlert(response.message, 'success');
+                if (setRenamePopup) setRenamePopup(false);
             } else {
                 showAlert(response.message, 'error');
             }
@@ -58,7 +79,7 @@ function FolderRenameForm({ selectedFolder, setFolder, setFolders, setSelectedOb
                 <SimpleLoading />
             ) : (
             <>
-            <h3 className='font-bold text-lg'>Nimi</h3>
+            <h3 className='font-bold text-xl'>Nimeä uudelleen</h3>
             <p className='text-sm'>Muuta kansion nimeä. Nimen tulee olla 2-50 merkkiä pitkä ja se ei saa sisältää &lt;, &gt;, / tai \ merkkiä.</p>
 
             <form className='flex flex-col gap-2 text-sm' onSubmit={handleFolderRenaming}>
@@ -67,13 +88,13 @@ function FolderRenameForm({ selectedFolder, setFolder, setFolders, setSelectedOb
                     id='folderName'
                     name='folderName'
                     defaultValue={selectedFolder.name || ''}
-                    className='relative w-full py-2 px-3 rounded-md bg-contrast text-sm border border-transparent 
+                    className='relative w-full py-2 px-3  bg-contrast text-sm border border-transparent 
                         outline-none focus:border-primary focus:ring-1'
                     placeholder='Anna kansiolle nimi...'
                 />
 
                 {nameError && 
-                    <div className='flex items-center justify-between gap-2 px-3 py-2 rounded-md text-white text-sm bg-red-500'>
+                    <div className='flex items-center justify-between gap-2 px-3 py-2  text-white text-sm bg-red-500'>
                         <p>{nameError}</p>
                         <button onClick={() => setNameError('')}><X size={20} /></button>
                     </div>
@@ -81,7 +102,7 @@ function FolderRenameForm({ selectedFolder, setFolder, setFolders, setSelectedOb
 
                 <button
                     type='submit'
-                    className='w-fit py-2 px-3 rounded-lg text-white bg-primary hover:bg-primary/75 transition-colors'
+                    className='w-fit py-2 px-3  text-white bg-primary hover:bg-primary/75 transition-colors'
                 >
                     Tallenna nimi
                 </button>

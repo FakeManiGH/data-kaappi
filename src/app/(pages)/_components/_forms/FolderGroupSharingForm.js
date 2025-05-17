@@ -127,7 +127,7 @@ function FolderGroupSharingForm({ folder, setFolder, setFolders, setSelectedObje
                         <span className='flex items-center gap-1'>
                             <select
                                 id="groupSelect"
-                                className="w-full py-2 px-3 rounded-md bg-contrast text-sm border border-transparent 
+                                className="w-full py-2 px-3  bg-contrast text-sm border border-transparent 
                                     outline-none focus:border-primary focus:ring-1"
                                 onChange={handleCurrentSelected}
                                 defaultValue=""
@@ -139,7 +139,7 @@ function FolderGroupSharingForm({ folder, setFolder, setFolders, setSelectedObje
                             </select>
                             <button 
                                 type='button'
-                                className="w-fit h-fit px-3 py-2 rounded-lg text-white bg-primary text-sm hover:bg-primary/75 transition-colors"
+                                className="w-fit h-fit px-3 py-2  text-white bg-primary text-sm hover:bg-primary/75 transition-colors"
                                 onClick={handleAddGroup}
                             >
                                 Lisää
@@ -151,7 +151,7 @@ function FolderGroupSharingForm({ folder, setFolder, setFolders, setSelectedObje
                         <p htmlFor="groupSelect" className="block text-sm font-medium text-gray-700 dark:text-gray-400">Jaettu ryhmissä:</p>
                         <div className="flex items-center flex-wrap gap-2">
                             {selectedGroups.map(group => (
-                                <div key={group.id} className="flex items-center text-white px-2 py-1 bg-black rounded-md">
+                                <div key={group.id} className="flex items-center text-white px-2 py-1 bg-black ">
                                     <span>{group.name}</span>
                                     <button
                                         type="button"
@@ -172,7 +172,7 @@ function FolderGroupSharingForm({ folder, setFolder, setFolders, setSelectedObje
 
                     {shareErrors && shareErrors.length > 0 &&
                         shareErrors.map((error, index) => (
-                            <div className='flex items-center justify-between gap-2 px-3 py-2 rounded-md text-white text-sm bg-red-500' key={index}>
+                            <div className='flex items-center justify-between gap-2 px-3 py-2  text-white text-sm bg-red-500' key={index}>
                                 <p>{error}</p>
                                 <button onClick={() => setShareErrors(shareErrors.filter((_, i) => i !== index))}>
                                     <X size={20} />
@@ -183,7 +183,7 @@ function FolderGroupSharingForm({ folder, setFolder, setFolders, setSelectedObje
 
                     <button 
                         type="submit" 
-                        className="w-fit py-2 px-3 rounded-lg text-white bg-primary hover:bg-primary/75 
+                        className="w-fit py-2 px-3  text-white bg-primary hover:bg-primary/75 
                             text-sm transition-colors"
                     >
                         Tallenna muutokset

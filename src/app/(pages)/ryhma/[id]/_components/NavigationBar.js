@@ -14,7 +14,7 @@ function NavigationBar({ memberList, setMemberList }) {
     return (
         <div className='relative flex gap-2 items-center justify-between w-full'>
             <button 
-                className='flex items-center gap-1 px-3 py-2 rounded-lg bg-primary text-white text-sm hover:bg-primary/75'
+                className='flex items-center gap-1 px-3 py-2  bg-primary text-white text-sm hover:bg-primary/75'
                 onClick={() => setMemberList(!memberList)}
             >
                 <Users2 />

@@ -17,7 +17,7 @@ function Custom404() {
 
         <Link
             href="/"
-            className="mt-2 flex items-center gap-2 rounded-lg bg-primary px-5 py-3 text-sm text-white hover:bg-primary/90 focus:ring-3 focus:outline-hidden"
+            className="mt-2 flex items-center gap-2  bg-primary px-5 py-3 text-sm text-white hover:bg-primary/90 focus:ring-3 focus:outline-hidden"
         >   
             <ArrowLeftCircle size={20} />
             Takaisin kaappiin...

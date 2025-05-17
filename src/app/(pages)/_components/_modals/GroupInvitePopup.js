@@ -4,12 +4,12 @@ import React from 'react'
 function GroupInvitePopup({ group, setGroup, setGroupInvitePopup }) {
     return (
         <span className='fixed z-50 inset-0 flex justify-center items-center bg-black/50 px-4 py-2'>
-            <div className='relative flex flex-col w-full max-w-2xl rounded-xl p-4 z-50 bg-gradient-to-br from-contrast to-secondary 
+            <div className='relative flex flex-col w-full max-w-2xl  p-4 z-50 bg-gradient-to-br from-contrast to-secondary 
             shadow-lg shadow-black/25 max-h-full border border-contrast overflow-y-auto'
         >
                 <button 
                 onClick={() => setGroupInvitePopup(false)} 
-                className='absolute top-2 right-2 p-1 rounded-lg text-white bg-red-500 hover:bg-red-600 transition-colors'
+                className='absolute top-2 right-2 p-1  text-white bg-red-500 hover:bg-red-600 transition-colors'
                 >
                 <X />
                 </button>
@@ -29,13 +29,13 @@ function GroupInvitePopup({ group, setGroup, setGroupInvitePopup }) {
                         id='email'
                         name='email'
                         type='email'
-                        className='px-3 py-2 border border-contrast rounded-md bg-background outline-none focus:border-primary'
+                        className='px-3 py-2 border border-contrast  bg-background outline-none focus:border-primary'
                         placeholder='Anna sähköpostiosoite'
                     />
 
                     <button
                         type='submit'
-                        className='px-3 py-2 mt-2 rounded-lg text-white bg-primary hover:bg-primary/75'
+                        className='px-3 py-2 mt-2  text-white bg-primary hover:bg-primary/75'
                     >
                         Lähetä kutsu
                     </button>

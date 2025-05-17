@@ -33,7 +33,7 @@ function MemberList({ group, members, memberList, setMemberList, setGroupInviteP
                         <div className='flex items-center gap-2'>
                             <p>{member.name}</p>
                             {group.admins.includes(member.id) &&  
-                                <p className='p-0.5 text-xs text-success border border-success rounded-md'>
+                                <p className='p-0.5 text-xs text-success border border-success '>
                                     Ylläpitäjä
                                 </p>
                             }
@@ -60,7 +60,7 @@ function MemberList({ group, members, memberList, setMemberList, setGroupInviteP
             {/* INVITES */}
             {group.admins.includes(user.id) &&
                 <button 
-                    className='px-3 py-2 w-fit rounded-lg text-sm text-white bg-primary hover:bg-primary/75'
+                    className='px-3 py-2 w-fit  text-sm text-white bg-primary hover:bg-primary/75'
                     onClick={() => {setMemberList(false), setGroupInvitePopup(true)}}
                 >
                     Lähetä kutsu

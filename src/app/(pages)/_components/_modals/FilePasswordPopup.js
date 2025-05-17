@@ -40,11 +40,11 @@ function FilePasswordPopup({ selectedFile, setFile, setFiles, setSelectedObjects
 
     return (
         <span className='fixed z-50 inset-0 flex justify-center items-center bg-black/50 px-4 py-2'>
-            <div className='relative flex flex-col w-full max-w-2xl rounded-xl p-4 z-50 bg-gradient-to-br from-contrast to-secondary 
+            <div className='relative flex flex-col w-full max-w-2xl  p-4 z-50 bg-gradient-to-br from-contrast to-secondary 
                 shadow-lg shadow-black/25 max-h-full border border-contrast overflow-y-auto'
             >
                 <button
-                    className="absolute top-2 right-2 p-1 rounded-lg text-white bg-red-500 hover:bg-red-600 transition-colors"
+                    className="absolute top-2 right-2 p-1  text-white bg-red-500 hover:bg-red-600 transition-colors"
                     onClick={() => setPasswordPopup(false)}
                 >
                     <X />
@@ -53,7 +53,7 @@ function FilePasswordPopup({ selectedFile, setFile, setFiles, setSelectedObjects
                 <h2 className="text-2xl md:text-3xl mb-2 text-center font-bold">Salasana</h2>
 
                 {selectedFile.passwordProtected ? (
-                    <div className="flex items-center justify-between gap-2 p-4 rounded-lg bg-contrast border border-gray-400 dark:border-gray-600 shadow-md">
+                    <div className="flex items-center justify-between gap-2 p-4  bg-contrast border border-gray-400 dark:border-gray-600 shadow-md">
                         <div className='flex items-center gap-2 w-full'>
                             <p className='text-sm'>Tiedosto <strong>{selectedFile.name}</strong> on suojattu salasanalla.</p>
                         </div>
@@ -67,7 +67,7 @@ function FilePasswordPopup({ selectedFile, setFile, setFiles, setSelectedObjects
                         </button>
                     </div>
                 ) : (
-                    <div className="flex items-center justify-between gap-2 p-4 mb-4 rounded-lg bg-contrast border border-gray-400 dark:border-gray-600 shadow-md">
+                    <div className="flex items-center justify-between gap-2 p-4 mb-4  bg-contrast border border-gray-400 dark:border-gray-600 shadow-md">
                         <p className='text-sm'>Suojaa tiedosto <strong>{selectedFile.name}</strong> salasanalla.</p>
                     </div>
                 )}

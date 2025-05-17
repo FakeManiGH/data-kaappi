@@ -9,9 +9,9 @@ import { getFolderBreadGrumpInfo, getFolderContent, getFolderShareGroupsInfo } f
 import Breadcrumbs from './_components/BreadGrumps';
 import FolderContainer from './_components/FolderContainer';
 import FolderNavigation from './_components/FolderNavigation';
-import { FilePlus, FolderPlus, Grid, List, LockKeyhole, Settings, Share2, Users2, X } from 'lucide-react';
+import { FilePlus, FolderPlus, Grid, Info, List, LockKeyhole, Settings, Share2, Users2, X } from 'lucide-react';
 import { useAlert } from '@/app/contexts/AlertContext';
-import FolderInfoContainer from './_components/FolderInfoContainer';
+import FolderInfo from './_components/FolderInfo';
 import FolderSettings from './_components/FolderSettings';
 import MoveSelectedObjectsPopup from '../../_components/_modals/MoveSelectedObjectsPopup';
 import CreateNewFolder from '../../_components/_modals/CreateNewFolderPopup';
@@ -23,6 +23,7 @@ import FolderPasswordPopup from '../../_components/_modals/FolderPasswordPopup';
 import DeleteSelectedObjects from '../../_components/_modals/DeleteSelectedObjectsPopup';
 import FileSharingPopup from '../../_components/_modals/FileSharingPopup';
 import FolderSharingPopup from '../../_components/_modals/FolderSharingPopup';
+import FolderDeletePopup from '../../_components/_modals/FolderDeletePopup';
 
 
 function Page({ params }) {
@@ -35,6 +36,9 @@ function Page({ params }) {
     const [folder, setFolder] = useState(null);
     const [grumps, setGrumps] = useState(null); 
     const [settings, setSettings] = useState(false);
+    const [deletePopup, setDeletePopup] = useState(false);
+    const [deleted, setDeleted] = useState(false);
+    const [info, setInfo] = useState(false);
     const [folders, setFolders] = useState(null);
     const [files, setFiles] = useState([]);
     const [shareGroups, setShareGroups] = useState([]);
@@ -45,7 +49,7 @@ function Page({ params }) {
     const [renamePopup, setRenamePopup] = useState(false);
     const [passwordPopup, setPasswordPopup] = useState(false);
     const [sharePopup, setSharePopup] = useState(false);
-    const [deletePopup, setDeletePopup] = useState(false);
+    const [deleteSelectedPopup, setDeleteSelectedPopup] = useState(false);
     const [serverError, setServerError] = useState(null);
     const [dataError, setDataError] = useState(null);
 
@@ -60,7 +64,7 @@ function Page({ params }) {
                     if (response.folder.sharing.groups.length > 0) await getFolderShareGroups(response.folder.sharing.groups);
                     if (response.folder.parent.id) await getBreadGrumps(response.folder.parent.id);
                 } else {
-                    setDataError(response.message || 'Sisällön h');
+                    setDataError(response.message || 'Sisällön hakemisessa tapahtui virhe, päivitä sivu.');
                 }
             } catch (error) {
                 console.error("Error fetching folder data:", error);
@@ -69,12 +73,19 @@ function Page({ params }) {
                 setLoading(false);
             }
         };
-    
+        
+        // Auth actions
         if (isLoaded && user) {
             setCurrentIndex('/kansiot');
             getFolderData();
         } else {
             navigatePage('/sign-in');
+        }
+
+        // Action when deleted
+        if (deleted) {
+            setLoading(true);
+            navigatePage('/kansiot');
         }
     }, [isLoaded, user, id, setCurrentIndex, navigatePage]);
 
@@ -124,16 +135,23 @@ function Page({ params }) {
 
             <h1 className='text-3xl md:text-4xl font-black truncate'>{folder.name}</h1> 
             
-            <div className='relative flex items-center max-w-full gap-2 justify-between'>   
-                <FolderInfoContainer files={files} folder={folder} folders={folders} shareGroups={shareGroups} />
+            <div className='relative flex items-center max-w-full gap-2 text-sm font-semibold'>   
+                <button 
+                    className='relative flex items-center gap-1 hover:text-primary transition-colors'
+                    title='Kansion asetukset'
+                    onClick={() => setInfo(!info)}
+                >   
+                    Tietoa kansiosta
+                    <Info />
+                </button>
 
                 <button 
-                    className={`relative flex items-center flex-wrap hover:text-primary transition-all
-                        ${settings ? 'rotate-[0deg]' : 'rotate-[-90deg]'}`} 
+                    className='relative flex items-center gap-1 hover:text-primary transition-colors'
                     title='Kansion asetukset'
                     onClick={() => setSettings(!settings)}
                 >   
-                    <Settings className={settings ? 'text-red-500 hover:text-red-600' : 'text-foreground hover:text-primary'} size={28} />
+                    Asetukset
+                    <Settings />
                 </button>
             </div>
             
@@ -142,7 +160,7 @@ function Page({ params }) {
                     <nav className='flex items-center gap-1'>
                         <button 
                             onClick={() => setUploadPopup(true)} 
-                            className='flex flex-1 sm:flex-none items-center justify-center w-fit whitespace-nowrap gap-2 px-3 py-2 rounded-lg text-sm text-white bg-primary
+                            className='flex flex-1 sm:flex-none items-center justify-center w-fit whitespace-nowrap gap-2 px-3 py-2  text-sm text-white bg-primary
                                 hover:bg-primary/75  transition-colors'
                         >
                             <FilePlus />
@@ -150,7 +168,7 @@ function Page({ params }) {
                         </button>
                         <button 
                             onClick={() => setCreateFolder(true)} 
-                            className='flex flex-1 sm:flex-none items-center justify-center w-fit whitespace-nowrap gap-2 px-3 py-2 rounded-lg text-sm text-white bg-primary
+                            className='flex flex-1 sm:flex-none items-center justify-center w-fit whitespace-nowrap gap-2 px-3 py-2  text-sm text-white bg-primary
                                 hover:bg-primary/75  transition-colors'
                         >
                             <FolderPlus />
@@ -161,14 +179,14 @@ function Page({ params }) {
                     <nav className='flex items-center gap-1'>
                         <button 
                             title='Ruudukko' 
-                            className={`p-2 rounded-lg  hover:bg-primary hover:text-white transition-colors
+                            className={`p-2   hover:bg-primary hover:text-white transition-colors
                                 ${view === 'grid' ? 'bg-primary text-white' : 'text-foreground bg-transparent'}` } 
                             onClick={() => setView('grid')}>
                                 <Grid />
                         </button>
                         <button 
                             title='Lista' 
-                            className={`p-2 rounded-lg  hover:bg-primary hover:text-white transition-colors
+                            className={`p-2   hover:bg-primary hover:text-white transition-colors
                                 ${view === 'list' ? 'bg-primary text-white' : 'text-foreground bg-transparent'}` } 
                             onClick={() => setView('list')}>
                                 <List />
@@ -190,7 +208,7 @@ function Page({ params }) {
                 setRenamePopup={setRenamePopup}
                 setPasswordPopup={setPasswordPopup}
                 setSharePopup={setSharePopup}
-                setDeletePopup={setDeletePopup}
+                setDeletePopup={setDeleteSelectedPopup}
             />
             }
 
@@ -289,26 +307,45 @@ function Page({ params }) {
                 )
             )}
             
-            {deletePopup && 
+            {deleteSelectedPopup && 
                 <DeleteSelectedObjects
                     selectedObjects={selectedObjects} 
                     setSelectedObjects={setSelectedObjects} 
                     setFolders={setFolders} 
                     setFiles={setFiles} 
-                    setDeletePopup={setDeletePopup} 
+                    setDeletePopup={setDeleteSelectedPopup} 
                 />
             }
         </main>
 
-        
+        {/* Folder info, settings, delete */}
+        <FolderInfo 
+            folder={folder}
+            files={files}
+            folders={folders}
+            shareGroups={shareGroups}
+            infoOpen={info}
+            setInfoOpen={setInfo}
+        />
+
+
         <FolderSettings 
             folder={folder} 
             setFolder={setFolder} 
             shareGroups={shareGroups} 
             setShareGroups={setShareGroups}
             settings={settings} 
-            setSettings={setSettings} 
+            setSettings={setSettings}
+            setDeletePopup={setDeletePopup}
         />
+
+        {deletePopup &&
+            <FolderDeletePopup
+                folder={folder}
+                setDeleted={setDeleted}
+                setDeletePopup={setDeletePopup}
+            />
+        }
         </>
     );
 }

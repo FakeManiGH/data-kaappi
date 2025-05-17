@@ -83,7 +83,7 @@ function Page() {
 
     return (
         <main>
-            <div className='flex items-end min-h-72 bg-[url(/images/folders_hero.png)] bg-center bg-contain rounded-lg overflow-hidden'>
+            <div className='flex items-end min-h-72 bg-[url(/images/folders_hero.png)] bg-center bg-contain  overflow-hidden'>
                 <div className='flex flex-col gap-2 px-6 py-4 w-full bg-black/50 text-white'>
                     <h1 className="text-3xl font-black truncate">Kansiot</h1>
                     <p className='text-sm'>Luo kansioita ja lisää tiedostoja.</p>
@@ -94,7 +94,7 @@ function Page() {
                 <nav className='flex items-center gap-1'>
                     <button 
                         onClick={() => setUploadPopup(true)}
-                        className='flex flex-1 sm:flex-none items-center justify-center w-fit whitespace-nowrap gap-2 px-3 py-2 rounded-lg text-sm text-white bg-primary 
+                        className='flex flex-1 sm:flex-none items-center justify-center w-fit whitespace-nowrap gap-2 px-3 py-2  text-sm text-white bg-primary 
                             hover:bg-primary/75  transition-colors'
                     >
                         <FilePlus />
@@ -102,7 +102,7 @@ function Page() {
                     </button>
                     <button 
                         onClick={() => setCreateFolder(true)} 
-                        className='flex flex-1 sm:flex-none items-center justify-center w-fit whitespace-nowrap gap-2 px-3 py-2 rounded-lg text-sm text-white bg-primary 
+                        className='flex flex-1 sm:flex-none items-center justify-center w-fit whitespace-nowrap gap-2 px-3 py-2  text-sm text-white bg-primary 
                             hover:bg-primary/75  transition-colors'
                     >
                         <FolderPlus />
@@ -113,14 +113,14 @@ function Page() {
                 <nav className='flex items-center gap-1'>
                     <button 
                         title='Ruudukko' 
-                        className={`p-2 rounded-lg  hover:bg-primary hover:text-white transition-colors
+                        className={`p-2   hover:bg-primary hover:text-white transition-colors
                             ${view === 'grid' ? 'bg-primary text-white' : 'text-foreground bg-transparent'}` } 
                         onClick={() => setView('grid')}>
                             <Grid />
                     </button>
                     <button 
                         title='Lista' 
-                        className={`p-2 rounded-lg  hover:bg-primary hover:text-white transition-colors
+                        className={`p-2   hover:bg-primary hover:text-white transition-colors
                             ${view === 'list' ? 'bg-primary text-white' : 'text-foreground bg-transparent'}` } 
                         onClick={() => setView('list')}>
                             <List />

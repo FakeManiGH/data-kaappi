@@ -261,7 +261,7 @@ function LocalUploadForm({ setFiles, currentFolder, setUploadPopup }) {
                 )}
                 <label
                     htmlFor="dropzone-file"
-                    className={`flex flex-col items-center w-full max-w-full justify-center h-72 rounded-xl
+                    className={`flex flex-col items-center w-full max-w-full justify-center h-72 
                     cursor-pointer border-2 border-dashed border-primary hover:border-primary/75 bg-background transition-all
                     ${isDragging ? 'bg-contrast' : 'bg-background'}`}
 
@@ -287,7 +287,7 @@ function LocalUploadForm({ setFiles, currentFolder, setUploadPopup }) {
 
             {/* File errors */}
             {fileErrors?.map((error, index) => (
-                <div key={index} className='flex items-center gap-2 px-3 py-2 mt-2 rounded-lg justify-between text-sm text-white bg-red-500'>
+                <div key={index} className='flex items-center gap-2 px-3 py-2 mt-2  justify-between text-sm text-white bg-red-500'>
                     <p>{error}</p>
                     <button onClick={() => setFileErrors((prevErrors) => prevErrors.filter((_, i) => i !== index))}>
                         <X />
@@ -299,7 +299,7 @@ function LocalUploadForm({ setFiles, currentFolder, setUploadPopup }) {
             {/* File preview */}
             <div className='grid grid-cols-1 lg:grid-cols-2 w-full gap-2 mt-2'>
             {newFiles?.map((file, index) => (
-                <div key={index} className='flex flex-1 items-center gap-3 p-2 bg-contrast  rounded-xl'>
+                <div key={index} className='flex flex-1 items-center gap-3 p-2 bg-contrast  '>
                 <img
                     src={getFileIcon(file?.type)} 
                     alt='file' 
@@ -314,9 +314,9 @@ function LocalUploadForm({ setFiles, currentFolder, setUploadPopup }) {
                         </div>
 
                         {uploadProgress[index] > 0 && 
-                        <div className='text-center w-full bg-gray-300 rounded-lg dark:bg-gray-600'>
+                        <div className='text-center w-full bg-gray-300  dark:bg-gray-600'>
                             <div 
-                                className={`h-full text-center text-xs text-white rounded-xl ${uploadProgress[index] == 100 ? 'bg-success' : 'bg-primary'}`}
+                                className={`h-full text-center text-xs text-white  ${uploadProgress[index] == 100 ? 'bg-success' : 'bg-primary'}`}
                                 style={{ width: `${uploadProgress[index]}%` }}
                             >
                                 {`${Number(uploadProgress[index]).toFixed(0)}%`}
@@ -342,7 +342,7 @@ function LocalUploadForm({ setFiles, currentFolder, setUploadPopup }) {
                 <div className='flex items-center gap-1 mt-2'>
                     <button 
                         type="button"
-                        className='w-full px-3 py-2.5 rounded-lg bg-primary text-white transition-all hover:bg-primary/75'
+                        className='w-full px-3 py-2  bg-primary text-white transition-all hover:bg-primary/75'
                         {...(newFiles.length === 0 && { disabled: true })}
                         onClick={uploadFiles}
                     >
@@ -352,7 +352,7 @@ function LocalUploadForm({ setFiles, currentFolder, setUploadPopup }) {
                     <button 
                         type="reset"
                         onClick={handleFormReset}
-                        className='w-full px-3 py-2.5 rounded-lg bg-gray-500 hover:bg-gray-600 text-white transition-colors'
+                        className='w-full px-3 py-2  bg-gray-500 hover:bg-gray-600 text-white transition-colors'
                     >
                         Tyhjennä
                     </button>

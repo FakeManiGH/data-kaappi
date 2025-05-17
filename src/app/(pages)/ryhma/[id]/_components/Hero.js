@@ -9,7 +9,7 @@ function Hero({ group, setCoverImagePopup }) {
 
     return (
         <div
-            className="relative flex items-end min-h-72 bg-center bg-contain rounded-lg overflow-hidden"
+            className="relative flex items-end min-h-72 bg-center bg-contain  overflow-hidden"
             style={{
                 backgroundImage: `url('${coverImage || '/images/groups_hero.png'}')`
             }}

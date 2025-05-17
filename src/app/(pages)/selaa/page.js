@@ -133,7 +133,7 @@ function Page() {
     
   return (
     <main>
-      <div className='flex items-end min-h-72 bg-[url(/images/browse_hero.png)] bg-center bg-contain rounded-lg overflow-hidden'>
+      <div className='flex items-end min-h-72 bg-[url(/images/browse_hero.png)] bg-center bg-contain  overflow-hidden'>
         <div className='flex flex-col gap-2 px-6 py-4 w-full bg-black/50 text-white'>
           <h1 className="text-3xl font-black truncate">Selaa mediaa</h1>
           <p className='text-sm'>Selaa kuvia ja muita media-tiedostojasi.</p>
@@ -156,7 +156,7 @@ function Page() {
 
       {!contentLoading && hasMore &&
         <button 
-          className='flex items-center gap-1 px-3 py-2 bg-primary text-white text-sm self-center rounded-lg' 
+          className='flex items-center gap-1 px-3 py-2 bg-primary text-white text-sm self-center ' 
           onClick={() => fetchFiles()}
         >
           <ChevronDown />

@@ -102,12 +102,12 @@ function DeleteSelectedObjects({ selectedObjects, setSelectedObjects, setFolders
 
     return (
         <div className='fixed z-50 inset-0 flex justify-center items-center bg-black/50 px-4 py-2'>
-            <div className='relative flex flex-col w-full max-w-2xl rounded-xl p-4 z-50 bg-gradient-to-br from-contrast to-secondary 
+            <div className='relative flex flex-col w-full max-w-2xl  p-4 z-50 bg-gradient-to-br from-contrast to-secondary 
                 shadow-lg shadow-black/25 max-h-full border border-contrast overflow-y-auto'
             >
                 <button 
                     onClick={() => setDeletePopup(false)} 
-                    className='absolute top-2 right-2 p-1 rounded-lg text-white bg-red-500 hover:bg-red-600 transition-colors'
+                    className='absolute top-2 right-2 p-1  text-white bg-red-500 hover:bg-red-600 transition-colors'
                 >
                     <X />
                 </button>
@@ -123,7 +123,7 @@ function DeleteSelectedObjects({ selectedObjects, setSelectedObjects, setFolders
                                     <div className='relative flex items-center group'>
                                         <button><TriangleAlert size={20} className='text-orange-500' /></button>
                                         <p 
-                                            className='absolute scale-x-0 origin-left transition-transform top-[-5px] left-full ml-1 z-50 rounded-md bg-white 
+                                            className='absolute scale-x-0 origin-left transition-transform top-[-5px] left-full ml-1 z-50  bg-white 
                                             text-black whitespace-nowrap p-1 group-hover:scale-x-100'
                                         >
                                             Kansiossa on sisältöä.
@@ -134,7 +134,7 @@ function DeleteSelectedObjects({ selectedObjects, setSelectedObjects, setFolders
                                     <div className='relative flex items-center group'>
                                         <button><Users2 size={20} className='text-orange-500' /></button>
                                         <p 
-                                            className='absolute scale-x-0 origin-left transition-transform top-[-5px] left-full ml-1 z-50 rounded-md bg-white 
+                                            className='absolute scale-x-0 origin-left transition-transform top-[-5px] left-full ml-1 z-50  bg-white 
                                             text-black whitespace-nowrap p-1 group-hover:scale-x-100'
                                         >
                                             Kansio on ryhmä-jaettu.
@@ -159,7 +159,7 @@ function DeleteSelectedObjects({ selectedObjects, setSelectedObjects, setFolders
 
                 {/* Errors */}
                 {deleteErrors?.map((error, index) => (
-                    <div key={index} className='flex items-center gap-2 px-3 py-2 mt-2 rounded-lg justify-between text-sm text-white bg-red-500'>
+                    <div key={index} className='flex items-center gap-2 px-3 py-2 mt-2  justify-between text-sm text-white bg-red-500'>
                         <div className='flex gap-2 flex-wrap'>
                             <p>{error.name}</p>
                             <p>{error.error}</p>
@@ -173,7 +173,7 @@ function DeleteSelectedObjects({ selectedObjects, setSelectedObjects, setFolders
 
                 <button 
                     onClick={() => setDeleteConfirm(true)} 
-                    className='text-white text-sm bg-red-500 mt-4 py-2.5 px-3 rounded-lg hover:bg-red-600 '
+                    className='text-white text-sm bg-red-500 mt-4 py-2 px-3  hover:bg-red-600 '
                 >
                     Poista
                 </button>
@@ -186,13 +186,13 @@ function DeleteSelectedObjects({ selectedObjects, setSelectedObjects, setFolders
 
                 <div className='flex items-center justify-center gap-1 mt-4 text-sm'>
                     <button 
-                        className='px-3 py-2 rounded-lg bg-red-500 text-white hover:bg-red-600'
+                        className='px-3 py-2  bg-red-500 text-white hover:bg-red-600'
                         onClick={handleDeletingObjects}
                     >
                         Kyllä, poista    
                     </button>
                     <button 
-                        className='px-3 py-2 rounded-lg bg-gray-400 dark:bg-gray-600 text-foreground dark:text-white hover:bg-gray-500 dark:hover:bg-gray-700'
+                        className='px-3 py-2  bg-gray-400 dark:bg-gray-600 text-foreground dark:text-white hover:bg-gray-500 dark:hover:bg-gray-700'
                         onClick={() => setDeleteConfirm(false)}
                     >
                         Peruuta

@@ -68,7 +68,7 @@ function SearchBar({ fileState, setFileState }) {
                     ref={searchField} // Attach the ref to the input field
                     type="text"
                     id="search"
-                    className='px-3 py-2.5 w-full outline-none text-sm text-foreground bg-background border-b border-contrast 
+                    className='px-3 py-2 w-full outline-none text-sm text-foreground bg-background border-b border-contrast 
                         focus:border-primary ring-primary group-hover:border-primary transition-colors' 
                     placeholder="Hae tiedostoa..." 
                     onChange={handleSearch}

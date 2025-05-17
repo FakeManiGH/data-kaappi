@@ -10,7 +10,7 @@ function PasswordPrompt({ handleSubmit, loading, error, setError, handleCancel }
 
     return (
         <span className='fixed z-50 inset-0 flex justify-center items-center bg-black/50 p-4'>
-            <div className='relative flex flex-col w-full max-w-2xl rounded-xl p-4 z-50 bg-gradient-to-br from-contrast to-secondary 
+            <div className='relative flex flex-col w-full max-w-2xl  p-4 z-50 bg-gradient-to-br from-contrast to-secondary 
                 shadow-lg shadow-black/25 max-h-full border border-contrast overflow-y-auto'
             >
                 <h2 className="text-2xl md:text-3xl text-center font-bold">Sisältö suojattu</h2>
@@ -24,7 +24,7 @@ function PasswordPrompt({ handleSubmit, loading, error, setError, handleCancel }
                             id="password"
                             name="password"
                             type={showPassword ? 'text' : 'password'}
-                            className="relative w-full py-2.5 px-3 bg-background text-sm border border-transparent outline-none focus:border-primary focus:ring-1 pe-12"
+                            className="relative w-full py-2 px-3 bg-background text-sm border border-transparent outline-none focus:border-primary focus:ring-1 pe-12"
                             placeholder="Kirjoita salasana..."
                             autoFocus
                         />
@@ -40,7 +40,7 @@ function PasswordPrompt({ handleSubmit, loading, error, setError, handleCancel }
                     </div>
 
                     {error && 
-                        <div className='flex items-center justify-between gap-4 px-3 py-2.5 mt-2 text-white text-sm bg-red-500'>
+                        <div className='flex items-center justify-between gap-4 px-3 py-2 mt-2 text-white text-sm bg-red-500'>
                             <p>{error}</p>
                             <button onClick={() => setError(null)}><X size={20} /></button>
                         </div>
@@ -49,14 +49,14 @@ function PasswordPrompt({ handleSubmit, loading, error, setError, handleCancel }
                     <div className='flex items-center gap-1 mt-2'>
                         <button 
                             type="submit" 
-                            className="w-full py-2 px-3 rounded-lg bg-primary text-white 
+                            className="w-full py-2 px-3  bg-primary text-white 
                             text-sm hover:bg-primary/75  transition-colors"
                         >
                             Lähetä
                         </button>
                         <button 
                             type='button'
-                            className='w-full py-2 px-3 rounded-lg text-white text-sm bg-gray-500 hover:bg-gray-600'
+                            className='w-full py-2 px-3  text-white text-sm bg-gray-500 hover:bg-gray-600'
                             onClick={handleCancel}
                         >
                             Peruuta

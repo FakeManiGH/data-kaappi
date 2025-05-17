@@ -51,16 +51,32 @@ function Page() {
   return (
     <main>
       <h1 className='text-4xl md:text-4xl font-black'><strong>Hei, {user?.firstName}</strong></h1>
+
+      <p>Tervetuloa ikiomaan kaappiisi.</p>
       
-      <div 
-        className='flex items-center justify-center min-h-80 p-4 bg-[url(/images/dashboard_hero.png)] bg-center bg-contain rounded-lg'>
-        <div className='flex gap-2 p-4 flex-wrap items-center justify-center bg-black/50 backdrop-blur-md rounded-xl text-white'>
+      <div className='min-h-80 bg-[url(/images/dashboard_hero.png)] bg-center bg-contain' />
+
+      <div className='grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-8 gap-2'>
+          {filteredList.map((item) => (
+            <Link 
+              href={item.path}
+              key={item.id}
+              className="flex items-center justify-center gap-1 p-4  text-sm 
+                bg-primary text-white hover:bg-primary/75 transition-colors"
+              >
+                <item.icon />
+                <p className="whitespace-nowrap">{item.name}</p>
+            </Link>
+          ))}
+      </div>
+
+      <div className='flex gap-2 p-4 flex-wrap items-center justify-center bg-black/50 backdrop-blur-md  text-white'>
           <SpaceMeterCircle usedSpace={userDoc?.usedSpace} totalSpace={userDoc?.totalSpace} />
           <div className='flex flex-col gap-4 items-center md:items-start text-white'>
             <h3 className='text-xl font-bold'>Tallennustilan käyttö</h3>
             <p className='text-sm text-center md:text-start'>Jos kaapistasi loppuu tila kesken, lisätilaa on saatavilla muutamalla klikkauksella.</p>
             <Link 
-              className='flex items-center w-fit px-3 py-2 gap-1 rounded-lg text-sm cursor-not-allowed text-white bg-primary hover:bg-primary/75 
+              className='flex items-center w-fit px-3 py-2 gap-1  text-sm cursor-not-allowed text-white bg-primary hover:bg-primary/75 
                 transition-colors' 
               href="#"
             >
@@ -69,21 +85,6 @@ function Page() {
             </Link>
           </div>
         </div>
-      </div>
-
-      <div className='grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-8 gap-2'>
-          {filteredList.map((item) => (
-            <Link 
-              href={item.path}
-              key={item.id}
-              className="flex items-center justify-center gap-1 p-4 rounded-lg text-sm 
-                bg-primary text-white hover:bg-primary/75 transition-colors"
-              >
-                <item.icon />
-                <p className="whitespace-nowrap">{item.name}</p>
-            </Link>
-          ))}
-      </div>
     </main> 
   )
 }

@@ -22,7 +22,7 @@ function ErrorView({ message }) {
                 Yritä uudelleen
             </button>
 
-            <div className='flex flex-col gap-2 p-6 border border-contrast bg-background rounded-lg mt-4'>
+            <div className='flex flex-col gap-2 p-6 border border-contrast bg-background  mt-4'>
                 <p className='text-sm'>Jos ongelma jatkuu, ota yhteyttä ylläpitoon.</p>
                 <p className='text-sm'><strong>Sähköposti:</strong> <a href='mailto:timo.anjala@gmail.com' className='text-primary hover:text-primary/75'>timo.anjala@gmail.com</a></p>
             </div>

@@ -47,7 +47,7 @@ function Header() {
                         {isLoggedIn ? (
                             <Link
                                 className="flex gap-1 items-center px-3 py-2 text-sm bg-primary text-white 
-                                    rounded-lg hover:bg-primary/75 transition-colors "
+                                     hover:bg-primary/75 transition-colors "
                                 href="/kojelauta"
                             >   
                                 <CircleGauge />
@@ -56,7 +56,7 @@ function Header() {
                         ) : (
                             <Link
                                 className="flex gap-1 items-center px-3 py-2 text-sm bg-primary text-white 
-                                    rounded-lg hover:bg-primary/75 transition-colors "
+                                     hover:bg-primary/75 transition-colors "
                                 href="/sign-in"
                             >   
                                 <LogIn />
@@ -78,7 +78,7 @@ function Header() {
                                 role="menu"
                             >
                                 <div className='flex flex-col gap-6 w-full'>
-                                    <button className='w-fit rounded-lg self-end text-foreground hover:text-primary' onClick={() => setDropdown(false)}>
+                                    <button className='w-fit  self-end text-foreground hover:text-primary' onClick={() => setDropdown(false)}>
                                         <X size={32} />
                                     </button>
 
@@ -87,7 +87,7 @@ function Header() {
                                         <Link
                                             href={item.path}
                                             key={item.id}
-                                            className={`flex items-center gap-6 p-3 group hover:bg-primary hover:text-white rounded-lg transition-colors
+                                            className={`flex items-center gap-6 p-2 group hover:bg-primary hover:text-white  transition-colors
                                             ${currentIndex === item.path ? 'bg-primary text-white' : 'bg-contrast'}`}
                                             onClick={() => setDropdown(false)}
                                         >

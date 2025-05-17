@@ -99,7 +99,7 @@ function FileNav({ fileState, setFileState }) {
 
                 {dropMenu && (
                     <div
-                        className="absolute z-20 mt-2 rounded-lg end-0 sm:max-w-64 w-full pb-2 divide-y divide-contrast overflow-hidden border border-contrast bg-background shadow-lg shadow-black/25"
+                        className="absolute z-20 mt-2  end-0 sm:max-w-64 w-full pb-2 divide-y divide-contrast overflow-hidden border border-contrast bg-background shadow-lg shadow-black/25"
                         role="menu"
                     >
                         <div className='bg-background'>

@@ -68,7 +68,7 @@ function Page() {
                 <button
                     onClick={() => setCreateGroup(true)}
                     className='flex gap-2 items-center justify-center w-fit flex-nowrap py-3 px-5 whitespace-nowrap bg-primary text-white 
-                        hover:bg-primary/75 rounded-lg '
+                        hover:bg-primary/75  '
                 >
                     <PlusCircle size={20} />
                     Luo uusi ryhmä

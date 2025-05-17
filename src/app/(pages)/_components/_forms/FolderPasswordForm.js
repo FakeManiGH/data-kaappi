@@ -108,7 +108,7 @@ function FolderPasswordForm({ selectedFolder, setFolder, setFolders, setSelected
 
                     {selectedFolder.passwordProtected &&
                         <div className='flex items-center gap-1'>
-                            <p className='px-1 py-0.5 w-fit text-xs text-success border border-success rounded-md'>
+                            <p className='px-1 py-0.5 w-fit text-xs text-success border border-success '>
                                 Suojattu
                             </p>
                             
@@ -135,7 +135,7 @@ function FolderPasswordForm({ selectedFolder, setFolder, setFolders, setSelected
                         id="password"
                         name="password"
                         type={showPassword ? 'text' : 'password'}
-                        className="relative w-full py-2 px-3 bg-contrast text-sm rounded-md border border-transparent 
+                        className="relative w-full py-2 px-3 bg-contrast text-sm  border border-transparent 
                             outline-none focus:border-primary focus:ring-1 pe-12"
                         placeholder="Kirjoita salasana"
                         autoFocus
@@ -152,7 +152,7 @@ function FolderPasswordForm({ selectedFolder, setFolder, setFolders, setSelected
                 </div>
 
                 {passwordErr && 
-                    <div className='flex items-center justify-between gap-4 px-3 py-2 mt-2 rounded-md text-white text-sm bg-red-500'>
+                    <div className='flex items-center justify-between gap-4 px-3 py-2 mt-2  text-white text-sm bg-red-500'>
                         <p>{passwordErr}</p>
                         <button onClick={() => setPasswordErr(null)}><X size={20} /></button>
                     </div>
@@ -160,7 +160,7 @@ function FolderPasswordForm({ selectedFolder, setFolder, setFolders, setSelected
 
                 <button 
                     type="submit" 
-                    className="w-fit mt-2 py-2 px-3 rounded-lg bg-primary text-white 
+                    className="w-fit mt-2 py-2 px-3  bg-primary text-white 
                         text-sm hover:bg-primary/75 transition-colors"
                 >
                     Tallenna salasana

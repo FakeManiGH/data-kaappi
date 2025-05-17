@@ -25,7 +25,7 @@ function ContentNotFound({ message }) {
 
                 <Link 
                     href='/kojelauta' 
-                    className='flex items-center gap-1 px-3 py-2 rounded-lg text-white bg-primary hover:bg-primary/75 
+                    className='flex items-center gap-1 px-3 py-2  text-white bg-primary hover:bg-primary/75 
                      transition-colors'
                 >
                     <Home />

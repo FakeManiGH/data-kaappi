@@ -13,19 +13,24 @@ function CreateNewFolder({ currentFolder, setNewFolderPopup, folders, setFolders
   const { user } = useUser()
 
   const handleCreateFolder = async (e) => {
+      if (apiLoading) {
+        showAlert('Ladataan... odota hetki.', 'info');
+        return;
+      }
+
       e.preventDefault();
       setApiLoading(true);
   
-      const folderName = e.target.folderName.value.trim();
+      const folderName = e.target.folderName.value;
   
       if (!folderName) {
-        setError('Anna kansiolle nimi.');
+        showAlert('Anna kansiolle nimi.', 'info');
         setApiLoading(false);
         return
       }
   
       if (!folderNameRegex.test(folderName)) {
-        setError('Kansion nimen tulee olla 2-50 merkkiä pitkä, eikä se saa sisältää <, >, /, \\ -merkkejä.');
+        setNameError('Kansion nimen tulee olla 2-50 merkkiä pitkä, eikä se saa sisältää <, >, /, \\ -merkkejä.');
         setApiLoading(false);
         return
       }
@@ -60,12 +65,12 @@ function CreateNewFolder({ currentFolder, setNewFolderPopup, folders, setFolders
 
   return (
     <span className='fixed z-50 inset-0 flex justify-center items-center bg-black/50 p-4'>
-      <div className='relative flex flex-col w-full max-w-2xl rounded-xl p-4 z-50 bg-gradient-to-br from-contrast to-secondary 
-          shadow-lg shadow-black/25 max-h-full border border-contrast overflow-y-auto'
+      <div className='relative flex flex-col w-full max-w-2xl p-4 z-50 bg-background
+          shadow-lg shadow-black/25 max-h-full overflow-y-auto'
       >
         <button 
           onClick={() => setNewFolderPopup(false)} 
-          className='absolute top-2 right-2 p-1 rounded-lg text-white bg-red-500 hover:bg-red-600 transition-colors'
+          className='absolute top-2 right-2 p-1  text-white bg-red-500 hover:bg-red-600 transition-colors'
         >
           <X />
         </button>
@@ -75,17 +80,18 @@ function CreateNewFolder({ currentFolder, setNewFolderPopup, folders, setFolders
 
         <form className="flex flex-col mt-4" onSubmit={handleCreateFolder}>
           <label htmlFor="folderName" className="block text-sm font-semibold">Kansion nimi</label>
+          
           <input 
             type="text" 
             id="folderName" 
             placeholder='Anna kansiolle nimi...' 
             name="folderName" 
-            className="outline-none py-2.5 px-3 rounded-md bg-background text-sm border border-transparent focus:border-primary focus:ring-1"
+            className="outline-none py-2 px-3 bg-contrast text-sm border border-transparent focus:border-primary focus:ring-1"
             autoFocus
           />
 
           {nameError && 
-            <div className='flex items-center justify-between gap-4 px-3 py-2.5 mt-2 rounded-md text-white text-sm bg-red-500'>
+            <div className='flex items-center justify-between gap-4 px-3 py-2 mt-2  text-white text-sm bg-red-500'>
               <p>{nameError}</p>
               <button onClick={() => setNameError(null)}><X size={20} /></button>
             </div>
@@ -93,7 +99,7 @@ function CreateNewFolder({ currentFolder, setNewFolderPopup, folders, setFolders
 
           <button 
             type="submit" 
-            className="w-full mt-2 py-2.5 px-3 rounded-lg bg-primary text-white 
+            className="w-full mt-2 py-2 px-3  bg-primary text-white 
               text-sm hover:bg-primary/75  transition-colors"
           >
               Luo kansio

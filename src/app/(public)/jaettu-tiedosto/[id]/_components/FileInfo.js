@@ -23,7 +23,7 @@ function FileInfo({ file }) {
   ];
 
   return (
-    <div className="flex flex-col w-full p-4 rounded-lg bg-secondary shadow-lg shadow-black/25">
+    <div className="flex flex-col w-full p-4  bg-secondary shadow-lg shadow-black/25">
       <ul className="flex flex-col text-sm">
         {fileInfoFields.map((field, index) => (
           <li

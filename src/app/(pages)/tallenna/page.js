@@ -17,7 +17,7 @@ function Page() {
   const [serverError, setServerError] = useState(null);
   const { setCurrentIndex, navigatePage } = useNavigation();
   const [folders, setFolders] = useState([]);
-  const [newFolderPopup, setNewFolderPopup] = useState(false);
+  const [createFolder, setCreateFolder] = useState(false);
 
   useEffect(() => {
     setCurrentIndex('/tallenna');
@@ -52,16 +52,16 @@ function Page() {
 
   return (
     <main>
-      <div className='flex items-end min-h-72 bg-[url(/images/upload_hero.png)] bg-center bg-contain rounded-lg overflow-hidden'>
+      <div className='flex items-end min-h-72 bg-[url(/images/upload_hero.png)] bg-center bg-contain  overflow-hidden'>
         <div className='flex flex-col gap-2 px-6 py-4 w-full bg-black/50 text-white'>
           <h1 className="text-3xl font-black truncate">Tallenna</h1>
           <p className='text-sm'>Lisää tiedostoja kaappiisi.</p>
         </div>
       </div>
 
-      <FileUploadForm folders={folders} setNewFolderPopup={setNewFolderPopup} />
+      <FileUploadForm folders={folders} setCreateFolder={setCreateFolder} />
       
-      {newFolderPopup && <CreateNewFolder setNewFolderPopup={setNewFolderPopup} folders={folders} setFolders={setFolders} />}
+      {createFolder && <CreateNewFolder setNewFolderPopup={setCreateFolder} folders={folders} setFolders={setFolders} />}
     </main>
   );
 }

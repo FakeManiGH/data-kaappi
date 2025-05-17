@@ -65,7 +65,7 @@ function FileInfo({ file, folder, shareGroups }) {
   ];
 
   return (
-    <div className="flex flex-col w-full p-4 rounded-lg bg-secondary">
+    <div className="flex flex-col w-full p-4  bg-secondary">
       <ul className="flex flex-col text-sm">
         {fileInfoFields.map((field, index) => (
           <li

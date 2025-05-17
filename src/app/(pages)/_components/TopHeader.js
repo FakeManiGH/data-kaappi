@@ -33,12 +33,12 @@ function TopHeader() {
           > 
 
             <div className='flex flex-col gap-6 w-full'>
-              <button className='w-fit rounded-lg self-end text-foreground hover:text-primary' onClick={() => setDropdown(false)}>
+              <button className='w-fit  self-end text-foreground hover:text-primary' onClick={() => setDropdown(false)}>
                 <X size={32} />
               </button>
 
               <nav className='flex flex-col gap-1'>
-                <Link href='/' className='flex items-center gap-6 p-3 text-sm rounded-lg bg-contrast hover:bg-primary hover:text-white'>
+                <Link href='/' className='flex items-center gap-6 p-3 text-sm  bg-contrast hover:bg-primary hover:text-white'>
                   <Home />
                   Etusivu
                 </Link>
@@ -47,7 +47,7 @@ function TopHeader() {
                   <Link
                     href={item.path}
                     key={item.id}
-                    className={`flex items-center gap-6 p-3 group hover:bg-primary hover:text-white rounded-lg transition-colors
+                    className={`flex items-center gap-6 p-3 group hover:bg-primary hover:text-white  transition-colors
                       ${currentIndex === item.path ? 'bg-primary text-white' : 'bg-contrast'}`}
                     onClick={() => setDropdown(false)}
                   >

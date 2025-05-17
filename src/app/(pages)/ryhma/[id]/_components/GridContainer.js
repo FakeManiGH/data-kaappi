@@ -9,7 +9,7 @@ function GridContainer({ folders }) {
         {folders.map(folder => (
             <div 
                 key={folder.id} 
-                className='relative flex flex-col items-center justify-center p-2 rounded-lg transition-colors group 
+                className='relative flex flex-col items-center justify-center p-2  transition-colors group 
                     overflow-hidden bg-gradient-to-br from-secondary to-contrast text-sm'
             >   
                 <Link href={`/kansio/${folder.id}`} className='flex flex-col items-center max-w-full overflow-hidden text-foreground hover:text-primary'>
